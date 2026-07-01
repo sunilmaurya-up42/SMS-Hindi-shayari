@@ -33,7 +33,12 @@ exports.isAuthenticated = async (req, res, next) => {
 
         if (!user) {
 
-            req.logout(() => {});
+            await new Promise((resolve, reject) => {
+    req.logout((err) => {
+        if (err) return reject(err);
+        resolve();
+    });
+});
 
             if (req.originalUrl.startsWith("/api")) {
                 return res.status(401).json({
@@ -47,7 +52,12 @@ exports.isAuthenticated = async (req, res, next) => {
 
         if (!user.isActive) {
 
-            req.logout(() => {});
+            await new Promise((resolve, reject) => {
+    req.logout((err) => {
+        if (err) return reject(err);
+        resolve();
+    });
+});
 
             if (req.originalUrl.startsWith("/api")) {
                 return res.status(403).json({
@@ -87,7 +97,19 @@ exports.optionalAuth = async (req, res, next) => {
 
             const user = await User.findById(req.user._id).select("-password");
 
-            req.user = user || null;
+            if (!user || !user.isActive) {
+
+    await new Promise((resolve) => {
+        req.logout(() => resolve());
+    });
+
+    req.user = null;
+
+} else {
+
+    req.user = user;
+
+            }
 
         }
 
