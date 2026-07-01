@@ -8,17 +8,21 @@
 "use strict";
 
 const mongoose = require("mongoose");
+const { logger } = require("../utils/logger");
 
 mongoose.set("strictQuery", true);
 
 const connectDatabase = async () => {
     try {
 
-        if (!process.env.MONGODB_URI) {
-            throw new Error("MONGODB_URI is missing in environment variables.");
+        const MONGO_URI =
+            process.env.MONGO_URI || process.env.MONGODB_URI;
+
+        if (!MONGO_URI) {
+            throw new Error("MongoDB URI is missing in environment variables.");
         }
 
-        const connection = await mongoose.connect(process.env.MONGODB_URI, {
+        const connection = await mongoose.connect(MONGO_URI, {
             autoIndex: false,
             maxPoolSize: 10,
             minPoolSize: 2,
@@ -26,20 +30,20 @@ const connectDatabase = async () => {
             socketTimeoutMS: 45000
         });
 
-        console.log("==================================");
-        console.log(" MongoDB Connected");
-        console.log(` Database : ${connection.connection.name}`);
-        console.log(` Host     : ${connection.connection.host}`);
-        console.log("==================================");
+        logger.info("==================================");
+        logger.info(" MongoDB Connected");
+        logger.info(` Database : ${connection.connection.name}`);
+        logger.info(` Host     : ${connection.connection.host}`);
+        logger.info("==================================");
 
         return connection;
 
     } catch (error) {
 
-        console.error("==================================");
-        console.error(" MongoDB Connection Failed");
-        console.error(error.message);
-        console.error("==================================");
+        logger.error("==================================");
+        logger.error(" MongoDB Connection Failed");
+        logger.error(error.message);
+        logger.error("==================================");
 
         process.exit(1);
     }
@@ -50,15 +54,15 @@ const connectDatabase = async () => {
 =============================== */
 
 mongoose.connection.on("connected", () => {
-    console.log("MongoDB connection established.");
+    logger.info("MongoDB connection established.");
 });
 
 mongoose.connection.on("error", (error) => {
-    console.error("MongoDB Error:", error.message);
+    logger.error(`MongoDB Error: ${error.message}`);
 });
 
 mongoose.connection.on("disconnected", () => {
-    console.warn("MongoDB disconnected.");
+    logger.warn("MongoDB disconnected.");
 });
 
 module.exports = connectDatabase;
