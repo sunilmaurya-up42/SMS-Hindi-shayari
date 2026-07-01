@@ -1,24 +1,28 @@
-import generateJwt from "../utils/generateJwt.js";
 
-export const googleCallback = async (req, res) => {
-  const token = generateJwt(req.user);
 
-  return res.status(200).json({
-    success: true,
-    token,
-    user: req.user
-  });
-};
-export const logout = async (req, res) => {
-  return res.status(200).json({
-    success: true,
-    message: "Logged out successfully."
-  });
-};
+import authService from "../services/auth.service.js";
 
-export const currentUser = async (req, res) => {
-  return res.status(200).json({
-    success: true,
-    user: req.user
-  });
+export const googleCallback = async (req, res, next) => {
+  try {
+    const result = await authService.loginWithGoogle(
+      req.account,
+      req
+    );
+
+    res.cookie("refreshToken", result.refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 30 * 24 * 60 * 60 * 1000
+    });
+
+    return res.status(200).json({
+      success: true,
+      token: result.accessToken,
+      user: result.user
+    });
+
+  } catch (error) {
+    next(error);
+  }
 };
