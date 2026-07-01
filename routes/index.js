@@ -1,4 +1,3 @@
-
 /**
  * -------------------------------------------------------
  * SMS Hindi Shayari
@@ -12,133 +11,109 @@ const express = require("express");
 const router = express.Router();
 
 const shayariController = require("../controllers/shayari");
-const categoryController = require("../controllers/page");
+const pageController = require("../controllers/page");
+
 const { optionalAuth } = require("../middleware/auth");
 
 /* ==================================
-   Home Page
+   Home
 ================================== */
 
-router.get("/", optionalAuth, async (req, res, next) => {
-    try {
-        return res.render("pages/home", {
-            title: "SMS Hindi Shayari",
-            user: req.user || null
-        });
-    } catch (err) {
-        next(err);
-    }
-});
+router.get(
+    "/",
+    optionalAuth,
+    shayariController.home
+);
 
 /* ==================================
-   All Shayari List
+   Shayari
 ================================== */
 
-router.get("/shayari", optionalAuth, async (req, res, next) => {
-    try {
-        return res.render("pages/shayari/index", {
-            title: "All Shayari",
-            user: req.user || null
-        });
-    } catch (err) {
-        next(err);
-    }
-});
+router.get(
+    "/shayari",
+    optionalAuth,
+    shayariController.allShayari
+);
+
+router.get(
+    "/shayari/:slug",
+    optionalAuth,
+    shayariController.singleShayari
+);
 
 /* ==================================
-   Single Shayari Page (SEO Slug)
+   Category
 ================================== */
 
-router.get("/shayari/:slug", optionalAuth, async (req, res, next) => {
-    try {
-        const slug = req.params.slug;
-
-        return res.render("pages/shayari/detail", {
-            title: "Shayari Detail",
-            slug,
-            user: req.user || null
-        });
-    } catch (err) {
-        next(err);
-    }
-});
+router.get(
+    "/category/:slug",
+    optionalAuth,
+    shayariController.category
+);
 
 /* ==================================
-   Category Page
+   Search
 ================================== */
 
-router.get("/category/:slug", optionalAuth, async (req, res, next) => {
-    try {
-        const slug = req.params.slug;
-
-        return res.render("pages/category/detail", {
-            title: "Category",
-            slug,
-            user: req.user || null
-        });
-    } catch (err) {
-        next(err);
-    }
-});
+router.get(
+    "/search",
+    optionalAuth,
+    shayariController.search
+);
 
 /* ==================================
-   Search Page
+   Tags
 ================================== */
 
-router.get("/search", optionalAuth, async (req, res, next) => {
-    try {
+router.get(
+    "/tag/:tag",
+    optionalAuth,
+    shayariController.tag
+);
 
-        const q = req.query.q || "";
+/* ==================================
+   Language
+================================== */
 
-        return res.render("pages/search", {
-            title: "Search Shayari",
-            query: q,
-            user: req.user || null
-        });
-
-    } catch (err) {
-        next(err);
-    }
-});
+router.get(
+    "/language/:language",
+    optionalAuth,
+    shayariController.language
+);
 
 /* ==================================
    Static Pages
 ================================== */
 
-router.get("/about", optionalAuth, (req, res) => {
-    res.render("pages/about", {
-        title: "About Us",
-        user: req.user || null
-    });
-});
+router.get(
+    "/about",
+    optionalAuth,
+    pageController.about
+);
 
-router.get("/contact", optionalAuth, (req, res) => {
-    res.render("pages/contact", {
-        title: "Contact Us",
-        user: req.user || null
-    });
-});
+router.get(
+    "/contact",
+    optionalAuth,
+    pageController.contact
+);
 
-router.get("/privacy-policy", optionalAuth, (req, res) => {
-    res.render("pages/privacy", {
-        title: "Privacy Policy",
-        user: req.user || null
-    });
-});
+router.get(
+    "/privacy-policy",
+    optionalAuth,
+    pageController.privacyPolicy
+);
 
-router.get("/terms", optionalAuth, (req, res) => {
-    res.render("pages/terms", {
-        title: "Terms & Conditions",
-        user: req.user || null
-    });
-});
+router.get(
+    "/terms",
+    optionalAuth,
+    pageController.terms
+);
 
-router.get("/disclaimer", optionalAuth, (req, res) => {
-    res.render("pages/disclaimer", {
-        title: "Disclaimer",
-        user: req.user || null
-    });
-});
+router.get(
+    "/disclaimer",
+    optionalAuth,
+    pageController.disclaimer
+);
 
 /* ==================================
    Export
