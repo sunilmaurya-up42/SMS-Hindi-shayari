@@ -27,5 +27,5 @@ export const env = {
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET || "",
 
   FRONTEND_URL:
-    process.env.FRONTEND_URL || "http://localhost:5173"
+    process.env.FRONTEND_URL || "https://sms-hindi-shayari-api.onrender.com"
 };
