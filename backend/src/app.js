@@ -1,4 +1,5 @@
 import express from "express";
+import passport from "./config/passport.js";
 import helmet from "helmet";
 import cors from "cors";
 import compression from "compression";
