@@ -1,0 +1,138 @@
+/* ==========================================
+   SMS Hindi Shayari
+   Main Stylesheet
+========================================== */
+
+:root{
+
+    --primary:#dc3545;
+    --primary-dark:#bb2d3b;
+    --secondary:#6c757d;
+    --success:#198754;
+    --warning:#ffc107;
+    --danger:#dc3545;
+    --light:#f8f9fa;
+    --dark:#212529;
+    --white:#ffffff;
+    --border:#dee2e6;
+    --shadow:0 4px 12px rgba(0,0,0,.08);
+    --radius:12px;
+
+}
+
+*{
+
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+
+}
+
+html{
+
+    scroll-behavior:smooth;
+
+}
+
+body{
+
+    font-family:"Poppins",sans-serif;
+    background:#f5f6fa;
+    color:#212529;
+    line-height:1.7;
+
+}
+
+a{
+
+    text-decoration:none;
+    transition:.3s;
+
+}
+
+img{
+
+    max-width:100%;
+    display:block;
+
+}
+
+.container{
+
+    width:100%;
+    max-width:1200px;
+    margin:auto;
+    padding:0 15px;
+
+}
+
+/* ==========================
+   Navbar
+========================== */
+
+.navbar{
+
+    box-shadow:var(--shadow);
+
+}
+
+.navbar-brand{
+
+    font-size:1.5rem;
+    font-weight:700;
+
+}
+
+.nav-link{
+
+    font-weight:500;
+
+}
+
+.nav-link:hover{
+
+    color:var(--primary)!important;
+
+}
+
+/* ==========================
+   Hero
+========================== */
+
+.hero{
+
+    padding:80px 0;
+
+    background:linear-gradient(
+        135deg,
+        #fff,
+        #ffeaea
+    );
+
+}
+
+.hero h1{
+
+    font-size:3rem;
+
+    font-weight:700;
+
+    margin-bottom:20px;
+
+}
+
+.hero p{
+
+    font-size:1.1rem;
+
+    color:#555;
+
+}
+
+.hero .btn{
+
+    border-radius:50px;
+
+    padding:12px 30px;
+
+}
