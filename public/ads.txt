@@ -5,3 +5,4 @@
 
 # Replace the following line after your AdSense approval.
 
+google.com, pub-8571524783344516, DIRECT, f08c47fec0942fa0
