@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+    <rect width="1200" height="630" fill="#f8f9fa"/>
+    <rect x="40" y="40" width="1120" height="550" rx="20" fill="#ffffff" stroke="#dee2e6"/>
+    <text x="600" y="285"
+          text-anchor="middle"
+          font-size="52"
+          font-family="Arial"
+          fill="#dc3545"
+          font-weight="bold">
+        SMS Hindi Shayari
+    </text>
+    <text x="600" y="350"
+          text-anchor="middle"
+          font-size="26"
+          font-family="Arial"
+          fill="#6c757d">
+        Image Coming Soon
+    </text>
+</svg>
