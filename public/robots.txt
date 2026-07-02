@@ -1,1 +1,21 @@
+# ==================================
+# SMS Hindi Shayari
+# robots.txt
+# ==================================
 
+User-agent: *
+
+Allow: /
+
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /api/
+Disallow: /auth/
+Disallow: /uploads/
+Disallow: /private/
+
+Crawl-delay: 5
+
+Sitemap: https://sms-hindi-shayari.onrender.com/sitemap.xml
+
+Host: https://sms-hindi-shayari.onrender.com
