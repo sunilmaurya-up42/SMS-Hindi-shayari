@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <%- include("../partials/head") %>
+
+</head>
+
+<body class="bg-light">
+
+<%- include("../partials/navbar") %>
+
+<!-- ==================================
+Login Section
+================================== -->
+
+<section class="py-5">
+
+<div class="container">
+
+<div class="row justify-content-center">
+
+<div class="col-lg-5 col-md-7">
+
+<div class="card shadow border-0">
+
+<div class="card-header bg-danger text-white text-center">
+
+<h2 class="mb-0">
+
+<i class="fa-solid fa-right-to-bracket me-2"></i>
+
+Login
+
+</h2>
+
+</div>
+
+<div class="card-body p-4">
+
+<% if(error && error.length){ %>
+
+<div class="alert alert-danger">
+
+<%= error[0] %>
+
+</div>
+
+<% } %>
+
+<% if(success && success.length){ %>
+
+<div class="alert alert-success">
+
+<%= success[0] %>
+
+</div>
+
+<% } %>
+
+<form
+action="/auth/login"
+method="POST">
+
+<div class="mb-3">
+
+<label class="form-label">
+
+Email
+
+</label>
+
+<input
+type="email"
+name="email"
+class="form-control"
+placeholder="Enter your email"
+required>
+
+</div>
+
+<div class="mb-3">
+
+<label class="form-label">
+
+Password
+
+</label>
+
+<input
+type="password"
+name="password"
+class="form-control"
+placeholder="Enter your password"
+required>
+
+</div>
+
+<div class="form-check mb-4">
+
+<input
+class="form-check-input"
+type="checkbox"
+name="remember"
+id="remember">
+
+<label
+class="form-check-label"
+for="remember">
+
+Remember Me
+
+</label>
+
+</div>
+
+<div class="d-grid">
+
+<button
+type="submit"
+class="btn btn-danger btn-lg">
+
+<i class="fa-solid fa-right-to-bracket me-2"></i>
+
+Login
+
+</button>
+
+</div>
+
+</form>
+
+<div class="text-center mt-4">
+
+<a
+href="/auth/forgot-password"
+class="text-decoration-none">
+
+Forgot Password?
+
+</a>
+
+</div>
+
+<hr>
+
+<div class="text-center">
+
+<p class="mb-2">
+
+Don't have an account?
+
+</p>
+
+<a
+href="/auth/register"
+class="btn btn-outline-danger">
+
+Create New Account
+
+</a>
+
+</div>
+
+<hr>
+
+<h5 class="text-center mb-3">
+
+Or Continue With
+
+</h5>
+
+<div class="d-grid gap-2">
+
+<a
+href="/auth/google"
+class="btn btn-outline-dark">
+
+<i class="fa-brands fa-google me-2"></i>
+
+Continue with Google
+
+</a>
+
+<a
+href="/auth/github"
+class="btn btn-outline-secondary">
+
+<i class="fa-brands fa-github me-2"></i>
+
+Continue with GitHub
+
+</a>
+
+</div>
+
+<div class="alert alert-info mt-4 mb-0">
+
+<h6 class="fw-bold">
+
+<i class="fa-solid fa-shield-halved me-2"></i>
+
+Security Tips
+
+</h6>
+
+<ul class="mb-0 ps-3">
+
+<li>
+
+Never share your password with anyone.
+
+</li>
+
+<li>
+
+Always logout from public devices.
+
+</li>
+
+<li>
+
+Use a strong password with letters, numbers and symbols.
+
+</li>
+
+</ul>
+
+</div>
+
+</div>
+
+<div class="card-footer text-center bg-white">
+
+<small class="text-muted">
+
+By logging in, you agree to our
+
+<a href="/terms">
+
+Terms
+
+</a>
+
+and
+
+<a href="/privacy-policy">
+
+Privacy Policy
+
+</a>
+
+</small>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ==================================
+Need Help?
+================================== -->
+
+<section class="py-5 bg-light">
+
+    <div class="container">
+
+        <div class="row justify-content-center">
+
+            <div class="col-lg-8 text-center">
+
+                <h2 class="fw-bold mb-3">
+
+                    Welcome to SMS Hindi Shayari
+
+                </h2>
+
+                <p class="text-muted">
+
+                    Login to save your favorite Shayari, post comments,
+                    download HD Shayari images and enjoy a personalized
+                    experience across all your devices.
+
+                </p>
+
+                <div class="mt-4">
+
+                    <a
+                        href="/"
+                        class="btn btn-outline-danger me-2">
+
+                        <i class="fa-solid fa-house me-2"></i>
+
+                        Back to Home
+
+                    </a>
+
+                    <a
+                        href="/contact"
+                        class="btn btn-dark">
+
+                        <i class="fa-solid fa-envelope me-2"></i>
+
+                        Contact Us
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ==================================
+Footer
+================================== -->
+
+<%- include("../partials/footer") %>
+
+<!-- ==================================
+Scripts
+================================== -->
+
+<%- include("../partials/scripts") %>
+
+</body>
+
+</html>
