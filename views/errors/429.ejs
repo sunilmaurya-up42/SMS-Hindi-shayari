@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <%- include("../partials/head") %>
+
+</head>
+
+<body>
+
+<%- include("../partials/navbar") %>
+
+<!-- ==================================
+429 Error
+================================== -->
+
+<section class="py-5">
+
+<div class="container">
+
+<div class="row justify-content-center">
+
+<div class="col-lg-8 text-center">
+
+<div class="mb-4">
+
+<i
+class="fa-solid fa-hourglass-half text-warning"
+style="font-size:100px;"></i>
+
+</div>
+
+<h1
+class="display-1 fw-bold text-warning">
+
+429
+
+</h1>
+
+<h2 class="fw-bold">
+
+Too Many Requests
+
+</h2>
+
+<p class="lead text-muted">
+
+You've made too many requests in a short period of time.
+
+Please wait a few minutes before trying again.
+
+</p>
+
+<div class="mt-4">
+
+<a
+href="/"
+class="btn btn-warning btn-lg me-2">
+
+<i class="fa-solid fa-house me-2"></i>
+
+Go Home
+
+</a>
+
+<button
+onclick="history.back()"
+class="btn btn-outline-secondary btn-lg">
+
+<i class="fa-solid fa-arrow-left me-2"></i>
+
+Go Back
+
+</button>
+
+</div>
+
+<hr class="my-5">
+
+<h4 class="fw-bold">
+
+Why am I seeing this?
+
+</h4>
+
+<p class="text-muted">
+
+This website uses rate limiting to protect against spam,
+abuse and automated requests. If you continue browsing
+normally, access will be restored automatically after a
+short waiting period.
+
+</p>
+
+<div class="row mt-5">
+
+<div class="col-md-4">
+
+<div class="card border-0 shadow-sm">
+
+<div class="card-body">
+
+<i class="fa-solid fa-shield-halved fa-2x text-success mb-3"></i>
+
+<h5>
+
+Secure
+
+</h5>
+
+<p class="text-muted mb-0">
+
+Protects our servers from abuse.
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-md-4">
+
+<div class="card border-0 shadow-sm">
+
+<div class="card-body">
+
+<i class="fa-solid fa-clock fa-2x text-primary mb-3"></i>
+
+<h5>
+
+Wait
+
+</h5>
+
+<p class="text-muted mb-0">
+
+Try again after a few minutes.
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-md-4">
+
+<div class="card border-0 shadow-sm">
+
+<div class="card-body">
+
+<i class="fa-solid fa-headset fa-2x text-danger mb-3"></i>
+
+<h5>
+
+Support
+
+</h5>
+
+<p class="text-muted mb-0">
+
+Contact us if the issue continues.
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ==================================
+Need Help?
+================================== -->
+
+<section class="py-5 bg-light">
+
+    <div class="container">
+
+        <div class="row justify-content-center">
+
+            <div class="col-lg-8 text-center">
+
+                <h2 class="fw-bold mb-3">
+
+                    Still Seeing This Error?
+
+                </h2>
+
+                <p class="text-muted">
+
+                    If you're still receiving this message after waiting for a
+                    few minutes, please contact our support team. We'll be
+                    happy to help resolve the issue.
+
+                </p>
+
+                <div class="mt-4">
+
+                    <a
+                        href="/contact"
+                        class="btn btn-primary me-2">
+
+                        <i class="fa-solid fa-envelope me-2"></i>
+
+                        Contact Support
+
+                    </a>
+
+                    <a
+                        href="/"
+                        class="btn btn-outline-dark">
+
+                        <i class="fa-solid fa-house me-2"></i>
+
+                        Back to Home
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ==================================
+Footer
+================================== -->
+
+<%- include("../partials/footer") %>
+
+<!-- ==================================
+Scripts
+================================== -->
+
+<%- include("../partials/scripts") %>
+
+</body>
+
+</html>
