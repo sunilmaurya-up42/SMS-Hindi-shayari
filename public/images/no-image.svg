@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800">
+    <rect width="800" height="800" fill="#eeeeee"/>
+    <circle cx="400" cy="300" r="110" fill="#cccccc"/>
+    <rect x="180" y="470" width="440" height="170" rx="25" fill="#cccccc"/>
+    <text x="400"
+          y="730"
+          text-anchor="middle"
+          font-size="34"
+          font-family="Arial"
+          fill="#666666">
+        No Image Available
+    </text>
+</svg>
