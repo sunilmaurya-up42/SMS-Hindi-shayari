@@ -1,1 +1,7 @@
+# ==================================
+# SMS Hindi Shayari
+# ads.txt
+# ==================================
+
+# Replace the following line after your AdSense approval.
 
