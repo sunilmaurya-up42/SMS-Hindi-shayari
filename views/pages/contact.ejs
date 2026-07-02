@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <%- include("../partials/head") %>
+
+</head>
+
+<body>
+
+<%- include("../partials/navbar") %>
+
+<!-- ==================================
+Page Header
+================================== -->
+
+<section class="bg-success text-white py-5">
+
+    <div class="container">
+
+        <div class="text-center">
+
+            <h1 class="display-4 fw-bold">
+
+                Contact Us
+
+            </h1>
+
+            <p class="lead">
+
+                We'd love to hear from you.
+
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ==================================
+Contact Form
+================================== -->
+
+<section class="py-5">
+
+<div class="container">
+
+<div class="row">
+
+<div class="col-lg-7">
+
+<div class="card shadow-sm border-0">
+
+<div class="card-header bg-success text-white">
+
+<h3 class="mb-0">
+
+Send us a Message
+
+</h3>
+
+</div>
+
+<div class="card-body">
+
+<% if(typeof success !== "undefined" && success){ %>
+
+<div class="alert alert-success">
+
+<%= success %>
+
+</div>
+
+<% } %>
+
+<form
+action="/contact"
+method="POST">
+
+<div class="mb-3">
+
+<label class="form-label">
+
+Full Name
+
+</label>
+
+<input
+type="text"
+name="name"
+class="form-control"
+placeholder="Enter your name"
+required>
+
+</div>
+
+<div class="mb-3">
+
+<label class="form-label">
+
+Email Address
+
+</label>
+
+<input
+type="email"
+name="email"
+class="form-control"
+placeholder="Enter your email"
+required>
+
+</div>
+
+<div class="mb-3">
+
+<label class="form-label">
+
+Subject
+
+</label>
+
+<input
+type="text"
+name="subject"
+class="form-control"
+placeholder="Subject"
+required>
+
+</div>
+
+<div class="mb-3">
+
+<label class="form-label">
+
+Message
+
+</label>
+
+<textarea
+name="message"
+class="form-control"
+rows="6"
+placeholder="Write your message..."
+required></textarea>
+
+</div>
+
+<button
+type="submit"
+class="btn btn-success btn-lg">
+
+<i class="fa-solid fa-paper-plane me-2"></i>
+
+Send Message
+
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-lg-5">
+
+<div class="card shadow-sm border-0">
+
+<div class="card-header bg-dark text-white">
+
+<h3 class="mb-0">
+
+Contact Information
+
+</h3>
+
+</div>
+
+<div class="card-body">
+
+<p>
+
+<i class="fa-solid fa-envelope text-primary me-2"></i>
+
+<strong>Email</strong>
+
+<br>
+
+sunilmauryasurila@gmail.com
+
+</p>
+
+<hr>
+
+<p>
+
+<i class="fa-solid fa-globe text-success me-2"></i>
+
+<strong>Website</strong>
+
+<br>
+
+https://sms-hindi-shayari.onrender.com
+
+</p>
+
+<hr>
+
+<p>
+
+<i class="fa-solid fa-location-dot text-danger me-2"></i>
+
+<strong>Location</strong>
+
+<br>
+
+India
+
+</p>
+
+<hr>
+
+<p>
+
+<i class="fa-solid fa-clock text-warning me-2"></i>
+
+<strong>Support Hours</strong>
+
+<br>
+
+Monday - Saturday
+
+<br>
+
+09:00 AM - 06:00 PM (IST)
+
+</p>
+
+</div>
+
+</div>
+
+<div class="card shadow-sm border-0 mt-4">
+
+<div class="card-header bg-primary text-white">
+
+Follow Us
+
+</div>
+
+<div class="card-body text-center">
+
+<a
+href="#"
+class="btn btn-outline-primary me-2 mb-2">
+
+<i class="fa-brands fa-facebook-f"></i>
+
+</a>
+
+<a
+href="#"
+class="btn btn-outline-info me-2 mb-2">
+
+<i class="fa-brands fa-twitter"></i>
+
+</a>
+
+<a
+href="#"
+class="btn btn-outline-danger me-2 mb-2">
+
+<i class="fa-brands fa-instagram"></i>
+
+</a>
+
+<a
+href="#"
+class="btn btn-outline-dark mb-2">
+
+<i class="fa-brands fa-github"></i>
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ==================================
+Frequently Asked Questions
+================================== -->
+
+<section class="py-5 bg-light">
+
+    <div class="container">
+
+        <div class="row justify-content-center">
+
+            <div class="col-lg-10">
+
+                <h2 class="fw-bold text-center mb-5">
+
+                    Frequently Asked Questions
+
+                </h2>
+
+                <div class="accordion" id="faqAccordion">
+
+                    <div class="accordion-item">
+
+                        <h2 class="accordion-header">
+
+                            <button
+                                class="accordion-button"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#faq1">
+
+                                How can I contact SMS Hindi Shayari?
+
+                            </button>
+
+                        </h2>
+
+                        <div
+                            id="faq1"
+                            class="accordion-collapse collapse show"
+                            data-bs-parent="#faqAccordion">
+
+                            <div class="accordion-body">
+
+                                You can use the contact form on this page to
+                                send us your questions, suggestions or feedback.
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="accordion-item">
+
+                        <h2 class="accordion-header">
+
+                            <button
+                                class="accordion-button collapsed"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#faq2">
+
+                                How long does it take to receive a reply?
+
+                            </button>
+
+                        </h2>
+
+                        <div
+                            id="faq2"
+                            class="accordion-collapse collapse"
+                            data-bs-parent="#faqAccordion">
+
+                            <div class="accordion-body">
+
+                                We usually respond within 24–48 business hours.
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="accordion-item">
+
+                        <h2 class="accordion-header">
+
+                            <button
+                                class="accordion-button collapsed"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#faq3">
+
+                                Can I request new Shayari categories?
+
+                            </button>
+
+                        </h2>
+
+                        <div
+                            id="faq3"
+                            class="accordion-collapse collapse"
+                            data-bs-parent="#faqAccordion">
+
+                            <div class="accordion-body">
+
+                                Yes. We welcome suggestions for new Shayari
+                                categories and features.
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ==================================
+Footer
+================================== -->
+
+<%- include("../partials/footer") %>
+
+<!-- ==================================
+Scripts
+================================== -->
+
+<%- include("../partials/scripts") %>
+
+</body>
+
+</html>
