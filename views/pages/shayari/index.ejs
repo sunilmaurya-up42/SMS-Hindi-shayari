@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <%- include("../../partials/head") %>
+
+</head>
+
+<body>
+
+<%- include("../../partials/navbar") %>
+
+<!-- ==================================
+Page Header
+================================== -->
+
+<section class="bg-danger text-white py-5">
+
+    <div class="container">
+
+        <div class="row align-items-center">
+
+            <div class="col-lg-8">
+
+                <h1 class="display-5 fw-bold">
+
+                    All Hindi Shayari
+
+                </h1>
+
+                <p class="lead mb-0">
+
+                    Read the latest Love, Sad, Attitude, Friendship,
+                    Romantic, Motivational and Festival Hindi Shayari.
+
+                </p>
+
+            </div>
+
+            <div class="col-lg-4">
+
+                <form
+                    action="/search"
+                    method="GET">
+
+                    <div class="input-group">
+
+                        <input
+                            type="text"
+                            name="q"
+                            class="form-control form-control-lg"
+                            placeholder="Search Shayari">
+
+                        <button
+                            class="btn btn-dark"
+                            type="submit">
+
+                            <i class="fa-solid fa-search"></i>
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ==================================
+Breadcrumb
+================================== -->
+
+<section class="border-bottom bg-light">
+
+    <div class="container py-3">
+
+        <nav>
+
+            <ol class="breadcrumb mb-0">
+
+                <li class="breadcrumb-item">
+
+                    <a
+                        href="/"
+                        class="text-decoration-none">
+
+                        Home
+
+                    </a>
+
+                </li>
+
+                <li
+                    class="breadcrumb-item active">
+
+                    All Shayari
+
+                </li>
+
+            </ol>
+
+        </nav>
+
+    </div>
+
+</section>
+
+<!-- ==================================
+Shayari Grid
+================================== -->
+
+<section class="py-5">
+
+<div class="container">
+
+<div class="row g-4">
+
+<% if(shayaries && shayaries.length){ %>
+
+<% shayaries.forEach(function(shayari){ %>
+
+<div class="col-lg-4 col-md-6">
+
+<div class="card shadow-sm border-0 h-100">
+
+<% if(shayari.thumbnail){ %>
+
+<img
+src="<%= shayari.thumbnail %>"
+class="card-img-top"
+alt="<%= shayari.imageAlt || shayari.title %>">
+
+<% } %>
+
+<div class="card-body">
+
+<% if(shayari.category){ %>
+
+<span class="badge bg-danger mb-2">
+
+<%= shayari.category.name %>
+
+</span>
+
+<% } %>
+
+<h4 class="fw-bold">
+
+<%= shayari.title %>
+
+</h4>
+
+<p class="text-muted">
+
+<%= shayari.excerpt %>
+
+</p>
+
+</div>
+
+<div class="card-footer bg-white border-0">
+
+<div class="d-flex justify-content-between align-items-center">
+
+<a
+href="/shayari/<%= shayari.slug %>"
+class="btn btn-danger">
+
+Read More
+
+</a>
+
+<small class="text-muted">
+
+👁 <%= shayari.views %>
+
+</small>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<% }) %>
+
+<% } else { %>
+
+<% for(let i=1;i<=9;i++){ %>
+
+<div class="col-lg-4 col-md-6">
+
+<div class="card shadow-sm h-100 border-0">
+
+<div class="card-body">
+
+<span class="badge bg-secondary mb-2">
+
+Demo
+
+</span>
+
+<h4 class="fw-bold">
+
+Beautiful Hindi Shayari <%= i %>
+
+</h4>
+
+<p class="text-muted">
+
+Your published Shayari will automatically appear here after adding data from the admin panel.
+
+</p>
+
+<a
+href="/shayari"
+class="btn btn-outline-danger">
+
+Explore
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+<% } %>
+
+<% } %>
+
+</div>
+
+<!-- ==================================
+Pagination
+================================== -->
+
+<% if(typeof page !== "undefined"){ %>
+
+<nav class="mt-5">
+
+<ul class="pagination justify-content-center">
+
+<li class="page-item <%= page<=1 ? 'disabled' : '' %>">
+
+<a
+class="page-link"
+href="?page=<%= page-1 %>">
+
+Previous
+
+</a>
+
+</li>
+
+<li class="page-item active">
+
+<span class="page-link">
+
+<%= page %>
+
+</span>
+
+</li>
+
+<li class="page-item">
+
+<a
+class="page-link"
+href="?page=<%= page+1 %>">
+
+Next
+
+</a>
+
+</li>
+
+</ul>
+
+</nav>
+
+<% } %>
+
+</div>
+
+</section>
+
+<!-- ==================================
+Popular Categories
+================================== -->
+
+<section class="py-5 bg-light">
+
+<div class="container">
+
+<h2 class="fw-bold mb-4">
+
+Popular Categories
+
+</h2>
+
+<div class="row g-3">
+
+<div class="col-md-3">
+
+<a
+href="/category/love"
+class="btn btn-outline-danger w-100">
+
+❤️ Love Shayari
+
+</a>
+
+</div>
+
+<div class="col-md-3">
+
+<a
+href="/category/sad"
+class="btn btn-outline-primary w-100">
+
+💔 Sad Shayari
+
+</a>
+
+</div>
+
+<div class="col-md-3">
+
+<a
+href="/category/attitude"
+class="btn btn-outline-dark w-100">
+
+😎 Attitude Shayari
+
+</a>
+
+</div>
+
+<div class="col-md-3">
+
+<a
+href="/category/friendship"
+class="btn btn-outline-success w-100">
+
+🤝 Friendship Shay
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ==================================
+SEO Content
+================================== -->
+
+<section class="py-5">
+
+    <div class="container">
+
+        <div class="row justify-content-center">
+
+            <div class="col-lg-10">
+
+                <h2 class="fw-bold mb-4">
+
+                    Best Hindi Shayari Collection
+
+                </h2>
+
+                <p class="text-muted">
+
+                    Welcome to SMS Hindi Shayari. Here you'll find a huge collection of
+                    Love Shayari, Sad Shayari, Friendship Shayari, Romantic Shayari,
+                    Attitude Shayari, Motivational Shayari, Good Morning Shayari,
+                    Good Night Shayari, Birthday Shayari and many more.
+
+                </p>
+
+                <p class="text-muted">
+
+                    Every Shayari is carefully selected and regularly updated so you
+                    always get fresh content to read, share and download with beautiful
+                    backgrounds.
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ==================================
+Call To Action
+================================== -->
+
+<section class="py-5 bg-danger text-white">
+
+    <div class="container text-center">
+
+        <h2 class="fw-bold">
+
+            Looking for something specific?
+
+        </h2>
+
+        <p class="lead mb-4">
+
+            Search thousands of Hindi Shayari instantly.
+
+        </p>
+
+        <form
+            action="/search"
+            method="GET"
+            class="row justify-content-center">
+
+            <div class="col-md-7">
+
+                <div class="input-group input-group-lg">
+
+                    <input
+                        type="text"
+                        name="q"
+                        class="form-control"
+                        placeholder="Search Shayari...">
+
+                    <button
+                        type="submit"
+                        class="btn btn-dark">
+
+                        Search
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</section>
+
+<!-- ==================================
+Footer
+================================== -->
+
+<%- include("../../partials/footer") %>
+
+<!-- ==================================
+Scripts
+================================== -->
+
+<%- include("../../partials/scripts") %>
+
+</body>
+
+</html>
