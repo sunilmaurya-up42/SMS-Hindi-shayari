@@ -518,56 +518,6 @@ exports.tag = async (req, res, next) => {
 
 };
 /* ==================================
-   Tag Wise Shayari
-================================== */
-
-exports.tag = async (req, res, next) => {
-
-    try {
-
-        const tag = req.params.tag.toLowerCase();
-
-        const shayari = await Shayari.find({
-
-            tags: tag,
-
-            status: "published",
-
-            visibility: "public"
-
-        })
-
-        .populate("category", "name slug")
-
-        .populate("author", "name")
-
-        .sort({
-
-            createdAt: -1
-
-        })
-
-        .lean();
-
-        return res.render("pages/tag", {
-
-            title: `${tag} Shayari`,
-
-            tag,
-
-            shayari
-
-        });
-
-    } catch (error) {
-
-        next(error);
-
-    }
-
-};
-
-/* ==================================
    Language Filter
 ================================== */
 
