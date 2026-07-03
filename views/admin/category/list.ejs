@@ -1,0 +1,102 @@
+<h1 class="mb-4">Manage Categories</h1>
+
+<div class="card mb-4">
+    <div class="card-body">
+
+        <form action="/admin/category/create" method="POST">
+
+            <div class="row">
+
+                <div class="col-md-5">
+                    <input
+                        type="text"
+                        name="name"
+                        class="form-control"
+                        placeholder="Category Name"
+                        required>
+                </div>
+
+                <div class="col-md-5">
+                    <input
+                        type="text"
+                        name="slug"
+                        class="form-control"
+                        placeholder="category-slug"
+                        required>
+                </div>
+
+                <div class="col-md-2">
+                    <button
+                        class="btn btn-success w-100"
+                        type="submit">
+
+                        Add
+
+                    </button>
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+<table class="table table-bordered">
+
+    <thead>
+
+        <tr>
+            <th>Name</th>
+            <th>Slug</th>
+            <th>Action</th>
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+    <% if(list.length){ %>
+
+        <% list.forEach(function(category){ %>
+
+        <tr>
+
+            <td><%= category.name %></td>
+
+            <td><%= category.slug %></td>
+
+            <td>
+
+                <a
+                    href="/admin/category/delete/<%= category._id %>"
+                    class="btn btn-danger btn-sm"
+                    onclick="return confirm('Delete category?')">
+
+                    Delete
+
+                </a>
+
+            </td>
+
+        </tr>
+
+        <% }) %>
+
+    <% } else { %>
+
+        <tr>
+
+            <td colspan="3" class="text-center">
+
+                No Categories Found
+
+            </td>
+
+        </tr>
+
+    <% } %>
+
+    </tbody>
+
+</table>
