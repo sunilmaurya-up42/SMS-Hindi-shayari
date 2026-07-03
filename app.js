@@ -70,6 +70,10 @@ app.set("layout extractStyles", true);
 ================================== */
 
 app.use(express.static(path.join(__dirname, "public")));
+app.use((req, res, next) => {
+  res.locals.request = req;
+  next();
+});
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 /* ==================================
