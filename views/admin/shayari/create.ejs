@@ -1,0 +1,107 @@
+<h1 class="mb-4">Add New Shayari</h1>
+
+<form action="/admin/shayari/create" method="POST">
+
+<div class="mb-3">
+<label class="form-label">Title</label>
+<input
+type="text"
+name="title"
+class="form-control"
+required>
+</div>
+
+<div class="mb-3">
+<label class="form-label">Content</label>
+<textarea
+name="content"
+rows="8"
+class="form-control"
+required></textarea>
+</div>
+
+<div class="mb-3">
+<label class="form-label">Category ID</label>
+<input
+type="text"
+name="category"
+class="form-control"
+required>
+<small class="text-muted">
+Paste MongoDB Category ObjectId here.
+</small>
+</div>
+
+<div class="mb-3">
+<label class="form-label">Tags</label>
+<input
+type="text"
+name="tags"
+class="form-control"
+placeholder="love,sad,attitude">
+</div>
+
+<div class="mb-3">
+<label class="form-label">Language</label>
+
+<select
+name="language"
+class="form-select">
+
+<option value="Hindi">Hindi</option>
+<option value="English">English</option>
+<option value="Urdu">Urdu</option>
+
+</select>
+
+</div>
+
+<div class="form-check mb-2">
+
+<input
+class="form-check-input"
+type="checkbox"
+name="isFeatured"
+value="true">
+
+<label class="form-check-label">
+
+Featured
+
+</label>
+
+</div>
+
+<div class="form-check mb-4">
+
+<input
+class="form-check-input"
+type="checkbox"
+name="isTrending"
+value="true">
+
+<label class="form-check-label">
+
+Trending
+
+</label>
+
+</div>
+
+<button
+type="submit"
+class="btn btn-success">
+
+Save Shayari
+
+</button>
+
+<a
+href="/admin/shayari"
+class="btn btn-secondary">
+
+Cancel
+
+</a>
+
+</form>
