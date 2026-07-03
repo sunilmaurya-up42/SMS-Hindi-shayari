@@ -1,0 +1,74 @@
+<h1 class="mb-4">Manage Shayari</h1>
+
+<div class="mb-3">
+    <a href="/admin/shayari/create" class="btn btn-primary">
+        + Add New Shayari
+    </a>
+</div>
+
+<table class="table table-bordered table-hover">
+
+    <thead>
+
+        <tr>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Status</th>
+            <th>Views</th>
+            <th>Action</th>
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+    <% if(list.length){ %>
+
+        <% list.forEach(function(item){ %>
+
+        <tr>
+
+            <td><%= item.title %></td>
+
+            <td>
+                <%= item.category ? item.category.name : "-" %>
+            </td>
+
+            <td><%= item.status %></td>
+
+            <td><%= item.views %></td>
+
+            <td>
+
+                <a
+                    href="/admin/shayari/delete/<%= item._id %>"
+                    class="btn btn-sm btn-danger"
+                    onclick="return confirm('Delete this Shayari?')">
+
+                    Delete
+
+                </a>
+
+            </td>
+
+        </tr>
+
+        <% }) %>
+
+    <% } else { %>
+
+        <tr>
+
+            <td colspan="5" class="text-center">
+
+                No Shayari Found
+
+            </td>
+
+        </tr>
+
+    <% } %>
+
+    </tbody>
+
+</table>
