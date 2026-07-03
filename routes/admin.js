@@ -77,11 +77,22 @@ router.get(
 );
 
 /* Create Form */
-router.get("/shayari/create", isAdmin, (req, res) => {
-    res.render("admin/shayari/create", {
-        title: "Create Shayari"
-    });
-});
+router.get(
+    "/shayari/create",
+    isAdmin,
+    asyncHandler(async (req, res) => {
+
+        const categories = await Category.find().sort({
+            name: 1
+        });
+
+        res.render("admin/shayari/create", {
+            title: "Create Shayari",
+            categories
+        });
+
+    })
+);
 
 /* Create */
 router.post(
