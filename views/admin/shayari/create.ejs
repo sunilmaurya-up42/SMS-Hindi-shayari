@@ -22,11 +22,23 @@ required></textarea>
 
 <div class="mb-3">
 <label class="form-label">Category ID</label>
-<input
-type="text"
-name="category"
-class="form-control"
-required>
+<select
+    name="category"
+    class="form-select"
+    required>
+
+    <option value="">Select Category</option>
+
+    <% categories.forEach(function(category){ %>
+
+        <option value="<%= category._id %>">
+            <%= category.name %>
+        </option>
+
+    <% }) %>
+
+</select>
+
 <small class="text-muted">
 Paste MongoDB Category ObjectId here.
 </small>
