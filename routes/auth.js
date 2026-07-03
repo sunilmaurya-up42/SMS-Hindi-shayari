@@ -54,26 +54,24 @@ router.get("/register", isGuest, (req, res) => {
    Login Action
 ================================== */
 
-router.post("/login", (req, res) => {
+router.post(
+    "/login",
+    loginLimiter,
+    validateLogin,
+    passport.authenticate("local", {
+        failureRedirect: "/auth/login",
+        failureFlash: true
+    }),
+    (req, res) => {
 
-    const { email, password } = req.body;
+        if (req.body.remember) {
+            req.session.cookie.maxAge = 7 * 24 * 60 * 60 * 1000;
+        }
 
-    if (
-        email === process.env.ADMIN_EMAIL &&
-        password === process.env.ADMIN_PASSWORD
-    ) {
-
-        req.session.admin = true;
-
-        return res.redirect("/admin");
+        return res.redirect("/");
     }
+);
 
-    return res.render("pages/auth/login", {
-        title: "Login",
-        error: "Invalid Email or Password"
-    });
-
-});
 
 /* ==================================
    Register Action (Basic Placeholder)
@@ -130,13 +128,20 @@ router.post(
    Logout
 ================================== */
 
-router.get("/logout", (req, res) => {
+router.get("/logout", isAuthenticated, (req, res, next) => {
 
-    req.session.destroy(() => {
-        res.redirect("/auth/login");
+    req.logout((err) => {
+
+        if (err) return next(err);
+
+        req.session.destroy(() => {
+            res.redirect("/");
+        });
+
     });
 
 });
+
 
 /* ==================================
    Export
