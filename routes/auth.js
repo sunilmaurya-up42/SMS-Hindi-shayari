@@ -32,9 +32,9 @@ const {
 
 router.get("/login", isGuest, (req, res) => {
 
-    res.render("auth/login", {
-        title: "Login"
-    });
+    res.render("pages/auth/login", {
+    title: "Login"
+});
 
 });
 
@@ -44,9 +44,9 @@ router.get("/login", isGuest, (req, res) => {
 
 router.get("/register", isGuest, (req, res) => {
 
-    res.render("auth/register", {
-        title: "Register"
-    });
+    res.render("pages/auth/register", {
+    title: "Register"
+});
 
 });
 
@@ -94,10 +94,10 @@ router.post(
             });
 
             if (exists) {
-                return res.render("auth/register", {
-                    title: "Register",
-                    error: "Email already registered."
-                });
+                return res.render("pages/auth/register", {
+    title: "Register",
+    error: "Email already registered."
+});
             }
 
             const hash = await bcrypt.hash(password, 12);
