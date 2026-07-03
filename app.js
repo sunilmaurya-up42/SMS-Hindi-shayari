@@ -18,7 +18,6 @@ const flash = require("connect-flash");
 
 /* Config */
 require("dotenv").config();
-require("./config/db")();
 require("./config/passport");
 
 /* Routes */
