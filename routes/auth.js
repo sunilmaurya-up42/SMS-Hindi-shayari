@@ -54,23 +54,26 @@ router.get("/register", isGuest, (req, res) => {
    Login Action
 ================================== */
 
-router.post(
-    "/login",
-    loginLimiter,
-    validateLogin,
-    passport.authenticate("local", {
-        failureRedirect: "/auth/login",
-        failureFlash: true
-    }),
-    (req, res) => {
+router.post("/login", (req, res) => {
 
-        if (req.body.remember) {
-            req.session.cookie.maxAge = 7 * 24 * 60 * 60 * 1000;
-        }
+    const { email, password } = req.body;
 
-        return res.redirect("/");
+    if (
+        email === process.env.ADMIN_EMAIL &&
+        password === process.env.ADMIN_PASSWORD
+    ) {
+
+        req.session.admin = true;
+
+        return res.redirect("/admin");
     }
-);
+
+    return res.render("pages/auth/login", {
+        title: "Login",
+        error: "Invalid Email or Password"
+    });
+
+});
 
 /* ==================================
    Register Action (Basic Placeholder)
