@@ -265,14 +265,10 @@ Latest Shayari
 
                     <div class="card h-100 shadow-sm">
 
-                        <% if(item.thumbnail){ %>
-
                         <img
-                            src="<%= item.thumbnail %>"
-                            class="card-img-top"
-                            alt="<%= item.title %>">
-
-                        <% } %>
+    src="<%= item.thumbnail || '/images/placeholder.webp' %>"
+    class="card-img-top"
+    alt="<%= item.title %>">
 
                         <div class="card-body">
 
@@ -284,7 +280,7 @@ Latest Shayari
 
                             <p class="text-muted">
 
-                                <%= item.excerpt %>
+<%= item.excerpt || item.content?.substring(0,120) || "" %>
 
                             </p>
 
