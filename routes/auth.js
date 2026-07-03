@@ -130,16 +130,10 @@ router.post(
    Logout
 ================================== */
 
-router.get("/logout", isAuthenticated, (req, res, next) => {
+router.get("/logout", (req, res) => {
 
-    req.logout((err) => {
-
-        if (err) return next(err);
-
-        req.session.destroy(() => {
-            res.redirect("/");
-        });
-
+    req.session.destroy(() => {
+        res.redirect("/auth/login");
     });
 
 });
