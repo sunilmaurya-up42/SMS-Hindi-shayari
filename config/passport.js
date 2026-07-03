@@ -30,9 +30,9 @@ passport.use(
             try {
 
                 const user = await User.findOne({
-                    email: email.toLowerCase().trim(),
-                    isActive: true
-                });
+    email: email.toLowerCase().trim(),
+    isActive: true
+}).select("+password");
 
                 if (!user) {
                     return done(null, false, {
