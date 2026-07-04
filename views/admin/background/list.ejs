@@ -1,0 +1,78 @@
+<h1 class="mb-4">Background Images</h1>
+
+<div class="mb-3">
+    <a href="/admin/background/create" class="btn btn-primary">
+        + Upload Background
+    </a>
+</div>
+
+<table class="table table-bordered table-hover">
+
+    <thead>
+        <tr>
+            <th>Preview</th>
+            <th>Title</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+    <% if(list.length){ %>
+
+        <% list.forEach(function(item){ %>
+
+        <tr>
+
+            <td width="120">
+
+                <% if(item.image){ %>
+
+                <img
+                    src="<%= item.image %>"
+                    style="width:100px;height:60px;object-fit:cover;">
+
+                <% } %>
+
+            </td>
+
+            <td>
+
+                <%= item.title || "Untitled" %>
+
+            </td>
+
+            <td>
+
+                <a
+                    href="/admin/background/delete/<%= item._id %>"
+                    class="btn btn-danger btn-sm"
+                    onclick="return confirm('Delete background?')">
+
+                    Delete
+
+                </a>
+
+            </td>
+
+        </tr>
+
+        <% }) %>
+
+    <% } else { %>
+
+        <tr>
+
+            <td colspan="3" class="text-center">
+
+                No Background Found
+
+            </td>
+
+        </tr>
+
+    <% } %>
+
+    </tbody>
+
+</table>
