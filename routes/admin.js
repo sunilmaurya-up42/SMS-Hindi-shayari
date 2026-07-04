@@ -320,16 +320,33 @@ router.get(
 );
 
 /* Upload Form */
-router.get(
+router.post(
     "/background/create",
     isAdmin,
-    (req, res) => {
+    upload.single("image"),
+    asyncHandler(async (req, res) => {
 
-        return res.render("admin/background/create", {
-            title: "Upload Background"
+        if (!req.file) {
+            throw new Error("Image is required.");
+        }
+
+        const slug = req.body.title
+            .toLowerCase()
+            .trim()
+            .replace(/[^a-z0-9]+/g, "-");
+
+        await Background.create({
+            title: req.body.title,
+            slug,
+            fileName: req.file.filename,
+            filePath: `/uploads/${req.file.filename}`,
+            githubUrl: `/uploads/${req.file.filename}`,
+            rawUrl: `/uploads/${req.file.filename}`,
+            uploadedBy: req.user._id
         });
 
-    }
+        return res.redirect("/admin/background");
+    })
 );
 
 /* Upload */
