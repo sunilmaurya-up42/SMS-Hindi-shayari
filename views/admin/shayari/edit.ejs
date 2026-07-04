@@ -1,0 +1,124 @@
+<h1 class="mb-4">Edit Shayari</h1>
+
+<form action="/admin/shayari/edit/<%= shayari._id %>" method="POST">
+
+<div class="mb-3">
+<label class="form-label">Title</label>
+<input
+type="text"
+name="title"
+class="form-control"
+value="<%= shayari.title %>"
+required>
+</div>
+
+<div class="mb-3">
+<label class="form-label">Content</label>
+<textarea
+name="content"
+rows="8"
+class="form-control"
+required><%= shayari.content %></textarea>
+</div>
+
+<div class="mb-3">
+<label class="form-label">Category</label>
+
+<select
+name="category"
+class="form-select"
+required>
+
+<% categories.forEach(function(category){ %>
+
+<option
+value="<%= category._id %>"
+<%= String(category._id) === String(shayari.category) ? "selected" : "" %>>
+
+<%= category.name %>
+
+</option>
+
+<% }) %>
+
+</select>
+
+</div>
+
+<div class="mb-3">
+<label class="form-label">Tags</label>
+
+<input
+type="text"
+name="tags"
+class="form-control"
+value="<%= shayari.tags ? shayari.tags.join(',') : '' %>">
+
+</div>
+
+<div class="mb-3">
+<label class="form-label">Language</label>
+
+<select
+name="language"
+class="form-select">
+
+<option value="Hindi" <%= shayari.language==="Hindi"?"selected":"" %>>Hindi</option>
+<option value="English" <%= shayari.language==="English"?"selected":"" %>>English</option>
+<option value="Urdu" <%= shayari.language==="Urdu"?"selected":"" %>>Urdu</option>
+
+</select>
+
+</div>
+
+<div class="form-check mb-2">
+
+<input
+class="form-check-input"
+type="checkbox"
+name="isFeatured"
+value="true"
+<%= shayari.isFeatured ? "checked" : "" %>>
+
+<label class="form-check-label">
+
+Featured
+
+</label>
+
+</div>
+
+<div class="form-check mb-4">
+
+<input
+class="form-check-input"
+type="checkbox"
+name="isTrending"
+value="true"
+<%= shayari.isTrending ? "checked" : "" %>>
+
+<label class="form-check-label">
+
+Trending
+
+</label>
+
+</div>
+
+<button
+type="submit"
+class="btn btn-success">
+
+Update Shayari
+
+</button>
+
+<a
+href="/admin/shayari"
+class="btn btn-secondary">
+
+Back
+
+</a>
+
+</form>
