@@ -113,7 +113,49 @@ router.post(
 
     })
 );
+/* Edit Form */
+router.get(
+    "/shayari/edit/:id",
+    isAdmin,
+    asyncHandler(async (req, res) => {
 
+        const shayari = await Shayari.findById(req.params.id);
+
+        if (!shayari) {
+            return res.redirect("/admin/shayari");
+        }
+
+        const categories = await Category.find().sort({ name: 1 });
+
+        return res.render("admin/shayari/edit", {
+            title: "Edit Shayari",
+            shayari,
+            categories
+        });
+
+    })
+);
+
+/* Update */
+router.post(
+    "/shayari/edit/:id",
+    isAdmin,
+    validateShayari,
+    asyncHandler(async (req, res) => {
+
+        await Shayari.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            {
+                runValidators: true,
+                new: true
+            }
+        );
+
+        return res.redirect("/admin/shayari");
+
+    })
+);
 /* Delete */
 router.get(
     "/shayari/delete/:id",
