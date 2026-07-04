@@ -359,10 +359,32 @@ router.post(
     upload.single("image"),
     asyncHandler(async (req, res) => {
 
+        if (!req.file) {
+            return res.redirect("/admin/background/create");
+        }
+
+        const upload = await uploadToGitHub(req.file);
+
         await Background.create({
+
             title: req.body.title,
-            image: req.file ? `/uploads/${req.file.filename}` : ""
+
+            slug: randomString(20),
+
+            fileName: upload.fileName,
+
+            filePath: upload.filePath,
+
+            githubUrl: upload.githubUrl,
+
+            rawUrl: upload.rawUrl,
+
+            uploadedBy: req.user._id
+
         });
+
+        // Local file delete
+        fs.unlinkSync(req.file.path);
 
         return res.redirect("/admin/background");
 
