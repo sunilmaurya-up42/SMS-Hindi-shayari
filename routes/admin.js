@@ -297,7 +297,70 @@ router.post(
 
     })
 );
+/* ==================================
+   BACKGROUND MANAGEMENT
+================================== */
 
+/* List */
+router.get(
+    "/background",
+    isAdmin,
+    asyncHandler(async (req, res) => {
+
+        const list = await Background.find().sort({
+            createdAt: -1
+        });
+
+        return res.render("admin/background/list", {
+            title: "Background Images",
+            list
+        });
+
+    })
+);
+
+/* Upload Form */
+router.get(
+    "/background/create",
+    isAdmin,
+    (req, res) => {
+
+        return res.render("admin/background/create", {
+            title: "Upload Background"
+        });
+
+    }
+);
+
+/* Upload */
+router.post(
+    "/background/create",
+    isAdmin,
+    upload.single("image"),
+    asyncHandler(async (req, res) => {
+
+        await Background.create({
+            title: req.body.title,
+            image: req.file ? `/uploads/${req.file.filename}` : ""
+        });
+
+        return res.redirect("/admin/background");
+
+    })
+);
+
+/* Delete */
+router.get(
+    "/background/delete/:id",
+    isAdmin,
+    asyncHandler(async (req, res) => {
+
+        await Background.findByIdAndDelete(req.params.id);
+
+        return res.redirect("/admin/background");
+
+    })
+);
 /* ==================================
    AI IMAGE LIST
 ================================== */
