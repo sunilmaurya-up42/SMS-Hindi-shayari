@@ -40,16 +40,24 @@
 
             <td>
 
-                <a
-                    href="/admin/shayari/delete/<%= item._id %>"
-                    class="btn btn-sm btn-danger"
-                    onclick="return confirm('Delete this Shayari?')">
+    <a
+        href="/admin/shayari/edit/<%= item._id %>"
+        class="btn btn-sm btn-warning">
 
-                    Delete
+        Edit
 
-                </a>
+    </a>
 
-            </td>
+    <a
+        href="/admin/shayari/delete/<%= item._id %>"
+        class="btn btn-sm btn-danger"
+        onclick="return confirm('Delete this Shayari?')">
+
+        Delete
+
+    </a>
+
+</td>
 
         </tr>
 
