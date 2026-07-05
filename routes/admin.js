@@ -108,7 +108,23 @@ router.post(
 
         await Shayari.create({
 
-    ...req.body,
+    title: req.body.title,
+
+    content: req.body.content,
+
+    category: req.body.category,
+
+    background: req.body.background || null,
+
+    tags: req.body.tags
+        ? req.body.tags.split(",").map(tag => tag.trim())
+        : [],
+
+    language: req.body.language,
+
+    isFeatured: req.body.isFeatured === "true",
+
+    isTrending: req.body.isTrending === "true",
 
     author: req.user._id
 
