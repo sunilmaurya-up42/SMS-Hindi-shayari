@@ -85,13 +85,15 @@ router.get(
     isAdmin,
     asyncHandler(async (req, res) => {
 
-        const categories = await Category.find().sort({
-            name: 1
-        });
+        const [categories, backgrounds] = await Promise.all([
+            Category.find().sort({ name: 1 }),
+            Background.find({ isActive: true }).sort({ title: 1 })
+        ]);
 
-        res.render("admin/shayari/create", {
+        return res.render("admin/shayari/create", {
             title: "Create Shayari",
-            categories
+            categories,
+            backgrounds
         });
 
     })
