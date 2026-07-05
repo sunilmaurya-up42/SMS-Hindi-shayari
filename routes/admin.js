@@ -164,24 +164,46 @@ return res.render("admin/shayari/edit", {
 );
 
 /* Update */
-const updateData = {
-    ...req.body,
-    tags: req.body.tags
-        ? req.body.tags.split(",").map(tag => tag.trim())
-        : [],
-    background: req.body.background || null,
-    isFeatured: !!req.body.isFeatured,
-    isTrending: !!req.body.isTrending
-};
+router.post(
+    "/shayari/edit/:id",
+    isAdmin,
+    validateShayari,
+    asyncHandler(async (req, res) => {
 
-await Shayari.findByIdAndUpdate(
-    req.params.id,
-    updateData,
-    {
-        runValidators: true,
-        new: true
-    }
+        const updateData = {
+
+            title: req.body.title,
+            content: req.body.content,
+            category: req.body.category,
+            background: req.body.background || null,
+
+            tags: req.body.tags
+                ? req.body.tags.split(",").map(tag => tag.trim())
+                : [],
+
+            language: req.body.language,
+
+            isFeatured: req.body.isFeatured === "true",
+
+            isTrending: req.body.isTrending === "true"
+
+        };
+
+        await Shayari.findByIdAndUpdate(
+            req.params.id,
+            updateData,
+            {
+                runValidators: true,
+                new: true
+            }
+        );
+
+        return res.redirect("/admin/shayari");
+
+    })
 );
+
+
 /* Delete */
 router.get(
     "/shayari/delete/:id",
