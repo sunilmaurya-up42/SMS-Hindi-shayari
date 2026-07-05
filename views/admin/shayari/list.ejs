@@ -30,6 +30,21 @@
         <tr>
 
             <td><%= item.title %></td>
+<td>
+
+<% if(item.background){ %>
+
+    <img
+        src="<%= item.background.rawUrl %>"
+        style="width:80px;height:45px;object-fit:cover;border-radius:6px;">
+
+<% } else { %>
+
+    -
+
+<% } %>
+
+</td>
 
             <td>
                 <%= item.category ? item.category.name : "-" %>
@@ -68,7 +83,7 @@
 
         <tr>
 
-            <td colspan="5" class="text-center">
+            <td colspan="6" class="text-center">
 
                 No Shayari Found
 
