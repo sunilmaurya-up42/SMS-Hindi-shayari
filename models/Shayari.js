@@ -11,6 +11,12 @@ const mongoose = require("mongoose");
 const slugify = require("slugify");
 
 const shayariSchema = new mongoose.Schema({
+    background: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Background",
+    default: null,
+    index: true
+},
 
     title: {
         type: String,
