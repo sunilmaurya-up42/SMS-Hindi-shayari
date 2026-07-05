@@ -267,7 +267,7 @@ Latest Shayari
                     <div class="card h-100 shadow-sm">
 
                         <img
-    src="<%= item.thumbnail || '/images/placeholder.webp' %>"
+    src="<%= item.background ? item.background.rawUrl : '/images/placeholder.webp' %>"
     class="card-img-top"
     alt="<%= item.title %>">
 
