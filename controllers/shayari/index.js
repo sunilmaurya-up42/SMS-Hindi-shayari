@@ -32,6 +32,7 @@ exports.home = async (req, res, next) => {
                 isFeatured: true
             })
             .populate("category", "name slug")
+           .populate("background")
             .sort({ createdAt: -1 })
             .limit(12)
             .lean(),
@@ -41,6 +42,7 @@ exports.home = async (req, res, next) => {
                 visibility: "public"
             })
             .populate("category", "name slug")
+            .populate("background")
             .sort({ createdAt: -1 })
             .limit(20)
             .lean(),
@@ -51,6 +53,7 @@ exports.home = async (req, res, next) => {
                 isTrending: true
             })
             .populate("category", "name slug")
+            .populate("background")
             .sort({ views: -1 })
             .limit(10)
             .lean(),
