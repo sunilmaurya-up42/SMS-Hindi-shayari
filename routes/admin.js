@@ -68,8 +68,9 @@ router.get(
     asyncHandler(async (req, res) => {
 
         const list = await Shayari.find()
-            .populate("category")
-            .sort({ createdAt: -1 });
+    .populate("category")
+    .populate("background")
+    .sort({ createdAt: -1 });
 
         return res.render("admin/shayari/list", {
             title: "Manage Shayari",
