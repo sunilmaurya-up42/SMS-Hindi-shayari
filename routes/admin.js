@@ -146,7 +146,7 @@ router.get(
             return res.redirect("/admin/shayari");
         }
 
-        const categories = await Category.find().sort({ name: 1 });
+        
 
         const [categories, backgrounds] = await Promise.all([
     Category.find().sort({ name: 1 }),
