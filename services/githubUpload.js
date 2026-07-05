@@ -12,8 +12,8 @@ async function uploadToGitHub(file, folder = "public/backgrounds") {
 
     const fileName = `${Date.now()}-${file.originalname.replace(/\s+/g, "-")}`;
 
-    const githubPath = `${folder}/${fileName}`;
-
+    const githubPath = `public/uploads/${folder}/${fileName}`;
+    
     const content = fs.readFileSync(file.path, {
         encoding: "base64"
     });
