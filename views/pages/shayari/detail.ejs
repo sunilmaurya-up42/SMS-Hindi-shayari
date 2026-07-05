@@ -129,12 +129,12 @@ Main Content
 
 <div class="card shadow border-0">
 
-<% if(shayari.backgroundImage){ %>
+<% if(shayari.background){ %>
 
 <img
-src="<%= shayari.backgroundImage %>"
-class="card-img-top"
-alt="<%= shayari.imageAlt || shayari.title %>">
+    src="<%= shayari.background.rawUrl %>"
+    class="card-img-top"
+    alt="<%= shayari.background.title %>">
 
 <% } %>
 
