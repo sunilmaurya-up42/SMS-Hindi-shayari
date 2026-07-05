@@ -167,8 +167,8 @@ exports.singleShayari = async (req, res, next) => {
             visibility: "public"
         })
         .populate("category", "name slug")
-        .populate("author", "name");
-       .populate("background");
+        .populate("author", "name")
+        .populate("background");
 
         if (!shayari) {
             return res.status(404).render("errors/404", {
