@@ -458,7 +458,85 @@ router.get(
 
     })
 );
+/* ==================================
+   AI IMAGE MANAGEMENT
+================================== */
 
+/* Upload Form */
+router.get(
+    "/ai-images/create",
+    isAdmin,
+    (req, res) => {
+
+        return res.render("admin/ai/create", {
+            title: "Upload AI Image"
+        });
+
+    }
+);
+
+/* Upload */
+router.post(
+    "/ai-images/create",
+    isAdmin,
+    upload.single("image"),
+    asyncHandler(async (req, res) => {
+
+        if (!req.file) {
+            return res.redirect("/admin/ai-images/create");
+        }
+
+        const result = await uploadToGitHub(req.file, "ai");
+
+        await AIImage.create({
+
+            title: req.body.title,
+
+            prompt: req.body.prompt,
+
+            slug: randomString(20),
+
+            fileName: result.fileName,
+
+            filePath: result.filePath,
+
+            githubUrl: result.githubUrl,
+
+            rawUrl: result.rawUrl,
+
+            uploadedBy: req.user._id
+
+        });
+
+        fs.unlinkSync(req.file.path);
+
+        return res.redirect("/admin/ai-images");
+
+    })
+);
+
+/* Delete */
+router.get(
+    "/ai-images/delete/:id",
+    isAdmin,
+    asyncHandler(async (req, res) => {
+
+        const image = await AIImage.findById(req.params.id);
+
+        if (!image) {
+            return res.redirect("/admin/ai-images");
+        }
+
+        const { deleteFileFromGitHub } = require("../services/githubUpload");
+
+        await deleteFileFromGitHub(image.filePath);
+
+        await AIImage.findByIdAndDelete(req.params.id);
+
+        return res.redirect("/admin/ai-images");
+
+    })
+);
 /* ==================================
    Export
 ================================== */
