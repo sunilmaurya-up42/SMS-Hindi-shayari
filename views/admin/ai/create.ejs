@@ -1,0 +1,73 @@
+<h1 class="mb-4">Upload AI Image</h1>
+
+<form
+    action="/admin/ai-images/create"
+    method="POST"
+    enctype="multipart/form-data">
+
+    <div class="mb-3">
+
+        <label class="form-label">
+
+            Title
+
+        </label>
+
+        <input
+            type="text"
+            name="title"
+            class="form-control"
+            required>
+
+    </div>
+
+    <div class="mb-3">
+
+        <label class="form-label">
+
+            AI Prompt
+
+        </label>
+
+        <textarea
+            name="prompt"
+            rows="4"
+            class="form-control"
+            placeholder="Enter AI prompt (optional)"></textarea>
+
+    </div>
+
+    <div class="mb-3">
+
+        <label class="form-label">
+
+            Image
+
+        </label>
+
+        <input
+            type="file"
+            name="image"
+            class="form-control"
+            accept="image/*"
+            required>
+
+    </div>
+
+    <button
+        type="submit"
+        class="btn btn-success">
+
+        Upload AI Image
+
+    </button>
+
+    <a
+        href="/admin/ai-images"
+        class="btn btn-secondary">
+
+        Cancel
+
+    </a>
+
+</form>
