@@ -387,7 +387,7 @@ router.get(
 
         const { deleteFileFromGitHub } = require("../services/githubUpload");
 
-        await deleteFileFromGitHub(background.fileName);
+        await deleteFileFromGitHub(background.filePath);
 
         await Background.findByIdAndDelete(req.params.id);
 
