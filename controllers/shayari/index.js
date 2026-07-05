@@ -115,6 +115,7 @@ exports.allShayari = async (req, res, next) => {
                 visibility: "public"
             })
             .populate("category", "name slug")
+            .populate("background")
             .sort({
                 createdAt: -1
             })
@@ -356,6 +357,7 @@ exports.category = async (req, res, next) => {
             Shayari.find(filter)
                 .populate("category", "name slug")
                 .populate("author", "name")
+                .populate("background")
                 .sort({
                     isPinned: -1,
                     createdAt: -1
@@ -432,6 +434,7 @@ exports.search = async (req, res, next) => {
             Shayari.find(filter)
                 .populate("category", "name slug")
                 .populate("author", "name")
+                .populate("background")
                 .sort({
                     score: {
                         $meta: "textScore"
@@ -493,8 +496,8 @@ exports.tag = async (req, res, next) => {
         })
 
         .populate("category", "name slug")
-
         .populate("author", "name")
+        .populate("background")
 
         .sort({
 
@@ -542,8 +545,8 @@ exports.language = async (req, res, next) => {
         })
 
         .populate("category", "name slug")
-
         .populate("author", "name")
+        .populate("background")
 
         .sort({
 
