@@ -164,24 +164,23 @@ return res.render("admin/shayari/edit", {
 );
 
 /* Update */
-router.post(
-    "/shayari/edit/:id",
-    isAdmin,
-    validateShayari,
-    asyncHandler(async (req, res) => {
+const updateData = {
+    ...req.body,
+    tags: req.body.tags
+        ? req.body.tags.split(",").map(tag => tag.trim())
+        : [],
+    background: req.body.background || null,
+    isFeatured: !!req.body.isFeatured,
+    isTrending: !!req.body.isTrending
+};
 
-        await Shayari.findByIdAndUpdate(
-            req.params.id,
-            req.body,
-            {
-                runValidators: true,
-                new: true
-            }
-        );
-
-        return res.redirect("/admin/shayari");
-
-    })
+await Shayari.findByIdAndUpdate(
+    req.params.id,
+    updateData,
+    {
+        runValidators: true,
+        new: true
+    }
 );
 /* Delete */
 router.get(
