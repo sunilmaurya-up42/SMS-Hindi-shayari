@@ -149,11 +149,17 @@ router.get(
 
         const categories = await Category.find().sort({ name: 1 });
 
-        return res.render("admin/shayari/edit", {
-            title: "Edit Shayari",
-            shayari,
-            categories
-        });
+        const [categories, backgrounds] = await Promise.all([
+    Category.find().sort({ name: 1 }),
+    Background.find({ isActive: true }).sort({ title: 1 })
+]);
+
+return res.render("admin/shayari/edit", {
+    title: "Edit Shayari",
+    shayari,
+    categories,
+    backgrounds
+});
 
     })
 );
