@@ -323,33 +323,16 @@ router.get(
 );
 
 /* Upload Form */
-router.post(
+router.get(
     "/background/create",
     isAdmin,
-    upload.single("image"),
-    asyncHandler(async (req, res) => {
+    (req, res) => {
 
-        if (!req.file) {
-            throw new Error("Image is required.");
-        }
-
-        const slug = req.body.title
-            .toLowerCase()
-            .trim()
-            .replace(/[^a-z0-9]+/g, "-");
-
-        await Background.create({
-            title: req.body.title,
-            slug,
-            fileName: req.file.filename,
-            filePath: `/uploads/${req.file.filename}`,
-            githubUrl: `/uploads/${req.file.filename}`,
-            rawUrl: `/uploads/${req.file.filename}`,
-            uploadedBy: req.user._id
+        return res.render("admin/background/create", {
+            title: "Upload Background"
         });
 
-        return res.redirect("/admin/background");
-    })
+    }
 );
 
 /* Upload */
@@ -363,7 +346,7 @@ router.post(
             return res.redirect("/admin/background/create");
         }
 
-        const upload = await uploadToGitHub(req.file);
+        const result = await uploadToGitHub(req.file, "background");
 
         await Background.create({
 
@@ -371,19 +354,18 @@ router.post(
 
             slug: randomString(20),
 
-            fileName: upload.fileName,
+            fileName: result.fileName,
 
-            filePath: upload.filePath,
+            filePath: result.filePath,
 
-            githubUrl: upload.githubUrl,
+            githubUrl: result.githubUrl,
 
-            rawUrl: upload.rawUrl,
+            rawUrl: result.rawUrl,
 
             uploadedBy: req.user._id
 
         });
 
-        // Local file delete
         fs.unlinkSync(req.file.path);
 
         return res.redirect("/admin/background");
@@ -403,6 +385,7 @@ router.get(
 
     })
 );
+
 /* ==================================
    AI IMAGE LIST
 ================================== */
