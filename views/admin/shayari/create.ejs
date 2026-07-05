@@ -38,7 +38,37 @@ required></textarea>
     <% }) %>
 
 </select>
+<div class="mb-3">
 
+<label class="form-label">
+
+Background Image
+
+</label>
+
+<select
+    name="background"
+    class="form-select">
+
+    <option value="">
+
+        Select Background
+
+    </option>
+
+    <% backgrounds.forEach(function(background){ %>
+
+        <option value="<%= background._id %>">
+
+            <%= background.title %>
+
+        </option>
+
+    <% }) %>
+
+</select>
+
+</div>
 <small class="text-muted">
 Paste MongoDB Category ObjectId here.
 </small>
