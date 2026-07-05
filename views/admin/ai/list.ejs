@@ -1,0 +1,94 @@
+<h1 class="mb-4">AI Images</h1>
+
+<div class="mb-3">
+
+    <a
+        href="/admin/ai-images/create"
+        class="btn btn-primary">
+
+        + Upload AI Image
+
+    </a>
+
+</div>
+
+<table class="table table-bordered table-hover align-middle">
+
+    <thead>
+
+        <tr>
+
+            <th>Preview</th>
+
+            <th>Title</th>
+
+            <th>Prompt</th>
+
+            <th>Action</th>
+
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+    <% if(list.length){ %>
+
+        <% list.forEach(function(item){ %>
+
+        <tr>
+
+            <td style="width:120px;">
+
+                <img
+                    src="<%= item.rawUrl %>"
+                    style="width:100px;height:60px;object-fit:cover;border-radius:6px;">
+
+            </td>
+
+            <td>
+
+                <%= item.title %>
+
+            </td>
+
+            <td>
+
+                <%= item.prompt || "-" %>
+
+            </td>
+
+            <td>
+
+                <a
+                    href="/admin/ai-images/delete/<%= item._id %>"
+                    class="btn btn-danger btn-sm"
+                    onclick="return confirm('Delete this AI Image?')">
+
+                    Delete
+
+                </a>
+
+            </td>
+
+        </tr>
+
+        <% }) %>
+
+    <% } else { %>
+
+        <tr>
+
+            <td colspan="4" class="text-center">
+
+                No AI Images Found
+
+            </td>
+
+        </tr>
+
+    <% } %>
+
+    </tbody>
+
+</table>
