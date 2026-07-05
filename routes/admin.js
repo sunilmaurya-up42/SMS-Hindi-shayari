@@ -379,13 +379,22 @@ router.get(
     isAdmin,
     asyncHandler(async (req, res) => {
 
+        const background = await Background.findById(req.params.id);
+
+        if (!background) {
+            return res.redirect("/admin/background");
+        }
+
+        const { deleteFileFromGitHub } = require("../services/githubUpload");
+
+        await deleteFileFromGitHub(background.fileName);
+
         await Background.findByIdAndDelete(req.params.id);
 
         return res.redirect("/admin/background");
 
     })
 );
-
 /* ==================================
    AI IMAGE LIST
 ================================== */
