@@ -50,7 +50,7 @@ Search Header
                             type="text"
                             class="form-control"
                             name="q"
-                            value="<%= query || '' %>"
+                            value="<%= keyword || '' %>"
                             placeholder="Search Shayari..."
                             required>
 
@@ -126,12 +126,12 @@ Search Results
 
 </h2>
 
-<% if(query){ %>
+<% if(keyword){ %>
 
 <span class="badge bg-danger fs-6">
 
 Keyword :
-<%= query %>
+<%= keyword %>
 
 </span>
 
@@ -141,20 +141,19 @@ Keyword :
 
 <div class="row g-4">
 
-<% if(shayaries && shayaries.length){ %>
-
-<% shayaries.forEach(function(shayari){ %>
+<% if(shayari && shayari.length){ %>
+<% shayari.forEach(function(item){ %>
 
 <div class="col-lg-4 col-md-6">
 
 <div class="card shadow-sm border-0 h-100">
 
-<% if(shayari.thumbnail){ %>
+<% if(item.background){ %>
 
 <img
-src="<%= shayari.thumbnail %>"
+src="<%= item.background.rawUrl %>"
 class="card-img-top"
-alt="<%= shayari.imageAlt || shayari.title %>">
+alt="<%= item.title %>">
 
 <% } %>
 
