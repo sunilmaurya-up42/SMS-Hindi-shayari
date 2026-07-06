@@ -644,29 +644,38 @@ footer{
 
 @media(max-width:576px){
 
-.hero-search{
-    margin-top:20px;
+/* ==================================
+   All Shayari Search Box
+================================== */
+
+.bg-danger .input-group{
+    background:#fff;
+    border-radius:50px;
+    overflow:hidden;
+    box-shadow:0 10px 30px rgba(0,0,0,.25);
 }
 
-.search-box{
-    flex-direction:column;
-    border-radius:18px;
+.bg-danger .form-control{
+    border:none !important;
+    box-shadow:none !important;
+    padding:16px 22px;
+    font-size:17px;
 }
 
-.search-icon{
-    display:none;
+.bg-danger .form-control:focus{
+    border:none !important;
+    box-shadow:none !important;
 }
 
-.search-box input{
-    width:100%;
-    padding:16px;
+.bg-danger .btn-dark{
+    border:none !important;
+    background:linear-gradient(90deg,#ff9800,#ff5722) !important;
+    padding:0 28px;
+    font-weight:600;
 }
 
-.search-box button{
-    width:100%;
-    border-radius:0;
-}
-
+.bg-danger .btn-dark:hover{
+    background:linear-gradient(90deg,#ff5722,#e91e63) !important;
 }
 /* ==========================
    End of File
