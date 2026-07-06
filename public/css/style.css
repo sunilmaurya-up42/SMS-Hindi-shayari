@@ -677,6 +677,88 @@ footer{
 .bg-danger .btn-dark:hover{
     background:linear-gradient(90deg,#ff5722,#e91e63) !important;
 }
+   /* ==================================
+   Search Box Animation
+================================== */
+
+.bg-danger .input-group{
+    transition:all .35s ease;
+}
+
+.bg-danger .input-group:hover,
+.bg-danger .input-group:focus-within{
+    transform:translateY(-2px);
+    box-shadow:0 15px 40px rgba(0,0,0,.35);
+}
+
+.bg-danger .form-control::placeholder{
+    color:#999;
+    transition:.3s;
+}
+
+.bg-danger .form-control:focus::placeholder{
+    opacity:.5;
+}
+
+.bg-danger .btn-dark{
+    transition:.3s;
+}
+
+.bg-danger .btn-dark i{
+    transition:.3s;
+}
+
+.bg-danger .btn-dark:hover i{
+    transform:rotate(-10deg) scale(1.15);
+}
+   /* ==================================
+   Premium Glass Search Box
+================================== */
+
+.bg-danger .input-group{
+    background:rgba(255,255,255,.18);
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+    border:1px solid rgba(255,255,255,.25);
+}
+
+.bg-danger .form-control{
+    background:transparent !important;
+    color:#212529;
+}
+
+.bg-danger .form-control::placeholder{
+    color:#6c757d;
+}
+
+.bg-danger .btn-dark{
+    border-radius:0 50px 50px 0 !important;
+}
+
+.bg-danger .form-control{
+    border-radius:50px 0 0 50px !important;
+}
+   /* ==================================
+   Search Icon Inside Input
+================================== */
+
+.search-group .search-icon{
+    background:#fff;
+    border:none;
+    color:#dc3545;
+    padding-left:20px;
+    padding-right:8px;
+}
+
+.search-group .form-control{
+    border-left:none !important;
+}
+
+.search-group .input-group-text,
+.search-group .form-control,
+.search-group .btn{
+    border:none !important;
+}
 /* ==========================
    End of File
 ========================== */
