@@ -574,6 +574,15 @@ footer{
 }
 
 }
+.navbar{
+    margin:0;
+    border-radius:0;
+}
+
+.navbar .container-fluid{
+    padding-left:15px;
+    padding-right:15px;
+}
 
 /* ==========================
    End of File
