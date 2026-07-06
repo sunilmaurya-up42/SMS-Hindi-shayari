@@ -127,34 +127,33 @@ Category Shayari List
 
 <div class="row g-4">
 
-<% if(shayaries && shayaries.length){ %>
+<% if(shayari && shayari.length){ %>
 
-<% shayaries.forEach(function(shayari){ %>
+<% shayari.forEach(function(item){ %>
 
 <div class="col-lg-4 col-md-6">
 
 <div class="card shadow-sm border-0 h-100">
 
-<% if(shayari.thumbnail){ %>
+<% if(item.background){ %>
 
 <img
-src="<%= shayari.thumbnail %>"
+src="<%= item.background.rawUrl %>"
 class="card-img-top"
-alt="<%= shayari.imageAlt || shayari.title %>">
-
+alt="<%= item.title %>"
 <% } %>
 
 <div class="card-body">
 
 <h4 class="fw-bold">
 
-<%= shayari.title %>
+<%= item.title %>
 
 </h4>
 
 <p class="text-muted">
 
-<%= shayari.excerpt %>
+<%= item.excerpt || item.content.substring(0, 120) %>
 
 </p>
 
@@ -163,7 +162,7 @@ alt="<%= shayari.imageAlt || shayari.title %>">
 <div class="card-footer bg-white border-0 d-flex justify-content-between align-items-center">
 
 <a
-href="/shayari/<%= shayari.slug %>"
+href="/shayari/<%= item.slug %>"
 class="btn btn-primary">
 
 Read More
@@ -172,7 +171,7 @@ Read More
 
 <small class="text-muted">
 
-👁 <%= shayari.views %>
+👁 <%= item.views || 0 %>
 
 </small>
 
@@ -236,17 +235,17 @@ Browse All
 Pagination
 ================================== -->
 
-<% if(typeof page!=="undefined"){ %>
+<% if(pagination && pagination.pages > 1){ %>
 
 <nav class="mt-5">
 
 <ul class="pagination justify-content-center">
 
-<li class="page-item <%= page<=1?'disabled':'' %>">
+<li class="page-item <%= pagination.page <= 1 ? 'disabled' : '' %>">
 
 <a
 class="page-link"
-href="?page=<%= page-1 %>">
+href="?page=<%= pagination.page - 1 %>"
 
 Previous
 
@@ -258,18 +257,17 @@ Previous
 
 <span class="page-link">
 
-<%= page %>
+<%= pagination.page %>
 
 </span>
 
 </li>
 
-<li class="page-item">
+<li class="page-item <%= pagination.page >= pagination.pages ? 'disabled' : '' %>">
 
 <a
 class="page-link"
-href="?page=<%= page+1 %>">
-
+href="?page=<%= pagination.page + 1 %>"
 Next
 
 </a>
