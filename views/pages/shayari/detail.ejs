@@ -9,7 +9,7 @@
 
 <body>
 
-
+<%- include("../../partials/navbar") %>
 <!-- ==================================
 Page Header
 ================================== -->
@@ -457,9 +457,9 @@ Related Shayari
 
     <div class="list-group list-group-flush">
 
-        <% if(typeof relatedShayaries !== "undefined" && relatedShayaries.length){ %>
+        <% if(related && related.length){ %>
 
-            <% relatedShayaries.forEach(function(item){ %>
+<% related.forEach(function(item){ %>
 
                 <a
     href="/shayari/<%= item.slug %>"
