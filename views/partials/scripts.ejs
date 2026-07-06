@@ -332,6 +332,15 @@ document.body.classList.add("dark-theme");
 
 <% } %>
 
+<script>
+document.querySelectorAll(".navbar-nav .nav-link").forEach(link => {
+    link.addEventListener("click", () => {
+        const navbar = document.getElementById("mainNavbar");
+        const bsCollapse = bootstrap.Collapse.getOrCreateInstance(navbar);
+        bsCollapse.hide();
+    });
+});
+</script>
 <!-- =====================================
      End Scripts
 ===================================== -->
