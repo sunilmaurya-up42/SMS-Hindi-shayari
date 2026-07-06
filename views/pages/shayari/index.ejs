@@ -130,26 +130,23 @@ alt="<%= item.imageAlt || item.title %>">
 
 <div class="card-body">
 
-<% if(shayari.category){ %>
+<% if(item.category){ %>
 
 <span class="badge bg-danger mb-2">
 
-<%= shayari.category.name %>
-
+<%= item.category.name %>
 </span>
 
 <% } %>
 
 <h4 class="fw-bold">
 
-<%= shayari.title %>
-
+<%= item.title %>
 </h4>
 
 <p class="text-muted">
 
-<%= shayari.excerpt %>
-
+<%= item.excerpt %>
 </p>
 
 </div>
@@ -159,7 +156,7 @@ alt="<%= item.imageAlt || item.title %>">
 <div class="d-flex justify-content-between align-items-center">
 
 <a
-href="/shayari/<%= shayari.slug %>"
+href="/shayari/<%= item.slug %>"
 class="btn btn-danger">
 
 Read More
@@ -168,7 +165,7 @@ Read More
 
 <small class="text-muted">
 
-👁 <%= shayari.views %>
+👁 <%= item.views %>
 
 </small>
 
