@@ -119,12 +119,12 @@ Shayari Grid
 
 <div class="card shadow-sm border-0 h-100">
 
-<% if(item.thumbnail){ %>
+<% if(item.background){ %>
 
 <img
-src="<%= item.thumbnail %>"
-class="card-img-top"
-alt="<%= item.imageAlt || item.title %>">
+    src="<%= item.background.rawUrl %>"
+    class="card-img-top"
+    alt="<%= item.title %>">
 
 <% } %>
 
