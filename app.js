@@ -163,32 +163,7 @@ app.use(notFound);
 
 app.use(errorHandler);
 
-<script>
-document.addEventListener("DOMContentLoaded", () => {
 
-    const navLinks = document.querySelectorAll("#mainNavbar .nav-link");
-    const navbar = document.getElementById("mainNavbar");
-
-    navLinks.forEach(link => {
-
-        link.addEventListener("click", () => {
-
-            if (window.innerWidth < 992) {
-
-                const bsCollapse = bootstrap.Collapse.getInstance(navbar);
-
-                if (bsCollapse) {
-                    bsCollapse.hide();
-                }
-
-            }
-
-        });
-
-    });
-
-});
-</script>
 /* ==================================
    Export App
 ================================== */
