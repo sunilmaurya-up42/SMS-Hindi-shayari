@@ -194,6 +194,7 @@ exports.singleShayari = async (req, res, next) => {
 
         })
         .populate("category", "name slug")
+        .populate("background")
         .sort({
             createdAt: -1
         })
