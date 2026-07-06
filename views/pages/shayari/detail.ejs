@@ -463,25 +463,28 @@ Related Shayari
             <% relatedShayaries.forEach(function(item){ %>
 
                 <a
-                    href="/shayari/<%= item.slug %>"
-                    class="list-group-item list-group-item-action">
+    href="/shayari/<%= item.slug %>"
+    class="list-group-item list-group-item-action">
 
-                    <strong>
+    <% if(item.background){ %>
 
-                        <%= item.title %>
+        <img
+            src="<%= item.background.rawUrl %>"
+            style="width:100%;height:120px;object-fit:cover;border-radius:6px;"
+            class="mb-2">
 
-                    </strong>
+    <% } %>
 
-                    <br>
+    <strong><%= item.title %></strong>
 
-                    <small class="text-muted">
+    <br>
 
-                        👁 <%= item.views %> |
-                        ❤️ <%= item.likes %>
+    <small class="text-muted">
+        👁 <%= item.views %> |
+        ❤️ <%= item.likes %>
+    </small>
 
-                    </small>
-
-                </a>
+</a>
 
             <% }) %>
 
