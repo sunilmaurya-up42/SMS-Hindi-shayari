@@ -596,7 +596,78 @@ footer{
     padding-left:15px;
     padding-right:15px;
 }
+/* ==================================
+   Hero Search Box
+================================== */
 
+.hero-search{
+    margin-top:30px;
+}
+
+.search-box{
+    display:flex;
+    align-items:center;
+    background:#fff;
+    border-radius:60px;
+    overflow:hidden;
+    box-shadow:0 12px 35px rgba(0,0,0,.18);
+    border:3px solid rgba(255,255,255,.25);
+}
+
+.search-icon{
+    padding:0 20px;
+    color:#dc3545;
+    font-size:20px;
+}
+
+.search-box input{
+    flex:1;
+    border:none;
+    outline:none;
+    background:transparent;
+    padding:18px 0;
+    font-size:18px;
+}
+
+.search-box button{
+    border:none;
+    background:linear-gradient(90deg,#ff9800,#ff5722);
+    color:#fff;
+    font-weight:600;
+    padding:18px 28px;
+    transition:.3s;
+}
+
+.search-box button:hover{
+    background:linear-gradient(90deg,#ff5722,#e91e63);
+}
+
+@media(max-width:576px){
+
+.hero-search{
+    margin-top:20px;
+}
+
+.search-box{
+    flex-direction:column;
+    border-radius:18px;
+}
+
+.search-icon{
+    display:none;
+}
+
+.search-box input{
+    width:100%;
+    padding:16px;
+}
+
+.search-box button{
+    width:100%;
+    border-radius:0;
+}
+
+}
 /* ==========================
    End of File
 ========================== */
