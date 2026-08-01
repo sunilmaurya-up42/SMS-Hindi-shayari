@@ -1,0 +1,277 @@
+<section class="py-5">
+
+    <div class="container">
+
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
+
+            <div>
+
+                <h1 class="fw-bold">
+
+                    <i class="fa-solid fa-bookmark text-warning"></i>
+
+                    My Bookmarks
+
+                </h1>
+
+                <p class="text-muted mb-0">
+
+                    Your saved favorite Shayari collection.
+
+                </p>
+
+            </div>
+
+            <!-- Sort -->
+            <form
+                action="/bookmarks"
+                method="GET"
+                class="mt-3 mt-md-0">
+
+                <select
+                    name="sort"
+                    class="form-select"
+                    onchange="this.form.submit()">
+
+                    <option
+                        value="newest"
+                        <%= sort === "newest" ? "selected" : "" %>>
+
+                        Newest
+
+                    </option>
+
+                    <option
+                        value="oldest"
+                        <%= sort === "oldest" ? "selected" : "" %>>
+
+                        Oldest
+
+                    </option>
+
+                </select>
+
+            </form>
+
+        </div>
+
+        <!-- Bookmarks -->
+        <div class="row">
+
+            <% if (bookmarks && bookmarks.length) { %>
+
+                <% bookmarks.forEach(item => { %>
+
+                    <div class="col-lg-4 col-md-6 mb-4">
+
+                        <div class="card shadow-sm h-100">
+
+                            <% if (item.imageUrl) { %>
+
+                                <img
+                                    src="<%= item.imageUrl %>"
+                                    class="card-img-top"
+                                    alt="<%= item.title %>">
+
+                            <% } %>
+
+                            <div class="card-body">
+
+                                <span class="badge bg-primary mb-2">
+
+                                    <%= item.category?.name || "General" %>
+
+                                </span>
+
+                                <h5>
+
+                                    <%= item.title %>
+
+                                </h5>
+
+                                <p>
+
+                                    <%= item.content.substring(0,150) %>...
+
+                                </p>
+
+                            </div>
+
+                            <div class="card-footer bg-white">
+
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+
+                                    <small class="text-muted">
+
+                                        <i class="fa-solid fa-calendar"></i>
+
+                                        <%= new Date(item.createdAt).toLocaleDateString() %>
+
+                                    </small>
+
+                                    <small>
+
+                                        <i class="fa-solid fa-eye"></i>
+
+                                        <%= item.views || 0 %>
+
+                                    </small>
+
+                                </div>
+
+                                <div class="d-grid gap-2">
+
+                                    <a
+                                        href="/shayari/<%= item.slug %>"
+                                        class="btn btn-primary btn-sm">
+
+                                        <i class="fa-solid fa-book-open"></i>
+
+                                        Read More
+
+                                    </a>
+
+                                    <a
+                                        href="/bookmark/remove/<%= item._id %>"
+                                        class="btn btn-outline-danger btn-sm">
+
+                                        <i class="fa-solid fa-bookmark"></i>
+
+                                        Remove Bookmark
+
+                                    </a>
+
+                                    <a
+                                        href="/download/<%= item._id %>"
+                                        class="btn btn-outline-success btn-sm">
+
+                                        <i class="fa-solid fa-download"></i>
+
+                                        Download Image
+
+                                    </a>
+
+                                    <button
+                                        class="btn btn-outline-secondary btn-sm shareBtn"
+                                        data-url="/shayari/<%= item.slug %>">
+
+                                        <i class="fa-solid fa-share-nodes"></i>
+
+                                        Share
+
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                <% }) %>
+
+            <% } else { %>
+
+                <div class="col-12">
+
+                    <div class="alert alert-info text-center">
+
+                        <i class="fa-solid fa-bookmark fa-2x mb-3"></i>
+
+                        <h4>
+
+                            No Bookmarks Found
+
+                        </h4>
+
+                        <p>
+
+                            Save your favorite Shayari to see them here.
+
+                        </p>
+
+                        <a
+                            href="/"
+                            class="btn btn-primary">
+
+                            Browse Shayari
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            <% } %>
+
+        </div>
+
+        <!-- Pagination -->
+        <% if (pagination && pagination.totalPages > 1) { %>
+
+            <nav class="mt-4">
+
+                <ul class="pagination justify-content-center">
+
+                    <% for(let i = 1; i <= pagination.totalPages; i++){ %>
+
+                        <li class="page-item <%= pagination.page === i ? 'active' : '' %>">
+
+                            <a
+                                class="page-link"
+                                href="?page=<%= i %>&sort=<%= sort %>">
+
+                                <%= i %>
+
+                            </a>
+
+                        </li>
+
+                    <% } %>
+
+                </ul>
+
+            </nav>
+
+        <% } %>
+
+    </div>
+
+</section>
+
+<script>
+
+document.querySelectorAll(".shareBtn")
+.forEach(button => {
+
+    button.addEventListener("click", async () => {
+
+        const url =
+            window.location.origin +
+            button.dataset.url;
+
+        if (navigator.share) {
+
+            await navigator.share({
+
+                title: "SMS Hindi Shayari",
+
+                url
+
+            });
+
+        } else {
+
+            navigator.clipboard.writeText(url);
+
+            alert("Link copied successfully.");
+
+        }
+
+    });
+
+});
+
+</script>
