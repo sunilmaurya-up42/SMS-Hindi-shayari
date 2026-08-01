@@ -19,7 +19,7 @@ const hpp = require("hpp");
 const methodOverride = require("method-override");
 const notFound = require("./middleware/notFound");
 const errorHandler = require("./middleware/errorHandler");
-
+const maintenance = require("./middleware/maintenance");
 
 const app = express();
 
@@ -164,6 +164,7 @@ app.use((err, req, res, next) => {
 });
 
 app.use(notFound);
-
 app.use(errorHandler);
+app.use(maintenance);
+
 module.exports = app;
