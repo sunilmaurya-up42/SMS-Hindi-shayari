@@ -1,0 +1,126 @@
+<meta charset="UTF-8">
+
+<meta
+    http-equiv="X-UA-Compatible"
+    content="IE=edge">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0">
+
+<title>
+    <%= seo?.title || "SMS Hindi Shayari" %>
+</title>
+
+<meta
+    name="description"
+    content="<%= seo?.description || 'Latest Hindi Shayari Collection' %>">
+
+<meta
+    name="keywords"
+    content="<%= seo?.keywords || 'Hindi Shayari, Love Shayari, Sad Shayari, Attitude Shayari' %>">
+
+<meta
+    name="author"
+    content="SMS Hindi Shayari">
+
+<meta
+    name="robots"
+    content="<%= seo?.robots || 'index,follow' %>">
+
+<meta
+    name="theme-color"
+    content="#0d6efd">
+
+<% if (seo?.canonical) { %>
+<link
+    rel="canonical"
+    href="<%= seo.canonical %>">
+<% } %>
+
+<!-- Open Graph -->
+<meta
+    property="og:title"
+    content="<%= seo?.title || 'SMS Hindi Shayari' %>">
+
+<meta
+    property="og:description"
+    content="<%= seo?.description || '' %>">
+
+<meta
+    property="og:image"
+    content="<%= seo?.image || '/images/og-image.jpg' %>">
+
+<meta
+    property="og:url"
+    content="<%= seo?.canonical || '' %>">
+
+<meta
+    property="og:type"
+    content="website">
+
+<meta
+    property="og:site_name"
+    content="SMS Hindi Shayari">
+
+<!-- Twitter -->
+<meta
+    name="twitter:card"
+    content="summary_large_image">
+
+<meta
+    name="twitter:title"
+    content="<%= seo?.title || 'SMS Hindi Shayari' %>">
+
+<meta
+    name="twitter:description"
+    content="<%= seo?.description || '' %>">
+
+<meta
+    name="twitter:image"
+    content="<%= seo?.image || '/images/og-image.jpg' %>">
+
+<!-- Favicon -->
+<link
+    rel="icon"
+    type="image/x-icon"
+    href="/favicon.ico">
+
+<link
+    rel="apple-touch-icon"
+    href="/images/icon-192.png">
+
+<!-- Google Fonts -->
+<link
+    rel="preconnect"
+    href="https://fonts.googleapis.com">
+
+<link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin>
+
+<link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+
+<!-- Bootstrap -->
+<link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+    rel="stylesheet">
+
+<!-- Font Awesome -->
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+<!-- Custom CSS -->
+<link
+    rel="stylesheet"
+    href="/css/style.css">
+
+<% if (seo?.jsonLd) { %>
+<script type="application/ld+json">
+<%- JSON.stringify(seo.jsonLd) %>
+</script>
+<% } %>
