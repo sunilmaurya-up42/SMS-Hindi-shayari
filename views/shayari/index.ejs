@@ -1,0 +1,342 @@
+<section class="py-5">
+
+    <div class="container">
+
+        <!-- Page Header -->
+        <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
+
+            <div>
+
+                <h1 class="fw-bold">
+
+                    Hindi Shayari Collection
+
+                </h1>
+
+                <p class="text-muted mb-0">
+
+                    Browse all Shayari in one place.
+
+                </p>
+
+            </div>
+
+            <a
+                href="/"
+                class="btn btn-outline-primary">
+
+                <i class="fa-solid fa-house me-2"></i>
+
+                Home
+
+            </a>
+
+        </div>
+
+        <!-- Search & Filter -->
+        <div class="card shadow-sm mb-4">
+
+            <div class="card-body">
+
+                <form
+                    action="/shayari"
+                    method="GET">
+
+                    <div class="row g-3">
+
+                        <div class="col-lg-4">
+
+                            <input
+                                type="text"
+                                name="q"
+                                value="<%= query || '' %>"
+                                class="form-control"
+                                placeholder="Search Shayari...">
+
+                        </div>
+
+                        <div class="col-lg-3">
+
+                            <select
+                                name="category"
+                                class="form-select">
+
+                                <option value="">
+
+                                    All Categories
+
+                                </option>
+
+                                <% if (categories) { %>
+
+                                    <% categories.forEach(category => { %>
+
+                                        <option
+                                            value="<%= category.slug %>"
+                                            <%= selectedCategory === category.slug ? "selected" : "" %>>
+
+                                            <%= category.name %>
+
+                                        </option>
+
+                                    <% }) %>
+
+                                <% } %>
+
+                            </select>
+
+                        </div>
+
+                        <div class="col-lg-3">
+
+                            <select
+                                name="sort"
+                                class="form-select">
+
+                                <option value="latest">
+
+                                    Latest
+
+                                </option>
+
+                                <option value="popular">
+
+                                    Popular
+
+                                </option>
+
+                                <option value="likes">
+
+                                    Most Liked
+
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                        <div class="col-lg-2">
+
+                            <button
+                                class="btn btn-primary w-100">
+
+                                Search
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+        <!-- Shayari List -->
+        <div class="row">
+
+            <% if (shayari && shayari.length) { %>
+
+                <% shayari.forEach(item => { %>
+
+                    <div class="col-lg-4 col-md-6 mb-4">
+
+                        <div class="card h-100 shadow-sm">
+
+                            <% if (item.imageUrl) { %>
+
+                                <img
+                                    src="<%= item.imageUrl %>"
+                                    class="card-img-top"
+                                    alt="<%= item.title %>">
+
+                            <% } %>
+
+                            <div class="card-body">
+
+                                <span class="badge bg-primary mb-2">
+
+                                    <%= item.category?.name || "General" %>
+
+                                </span>
+
+                                <h5>
+
+                                    <%= item.title %>
+
+                                </h5>
+
+                                <p>
+
+                                    <%= item.content.substring(0,160) %>...
+
+                                </p>
+
+                            </div>
+
+                            <div class="card-footer bg-white">
+
+                                <div class="d-flex justify-content-between mb-2">
+
+                                    <small>
+
+                                        <i class="fa-solid fa-eye"></i>
+
+                                        <%= item.views || 0 %>
+
+                                    </small>
+
+                                    <small>
+
+                                        <i class="fa-solid fa-heart text-danger"></i>
+
+                                        <%= item.likes || 0 %>
+
+                                    </small>
+
+                                    <small>
+
+                                        <i class="fa-solid fa-share-nodes text-success"></i>
+
+                                        <%= item.shares || 0 %>
+
+                                    </small>
+
+                                </div>
+
+                                <div class="d-grid gap-2">
+
+                                    <a
+                                        href="/shayari/<%= item.slug %>"
+                                        class="btn btn-primary btn-sm">
+
+                                        Read More
+
+                                    </a>
+
+                                    <button
+                                        class="btn btn-outline-danger btn-sm likeBtn"
+                                        data-id="<%= item._id %>">
+
+                                        <i class="fa-solid fa-heart"></i>
+
+                                        Like
+
+                                    </button>
+
+                                    <button
+                                        class="btn btn-outline-secondary btn-sm shareBtn"
+                                        data-url="/shayari/<%= item.slug %>">
+
+                                        <i class="fa-solid fa-share"></i>
+
+                                        Share
+
+                                    </button>
+
+                                    <a
+                                        href="/download/<%= item._id %>"
+                                        class="btn btn-outline-success btn-sm">
+
+                                        <i class="fa-solid fa-download"></i>
+
+                                        Download Image
+
+                                    </a>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                <% }) %>
+
+            <% } else { %>
+
+                <div class="col-12">
+
+                    <div class="alert alert-warning text-center">
+
+                        No Shayari Found.
+
+                    </div>
+
+                </div>
+
+            <% } %>
+
+        </div>
+
+        <!-- Pagination -->
+        <% if (pagination && pagination.totalPages > 1) { %>
+
+            <nav class="mt-4">
+
+                <ul class="pagination justify-content-center">
+
+                    <% for(let i = 1; i <= pagination.totalPages; i++){ %>
+
+                        <li
+                            class="page-item <%= pagination.page === i ? 'active' : '' %>">
+
+                            <a
+                                class="page-link"
+                                href="?page=<%= i %>">
+
+                                <%= i %>
+
+                            </a>
+
+                        </li>
+
+                    <% } %>
+
+                </ul>
+
+            </nav>
+
+        <% } %>
+
+    </div>
+
+</section>
+
+<script>
+
+document.querySelectorAll(".shareBtn")
+.forEach(button => {
+
+    button.addEventListener("click", async () => {
+
+        const url =
+            window.location.origin +
+            button.dataset.url;
+
+        if (navigator.share) {
+
+            await navigator.share({
+
+                title: "SMS Hindi Shayari",
+
+                url
+
+            });
+
+        } else {
+
+            await navigator.clipboard.writeText(url);
+
+            alert("Link copied.");
+
+        }
+
+    });
+
+});
+
+</script>
