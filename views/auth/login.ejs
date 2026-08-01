@@ -1,0 +1,215 @@
+
+<section class="py-5">
+
+    <div class="container">
+
+        <div class="row justify-content-center">
+
+            <div class="col-lg-5 col-md-7">
+
+                <div class="card shadow border-0">
+
+                    <div class="card-body p-4">
+
+                        <div class="text-center mb-4">
+
+                            <h2 class="fw-bold">
+
+                                Login
+
+                            </h2>
+
+                            <p class="text-muted">
+
+                                Login to your SMS Hindi Shayari account.
+
+                            </p>
+
+                        </div>
+
+                        <% if(success_msg){ %>
+
+                            <div class="alert alert-success">
+
+                                <%= success_msg %>
+
+                            </div>
+
+                        <% } %>
+
+                        <% if(error_msg){ %>
+
+                            <div class="alert alert-danger">
+
+                                <%= error_msg %>
+
+                            </div>
+
+                        <% } %>
+
+                        <form
+                            action="/auth/login"
+                            method="POST">
+
+                            <input
+                                type="hidden"
+                                name="_csrf"
+                                value="<%= csrfToken %>">
+
+                            <div class="mb-3">
+
+                                <label class="form-label">
+
+                                    Email
+
+                                </label>
+
+                                <input
+                                    type="email"
+                                    name="email"
+                                    class="form-control"
+                                    placeholder="Enter your email"
+                                    required>
+
+                            </div>
+
+                            <div class="mb-3">
+
+                                <label class="form-label">
+
+                                    Password
+
+                                </label>
+
+                                <div class="input-group">
+
+                                    <input
+                                        type="password"
+                                        id="password"
+                                        name="password"
+                                        class="form-control"
+                                        placeholder="Enter password"
+                                        required>
+
+                                    <button
+                                        class="btn btn-outline-secondary"
+                                        type="button"
+                                        id="togglePassword">
+
+                                        <i class="fa-solid fa-eye"></i>
+
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+
+                                <div class="form-check">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        id="rememberMe"
+                                        name="remember">
+
+                                    <label
+                                        class="form-check-label"
+                                        for="rememberMe">
+
+                                        Remember Me
+
+                                    </label>
+
+                                </div>
+
+                                <a
+                                    href="/auth/forgot-password">
+
+                                    Forgot Password?
+
+                                </a>
+
+                            </div>
+
+                            <% if(typeof redirect !== "undefined"){ %>
+
+                                <input
+                                    type="hidden"
+                                    name="redirect"
+                                    value="<%= redirect %>">
+
+                            <% } %>
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary w-100">
+
+                                <i class="fa-solid fa-right-to-bracket"></i>
+
+                                Login
+
+                            </button>
+
+                        </form>
+
+                        <hr>
+
+                        <a
+                            href="/auth/google"
+                            class="btn btn-danger w-100">
+
+                            <i class="fa-brands fa-google"></i>
+
+                            Continue with Google
+
+                        </a>
+
+                        <div class="text-center mt-4">
+
+                            Don't have an account?
+
+                            <a href="/auth/register">
+
+                                Register
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<script>
+
+const toggle =
+    document.getElementById("togglePassword");
+
+const password =
+    document.getElementById("password");
+
+toggle.addEventListener("click", () => {
+
+    password.type =
+        password.type === "password"
+        ? "text"
+        : "password";
+
+    toggle.innerHTML =
+        password.type === "password"
+        ? '<i class="fa-solid fa-eye"></i>'
+        : '<i class="fa-solid fa-eye-slash"></i>';
+
+});
+
+</script>
