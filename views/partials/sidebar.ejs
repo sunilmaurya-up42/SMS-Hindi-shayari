@@ -1,0 +1,228 @@
+<aside
+    id="adminSidebar"
+    class="bg-dark text-white vh-100 position-sticky top-0">
+
+    <div class="p-3 border-bottom">
+
+        <a
+            href="/admin"
+            class="text-decoration-none text-white d-flex align-items-center">
+
+            <img
+                src="/images/logo.png"
+                alt="Logo"
+                width="45"
+                height="45"
+                class="me-2 rounded">
+
+            <div>
+
+                <h5 class="mb-0">
+
+                    SMS Hindi Shayari
+
+                </h5>
+
+                <small class="text-light">
+
+                    Admin Panel
+
+                </small>
+
+            </div>
+
+        </a>
+
+    </div>
+
+    <div class="p-3">
+
+        <ul class="nav flex-column">
+
+            <!-- Dashboard -->
+            <li class="nav-item mb-2">
+
+                <a
+                    href="/admin"
+                    class="nav-link text-white <%= activeMenu === 'dashboard' ? 'active fw-bold' : '' %>">
+
+                    <i class="fa-solid fa-gauge me-2"></i>
+
+                    Dashboard
+
+                </a>
+
+            </li>
+
+            <!-- Shayari -->
+            <li class="nav-item mb-2">
+
+                <a
+                    href="/admin/shayari"
+                    class="nav-link text-white <%= activeMenu === 'shayari' ? 'active fw-bold' : '' %>">
+
+                    <i class="fa-solid fa-book-open me-2"></i>
+
+                    Shayari
+
+                </a>
+
+            </li>
+
+            <!-- Categories -->
+            <li class="nav-item mb-2">
+
+                <a
+                    href="/admin/categories"
+                    class="nav-link text-white <%= activeMenu === 'categories' ? 'active fw-bold' : '' %>">
+
+                    <i class="fa-solid fa-folder-tree me-2"></i>
+
+                    Categories
+
+                </a>
+
+            </li>
+
+            <!-- Users -->
+            <li class="nav-item mb-2">
+
+                <a
+                    href="/admin/users"
+                    class="nav-link text-white <%= activeMenu === 'users' ? 'active fw-bold' : '' %>">
+
+                    <i class="fa-solid fa-users me-2"></i>
+
+                    Users
+
+                </a>
+
+            </li>
+
+            <!-- Comments -->
+            <li class="nav-item mb-2">
+
+                <a
+                    href="/admin/comments"
+                    class="nav-link text-white <%= activeMenu === 'comments' ? 'active fw-bold' : '' %>">
+
+                    <i class="fa-solid fa-comments me-2"></i>
+
+                    Comments
+
+                </a>
+
+            </li>
+
+            <!-- AI Images -->
+            <li class="nav-item mb-2">
+
+                <a
+                    href="/admin/ai-images"
+                    class="nav-link text-white <%= activeMenu === 'ai-images' ? 'active fw-bold' : '' %>">
+
+                    <i class="fa-solid fa-wand-magic-sparkles me-2"></i>
+
+                    AI Images
+
+                </a>
+
+            </li>
+
+            <!-- SEO -->
+            <li class="nav-item mb-2">
+
+                <a
+                    href="/admin/seo"
+                    class="nav-link text-white <%= activeMenu === 'seo' ? 'active fw-bold' : '' %>">
+
+                    <i class="fa-solid fa-magnifying-glass-chart me-2"></i>
+
+                    SEO
+
+                </a>
+
+            </li>
+
+            <!-- Analytics -->
+            <li class="nav-item mb-2">
+
+                <a
+                    href="/admin/analytics"
+                    class="nav-link text-white <%= activeMenu === 'analytics' ? 'active fw-bold' : '' %>">
+
+                    <i class="fa-solid fa-chart-line me-2"></i>
+
+                    Analytics
+
+                </a>
+
+            </li>
+
+            <!-- Settings -->
+            <li class="nav-item mb-2">
+
+                <a
+                    href="/admin/settings"
+                    class="nav-link text-white <%= activeMenu === 'settings' ? 'active fw-bold' : '' %>">
+
+                    <i class="fa-solid fa-gear me-2"></i>
+
+                    Settings
+
+                </a>
+
+            </li>
+
+            <!-- Backup -->
+            <li class="nav-item mb-2">
+
+                <a
+                    href="/admin/backups"
+                    class="nav-link text-white <%= activeMenu === 'backups' ? 'active fw-bold' : '' %>">
+
+                    <i class="fa-solid fa-database me-2"></i>
+
+                    Backups
+
+                </a>
+
+            </li>
+
+            <hr class="border-secondary">
+
+            <!-- Profile -->
+            <li class="nav-item mb-2">
+
+                <a
+                    href="/profile"
+                    class="nav-link text-white">
+
+                    <i class="fa-solid fa-user me-2"></i>
+
+                    Profile
+
+                </a>
+
+            </li>
+
+            <!-- Logout -->
+            <li class="nav-item">
+
+                <a
+                    href="/logout"
+                    class="nav-link text-danger">
+
+                    <i class="fa-solid fa-right-from-bracket me-2"></i>
+
+                    Logout
+
+                </a>
+
+            </li>
+
+        </ul>
+
+    </div>
+
+</aside>
