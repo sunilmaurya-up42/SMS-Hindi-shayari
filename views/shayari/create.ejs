@@ -1,0 +1,342 @@
+<section class="py-5">
+
+    <div class="container">
+
+        <div class="row justify-content-center">
+
+            <div class="col-lg-10">
+
+                <div class="card shadow-sm">
+
+                    <div class="card-header bg-primary text-white">
+
+                        <h2 class="mb-0">
+
+                            Create New Shayari
+
+                        </h2>
+
+                    </div>
+
+                    <div class="card-body">
+
+                        <form
+                            action="/admin/shayari"
+                            method="POST"
+                            enctype="multipart/form-data">
+
+                            <!-- Title -->
+                            <div class="mb-3">
+
+                                <label class="form-label">
+
+                                    Title
+
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="title"
+                                    class="form-control"
+                                    required>
+
+                            </div>
+
+                            <!-- Category -->
+                            <div class="mb-3">
+
+                                <label class="form-label">
+
+                                    Category
+
+                                </label>
+
+                                <select
+                                    name="category"
+                                    class="form-select"
+                                    required>
+
+                                    <option value="">
+
+                                        Select Category
+
+                                    </option>
+
+                                    <% categories.forEach(category => { %>
+
+                                        <option value="<%= category._id %>">
+
+                                            <%= category.name %>
+
+                                        </option>
+
+                                    <% }) %>
+
+                                </select>
+
+                            </div>
+
+                            <!-- Tags -->
+                            <div class="mb-3">
+
+                                <label class="form-label">
+
+                                    Tags
+
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="tags"
+                                    class="form-control"
+                                    placeholder="love,sad,motivational">
+
+                            </div>
+
+                            <!-- Shayari -->
+                            <div class="mb-3">
+
+                                <label class="form-label">
+
+                                    Shayari
+
+                                </label>
+
+                                <textarea
+                                    id="content"
+                                    name="content"
+                                    rows="10"
+                                    class="form-control"
+                                    required></textarea>
+
+                            </div>
+
+                            <!-- Image -->
+                            <div class="mb-3">
+
+                                <label class="form-label">
+
+                                    Upload Image
+
+                                </label>
+
+                                <input
+                                    type="file"
+                                    name="image"
+                                    class="form-control"
+                                    accept="image/*">
+
+                            </div>
+
+                            <!-- AI Image -->
+                            <div class="mb-3">
+
+                                <label class="form-label">
+
+                                    AI Image Prompt
+
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="aiPrompt"
+                                    class="form-control"
+                                    placeholder="Optional">
+
+                            </div>
+
+                            <!-- SEO -->
+                            <hr>
+
+                            <h5>
+
+                                SEO Settings
+
+                            </h5>
+
+                            <div class="mb-3">
+
+                                <label class="form-label">
+
+                                    SEO Title
+
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="seoTitle"
+                                    class="form-control">
+
+                            </div>
+
+                            <div class="mb-3">
+
+                                <label class="form-label">
+
+                                    SEO Description
+
+                                </label>
+
+                                <textarea
+                                    name="seoDescription"
+                                    rows="3"
+                                    class="form-control"></textarea>
+
+                            </div>
+
+                            <div class="mb-3">
+
+                                <label class="form-label">
+
+                                    SEO Keywords
+
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="seoKeywords"
+                                    class="form-control">
+
+                            </div>
+
+                            <!-- Options -->
+                            <div class="row">
+
+                                <div class="col-md-4">
+
+                                    <div class="form-check">
+
+                                        <input
+                                            class="form-check-input"
+                                            type="checkbox"
+                                            name="featured"
+                                            value="true">
+
+                                        <label class="form-check-label">
+
+                                            Featured
+
+                                        </label>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="col-md-4">
+
+                                    <div class="form-check">
+
+                                        <input
+                                            class="form-check-input"
+                                            type="checkbox"
+                                            name="trending"
+                                            value="true">
+
+                                        <label class="form-check-label">
+
+                                            Trending
+
+                                        </label>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="col-md-4">
+
+                                    <label class="form-label">
+
+                                        Status
+
+                                    </label>
+
+                                    <select
+                                        name="status"
+                                        class="form-select">
+
+                                        <option value="published">
+
+                                            Published
+
+                                        </option>
+
+                                        <option value="draft">
+
+                                            Draft
+
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+                            <!-- Preview -->
+                            <hr>
+
+                            <h5>
+
+                                Live Preview
+
+                            </h5>
+
+                            <div
+                                id="preview"
+                                class="border rounded p-3 bg-light"
+                                style="min-height:150px;white-space:pre-wrap;">
+
+                            </div>
+
+                            <!-- Buttons -->
+                            <div class="mt-4 d-flex gap-2">
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-success">
+
+                                    <i class="fa-solid fa-floppy-disk"></i>
+
+                                    Save Shayari
+
+                                </button>
+
+                                <a
+                                    href="/admin/shayari"
+                                    class="btn btn-secondary">
+
+                                    Cancel
+
+                                </a>
+
+                            </div>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<script>
+
+const editor =
+    document.getElementById("content");
+
+const preview =
+    document.getElementById("preview");
+
+editor.addEventListener("input", () => {
+
+    preview.textContent = editor.value;
+
+});
+
+</script>
