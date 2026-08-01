@@ -47,10 +47,12 @@ const shayariSchema = new mongoose.Schema(
       default: "",
     },
 
-    backgroundImage: {
-      type: String,
-      default: "",
-    },
+    background: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "Background",
+  required: false,
+  index: true
+},
 
     imageGenerated: {
       type: Boolean,
