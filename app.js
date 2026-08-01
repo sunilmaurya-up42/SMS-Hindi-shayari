@@ -17,6 +17,9 @@ const rateLimit = require("express-rate-limit");
 const mongoSanitize = require("express-mongo-sanitize");
 const hpp = require("hpp");
 const methodOverride = require("method-override");
+const notFound = require("./middleware/notFound");
+const errorHandler = require("./middleware/errorHandler");
+
 
 const app = express();
 
@@ -160,4 +163,7 @@ app.use((err, req, res, next) => {
 
 });
 
+app.use(notFound);
+
+app.use(errorHandler);
 module.exports = app;
