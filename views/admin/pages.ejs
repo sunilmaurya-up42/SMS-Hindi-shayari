@@ -1,1 +1,431 @@
-views/admin/pages.ejs
+<section class="py-4">
+
+    <div class="container-fluid">
+
+        <!-- Header -->
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
+
+            <div>
+
+                <h2 class="fw-bold">
+
+                    CMS Page Manager
+
+                </h2>
+
+                <p class="text-muted mb-0">
+
+                    Create and manage website pages.
+
+                </p>
+
+            </div>
+
+            <a
+                href="/admin/pages/new"
+                class="btn btn-primary">
+
+                <i class="fa-solid fa-plus"></i>
+
+                New Page
+
+            </a>
+
+        </div>
+
+        <!-- Search -->
+
+        <div class="card shadow-sm mb-4">
+
+            <div class="card-body">
+
+                <form
+                    action="/admin/pages"
+                    method="GET">
+
+                    <div class="row">
+
+                        <div class="col-md-9">
+
+                            <input
+                                type="text"
+                                name="q"
+                                value="<%= query || '' %>"
+                                class="form-control"
+                                placeholder="Search pages">
+
+                        </div>
+
+                        <div class="col-md-3">
+
+                            <button
+                                class="btn btn-primary w-100">
+
+                                Search
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+        <!-- Pages -->
+
+        <div class="card shadow-sm">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle mb-0">
+
+                    <thead class="table-light">
+
+                        <tr>
+
+                            <th>Title</th>
+
+                            <th>Slug</th>
+
+                            <th>Status</th>
+
+                            <th>Updated</th>
+
+                            <th>Actions</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <% if(pages.length){ %>
+
+                            <% pages.forEach(page=>{ %>
+
+                                <tr>
+
+                                    <td>
+
+                                        <strong>
+
+                                            <%= page.title %>
+
+                                        </strong>
+
+                                    </td>
+
+                                    <td>
+
+                                        <code>
+
+                                            <%= page.slug %>
+
+                                        </code>
+
+                                    </td>
+
+                                    <td>
+
+                                        <% if(page.status==="published"){ %>
+
+                                            <span class="badge bg-success">
+
+                                                Published
+
+                                            </span>
+
+                                        <% }else{ %>
+
+                                            <span class="badge bg-secondary">
+
+                                                Draft
+
+                                            </span>
+
+                                        <% } %>
+
+                                    </td>
+
+                                    <td>
+
+                                        <%= new Date(page.updatedAt).toLocaleDateString() %>
+
+                                    </td>
+
+                                    <td>
+
+                                        <div class="dropdown">
+
+                                            <button
+                                                class="btn btn-outline-secondary btn-sm dropdown-toggle"
+                                                data-bs-toggle="dropdown">
+
+                                                Actions
+
+                                            </button>
+
+                                            <ul class="dropdown-menu">
+
+                                                <li>
+
+                                                    <a
+                                                        class="dropdown-item"
+                                                        href="/admin/pages/<%= page._id %>/edit">
+
+                                                        Edit
+
+                                                    </a>
+
+                                                </li>
+
+                                                <li>
+
+                                                    <a
+                                                        class="dropdown-item"
+                                                        href="/<%= page.slug %>"
+                                                        target="_blank">
+
+                                                        Preview
+
+                                                    </a>
+
+                                                </li>
+
+                                                <li>
+
+                                                    <a
+                                                        class="dropdown-item"
+                                                        href="/admin/pages/<%= page._id %>/history">
+
+                                                        Revision History
+
+                                                    </a>
+
+                                                </li>
+
+                                                <li>
+
+                                                    <form
+                                                        action="/admin/pages/<%= page._id %>?_method=DELETE"
+                                                        method="POST">
+
+                                                        <input
+                                                            type="hidden"
+                                                            name="_csrf"
+                                                            value="<%= csrfToken %>">
+
+                                                        <button
+                                                            class="dropdown-item text-danger"
+                                                            onclick="return confirm('Delete this page?')">
+
+                                                            Delete
+
+                                                        </button>
+
+                                                    </form>
+
+                                                </li>
+
+                                            </ul>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+                            <% }) %>
+
+                        <% }else{ %>
+
+                            <tr>
+
+                                <td
+                                    colspan="5"
+                                    class="text-center py-5">
+
+                                    No pages found.
+
+                                </td>
+
+                            </tr>
+
+                        <% } %>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+        <!-- Editor -->
+
+        <div class="card shadow-sm mt-4">
+
+            <div class="card-header">
+
+                Page Editor
+
+            </div>
+
+            <div class="card-body">
+
+                <form
+                    action="/admin/pages/save"
+                    method="POST">
+
+                    <input
+                        type="hidden"
+                        name="_csrf"
+                        value="<%= csrfToken %>">
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+
+                            Page Title
+
+                        </label>
+
+                        <input
+                            type="text"
+                            name="title"
+                            class="form-control">
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+
+                            Slug
+
+                        </label>
+
+                        <input
+                            type="text"
+                            name="slug"
+                            class="form-control">
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+
+                            Content
+
+                        </label>
+
+                        <textarea
+                            id="editor"
+                            name="content"
+                            rows="12"
+                            class="form-control"></textarea>
+
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+
+                            <label>
+
+                                SEO Title
+
+                            </label>
+
+                            <input
+                                type="text"
+                                name="seoTitle"
+                                class="form-control">
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <label>
+
+                                Status
+
+                            </label>
+
+                            <select
+                                name="status"
+                                class="form-select">
+
+                                <option value="draft">
+
+                                    Draft
+
+                                </option>
+
+                                <option value="published">
+
+                                    Published
+
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label>
+
+                            SEO Description
+
+                        </label>
+
+                        <textarea
+                            name="seoDescription"
+                            rows="3"
+                            class="form-control"></textarea>
+
+                    </div>
+
+                    <button
+                        class="btn btn-primary">
+
+                        Save Page
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<script>
+
+/* TinyMCE / CKEditor initialization */
+
+if(typeof tinymce !== "undefined"){
+
+    tinymce.init({
+
+        selector:"#editor",
+
+        height:500
+
+    });
+
+}
+
+</script>
