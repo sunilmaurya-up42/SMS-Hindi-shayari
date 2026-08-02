@@ -197,23 +197,15 @@ app.use((req, res) => {
 });
 
 /* ===========================
-   Error Handler
+   404 Handler
 =========================== */
 
-app.use((err, req, res, next) => {
-
-    console.error(err);
-
-    res.status(err.status || 500).render("errors/500", {
-
-        title: "Server Error"
-
-    });
-
-});
-
 app.use(notFound);
-app.use(errorHandler);
 
+/* ===========================
+   Global Error Handler
+=========================== */
+
+app.use(errorHandler);
 
 module.exports = app;
