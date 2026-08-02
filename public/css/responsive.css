@@ -1,0 +1,157 @@
+/* ==========================================================
+   SMS Hindi Shayari
+   Responsive Styles
+   ========================================================== */
+
+/* Large Devices */
+@media (max-width:1200px){
+
+.container{
+    max-width:960px;
+}
+
+.dashboard-grid{
+    grid-template-columns:repeat(3,1fr);
+}
+
+}
+
+/* Tablets */
+@media (max-width:992px){
+
+.container{
+    max-width:720px;
+}
+
+.header{
+    flex-direction:column;
+    gap:15px;
+}
+
+.navbar{
+    flex-wrap:wrap;
+    justify-content:center;
+}
+
+.dashboard-grid{
+    grid-template-columns:repeat(2,1fr);
+}
+
+.admin-wrapper{
+    flex-direction:column;
+}
+
+.sidebar{
+    width:100%;
+    position:relative;
+}
+
+.admin-main{
+    margin-left:0;
+    width:100%;
+}
+
+}
+
+/* Mobile */
+@media (max-width:768px){
+
+.container{
+    width:95%;
+}
+
+.hero{
+    padding:40px 20px;
+    text-align:center;
+}
+
+.hero h1{
+    font-size:28px;
+}
+
+.hero p{
+    font-size:16px;
+}
+
+.card{
+    padding:15px;
+}
+
+.dashboard-grid{
+    grid-template-columns:1fr;
+}
+
+.table-responsive{
+    overflow-x:auto;
+}
+
+table{
+    min-width:650px;
+}
+
+.btn{
+    width:100%;
+}
+
+.form-row{
+    display:block;
+}
+
+.form-row .form-group{
+    width:100%;
+    margin-bottom:15px;
+}
+
+.footer{
+    text-align:center;
+}
+
+}
+
+/* Small Mobile */
+@media (max-width:576px){
+
+.hero h1{
+    font-size:24px;
+}
+
+.hero p{
+    font-size:15px;
+}
+
+.auth-card{
+    padding:20px;
+}
+
+.shayari-card{
+    padding:15px;
+}
+
+.pagination{
+    flex-wrap:wrap;
+}
+
+.pagination a{
+    width:38px;
+    height:38px;
+}
+
+}
+
+/* Very Small Devices */
+@media (max-width:360px){
+
+body{
+    font-size:14px;
+}
+
+.hero h1{
+    font-size:20px;
+}
+
+.btn{
+    font-size:14px;
+    padding:10px;
+}
+
+  }
