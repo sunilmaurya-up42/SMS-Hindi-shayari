@@ -147,12 +147,25 @@ app.use(limiter);
 /* ===========================
    Local Variables
 =========================== */
-
 app.use((req, res, next) => {
 
     res.locals.siteName = "SMS Hindi Shayari";
 
     res.locals.currentYear = new Date().getFullYear();
+
+    res.locals.user = req.user || null;
+
+    res.locals.success_msg = req.flash("success_msg");
+
+    res.locals.error_msg = req.flash("error_msg");
+
+    res.locals.error = req.flash("error");
+
+    if (req.csrfToken) {
+
+        res.locals.csrfToken = req.csrfToken();
+
+    }
 
     next();
 
@@ -181,20 +194,6 @@ app.use("/", healthRoutes);
 app.use("/reports", reportRoutes);
 app.use("/settings", settingsRoutes);
 app.use("/contact-admin", contactAdminRoutes);
-
-/* ===========================
-   404
-=========================== */
-
-app.use((req, res) => {
-
-    res.status(404).render("errors/404", {
-
-        title: "404"
-
-    });
-
-});
 
 /* ===========================
    404 Handler
