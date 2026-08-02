@@ -1,0 +1,403 @@
+<section class="py-4">
+
+    <div class="container-fluid">
+
+        <!-- Header -->
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
+
+            <div>
+
+                <h2 class="fw-bold">
+
+                    Media Library
+
+                </h2>
+
+                <p class="text-muted mb-0">
+
+                    Upload and manage website images.
+
+                </p>
+
+            </div>
+
+            <button
+                class="btn btn-primary"
+                data-bs-toggle="modal"
+                data-bs-target="#uploadModal">
+
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+
+                Upload Images
+
+            </button>
+
+        </div>
+
+        <!-- Search & Filter -->
+
+        <div class="card shadow-sm mb-4">
+
+            <div class="card-body">
+
+                <form
+                    action="/admin/images"
+                    method="GET">
+
+                    <div class="row g-3">
+
+                        <div class="col-lg-6">
+
+                            <input
+                                type="text"
+                                name="q"
+                                class="form-control"
+                                placeholder="Search images..."
+                                value="<%= query || '' %>">
+
+                        </div>
+
+                        <div class="col-lg-3">
+
+                            <select
+                                name="folder"
+                                class="form-select">
+
+                                <option value="">
+
+                                    All Folders
+
+                                </option>
+
+                                <% folders.forEach(folder=>{ %>
+
+                                    <option
+                                        value="<%= folder %>"
+                                        <%= selectedFolder===folder ? "selected" : "" %>>
+
+                                        <%= folder %>
+
+                                    </option>
+
+                                <% }) %>
+
+                            </select>
+
+                        </div>
+
+                        <div class="col-lg-3">
+
+                            <button
+                                class="btn btn-primary w-100">
+
+                                Search
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+        <!-- Bulk Delete -->
+
+        <form
+            action="/admin/images/bulk-delete"
+            method="POST">
+
+            <input
+                type="hidden"
+                name="_csrf"
+                value="<%= csrfToken %>">
+
+            <div class="card shadow-sm">
+
+                <div class="card-header d-flex justify-content-between align-items-center">
+
+                    <div>
+
+                        <button
+                            class="btn btn-danger">
+
+                            Delete Selected
+
+                        </button>
+
+                    </div>
+
+                    <div>
+
+                        Total Images:
+
+                        <strong>
+
+                            <%= pagination.totalItems %>
+
+                        </strong>
+
+                    </div>
+
+                </div>
+
+                <div class="card-body">
+
+                    <div class="row g-4">
+
+                        <% if(images.length){ %>
+
+                            <% images.forEach(image=>{ %>
+
+                                <div class="col-lg-3 col-md-4 col-sm-6">
+
+                                    <div class="card h-100 shadow-sm">
+
+                                        <img
+                                            src="<%= image.url %>"
+                                            class="card-img-top"
+                                            loading="lazy"
+                                            style="height:220px;object-fit:cover;">
+
+                                        <div class="card-body">
+
+                                            <div class="form-check mb-2">
+
+                                                <input
+                                                    class="form-check-input"
+                                                    type="checkbox"
+                                                    name="ids"
+                                                    value="<%= image._id %>">
+
+                                            </div>
+
+                                            <small
+                                                class="text-muted d-block text-truncate">
+
+                                                <%= image.filename %>
+
+                                            </small>
+
+                                            <small>
+
+                                                <%= image.size %>
+
+                                            </small>
+
+                                        </div>
+
+                                        <div class="card-footer d-grid gap-2">
+
+                                            <button
+                                                type="button"
+                                                class="btn btn-outline-primary btn-sm copy-url"
+                                                data-url="<%= image.url %>">
+
+                                                Copy URL
+
+                                            </button>
+
+                                            <a
+                                                href="<%= image.url %>"
+                                                target="_blank"
+                                                class="btn btn-outline-success btn-sm">
+
+                                                Preview
+
+                                            </a>
+
+                                            <form
+                                                action="/admin/images/<%= image._id %>?_method=DELETE"
+                                                method="POST">
+
+                                                <input
+                                                    type="hidden"
+                                                    name="_csrf"
+                                                    value="<%= csrfToken %>">
+
+                                                <button
+                                                    class="btn btn-danger btn-sm w-100"
+                                                    onclick="return confirm('Delete image?')">
+
+                                                    Delete
+
+                                                </button>
+
+                                            </form>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            <% }) %>
+
+                        <% } else { %>
+
+                            <div class="col-12 text-center py-5">
+
+                                <h5>
+
+                                    No images found.
+
+                                </h5>
+
+                            </div>
+
+                        <% } %>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </form>
+
+        <!-- Pagination -->
+
+        <% if(pagination.totalPages>1){ %>
+
+            <nav class="mt-4">
+
+                <ul class="pagination justify-content-center">
+
+                    <% for(let i=1;i<=pagination.totalPages;i++){ %>
+
+                        <li class="page-item <%= pagination.page===i?'active':'' %>">
+
+                            <a
+                                class="page-link"
+                                href="?page=<%= i %>">
+
+                                <%= i %>
+
+                            </a>
+
+                        </li>
+
+                    <% } %>
+
+                </ul>
+
+            </nav>
+
+        <% } %>
+
+    </div>
+
+</section>
+
+<!-- Upload Modal -->
+
+<div
+    class="modal fade"
+    id="uploadModal"
+    tabindex="-1">
+
+    <div class="modal-dialog modal-lg">
+
+        <div class="modal-content">
+
+            <form
+                action="/admin/images/upload"
+                method="POST"
+                enctype="multipart/form-data">
+
+                <input
+                    type="hidden"
+                    name="_csrf"
+                    value="<%= csrfToken %>">
+
+                <div class="modal-header">
+
+                    <h5 class="modal-title">
+
+                        Upload Images
+
+                    </h5>
+
+                    <button
+                        class="btn-close"
+                        data-bs-dismiss="modal"></button>
+
+                </div>
+
+                <div class="modal-body">
+
+                    <div
+                        id="dropArea"
+                        class="border border-2 rounded p-5 text-center mb-3">
+
+                        <i class="fa-solid fa-cloud-arrow-up fa-3x mb-3"></i>
+
+                        <h5>
+
+                            Drag & Drop Images Here
+
+                        </h5>
+
+                        <p class="text-muted">
+
+                            or click below
+
+                        </p>
+
+                        <input
+                            type="file"
+                            name="images"
+                            class="form-control"
+                            accept="image/*"
+                            multiple>
+
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button
+                        class="btn btn-primary">
+
+                        Upload
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+document
+.querySelectorAll(".copy-url")
+.forEach(button=>{
+
+    button.addEventListener("click",()=>{
+
+        navigator.clipboard.writeText(button.dataset.url);
+
+        button.innerText="Copied!";
+
+        setTimeout(()=>{
+
+            button.innerText="Copy URL";
+
+        },1500);
+
+    });
+
+});
+
+</script>
