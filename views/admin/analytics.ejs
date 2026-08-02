@@ -1,0 +1,416 @@
+<section class="py-4">
+
+    <div class="container-fluid">
+
+        <!-- Header -->
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
+
+            <div>
+
+                <h2 class="fw-bold">
+
+                    Analytics Dashboard
+
+                </h2>
+
+                <p class="text-muted mb-0">
+
+                    Website traffic, users and performance reports.
+
+                </p>
+
+            </div>
+
+            <div class="d-flex gap-2">
+
+                <a
+                    href="/admin/analytics/export/pdf"
+                    class="btn btn-danger">
+
+                    <i class="fa-solid fa-file-pdf"></i>
+
+                    PDF
+
+                </a>
+
+                <a
+                    href="/admin/analytics/export/csv"
+                    class="btn btn-success">
+
+                    <i class="fa-solid fa-file-csv"></i>
+
+                    CSV
+
+                </a>
+
+                <a
+                    href="/admin/analytics/export/excel"
+                    class="btn btn-primary">
+
+                    <i class="fa-solid fa-file-excel"></i>
+
+                    Excel
+
+                </a>
+
+            </div>
+
+        </div>
+
+        <!-- Date Filter -->
+
+        <div class="card shadow-sm mb-4">
+
+            <div class="card-body">
+
+                <form
+                    action="/admin/analytics"
+                    method="GET">
+
+                    <div class="row g-3">
+
+                        <div class="col-md-4">
+
+                            <input
+                                type="date"
+                                name="from"
+                                value="<%= from %>"
+                                class="form-control">
+
+                        </div>
+
+                        <div class="col-md-4">
+
+                            <input
+                                type="date"
+                                name="to"
+                                value="<%= to %>"
+                                class="form-control">
+
+                        </div>
+
+                        <div class="col-md-4">
+
+                            <button
+                                class="btn btn-primary w-100">
+
+                                Apply Filter
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+        <!-- Statistics -->
+
+        <div class="row g-4 mb-4">
+
+            <div class="col-lg-3 col-md-6">
+
+                <div class="card shadow-sm">
+
+                    <div class="card-body text-center">
+
+                        <h3><%= stats.visitors %></h3>
+
+                        <p class="mb-0">Visitors</p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+
+                <div class="card shadow-sm">
+
+                    <div class="card-body text-center">
+
+                        <h3><%= stats.pageViews %></h3>
+
+                        <p class="mb-0">Page Views</p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+
+                <div class="card shadow-sm">
+
+                    <div class="card-body text-center">
+
+                        <h3><%= stats.downloads %></h3>
+
+                        <p class="mb-0">Downloads</p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+
+                <div class="card shadow-sm">
+
+                    <div class="card-body text-center">
+
+                        <h3><%= stats.newUsers %></h3>
+
+                        <p class="mb-0">New Users</p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Charts -->
+
+        <div class="row g-4 mb-4">
+
+            <div class="col-lg-8">
+
+                <div class="card shadow-sm">
+
+                    <div class="card-header">
+
+                        Visitor Trend
+
+                    </div>
+
+                    <div class="card-body">
+
+                        <canvas id="visitorChart"></canvas>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-4">
+
+                <div class="card shadow-sm">
+
+                    <div class="card-header">
+
+                        Device Types
+
+                    </div>
+
+                    <div class="card-body">
+
+                        <canvas id="deviceChart"></canvas>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Reports -->
+
+        <div class="row g-4">
+
+            <div class="col-lg-6">
+
+                <div class="card shadow-sm">
+
+                    <div class="card-header">
+
+                        Top Shayari
+
+                    </div>
+
+                    <div class="table-responsive">
+
+                        <table class="table table-hover mb-0">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>Title</th>
+
+                                    <th>Views</th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                <% topShayari.forEach(item=>{ %>
+
+                                    <tr>
+
+                                        <td>
+
+                                            <a href="/shayari/<%= item.slug %>">
+
+                                                <%= item.title %>
+
+                                            </a>
+
+                                        </td>
+
+                                        <td>
+
+                                            <%= item.views %>
+
+                                        </td>
+
+                                    </tr>
+
+                                <% }) %>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-6">
+
+                <div class="card shadow-sm">
+
+                    <div class="card-header">
+
+                        Search Keywords
+
+                    </div>
+
+                    <div class="table-responsive">
+
+                        <table class="table table-hover mb-0">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>Keyword</th>
+
+                                    <th>Count</th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                <% keywords.forEach(item=>{ %>
+
+                                    <tr>
+
+                                        <td><%= item.keyword %></td>
+
+                                        <td><%= item.count %></td>
+
+                                    </tr>
+
+                                <% }) %>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Countries -->
+
+        <div class="card shadow-sm mt-4">
+
+            <div class="card-header">
+
+                Visitors by Country
+
+            </div>
+
+            <div class="table-responsive">
+
+                <table class="table table-striped mb-0">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Country</th>
+
+                            <th>Visitors</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <% countries.forEach(item=>{ %>
+
+                            <tr>
+
+                                <td><%= item.country %></td>
+
+                                <td><%= item.visitors %></td>
+
+                            </tr>
+
+                        <% }) %>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<script>
+
+new Chart(
+    document.getElementById("visitorChart"),
+    {
+        type: "line",
+        data: visitorChartData
+    }
+);
+
+new Chart(
+    document.getElementById("deviceChart"),
+    {
+        type: "doughnut",
+        data: deviceChartData
+    }
+);
+
+</script>
