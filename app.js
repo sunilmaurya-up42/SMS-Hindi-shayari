@@ -20,6 +20,13 @@ const methodOverride = require("method-override");
 const notFound = require("./middleware/notFound");
 const errorHandler = require("./middleware/errorHandler");
 const maintenance = require("./middleware/maintenance");
+const session = require("express-session");
+const MongoStore = require("connect-mongo");
+const flash = require("connect-flash");
+const passport = require("passport");
+const csrf = require("csurf");
+
+require("./config/passport");
 
 const app = express();
 
@@ -53,6 +60,25 @@ app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
 app.use(cookieParser());
+
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+        mongoUrl: process.env.MONGODB_URI
+    }),
+    cookie: {
+        maxAge: 1000 * 60 * 60 * 24 * 7,
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production"
+    }
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use(flash());
+app.use(csrf({ cookie: true }));
 
 /* ===========================
    Security
