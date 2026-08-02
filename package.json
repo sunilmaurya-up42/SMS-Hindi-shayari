@@ -8,7 +8,10 @@
     "start": "node server.js",
     "dev": "nodemon server.js",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "create-admin": "node scripts/createAdmin.js",
+    "create-settings": "node scripts/createSettings.js",
+    "cleanup": "node scripts/cleanupUploads.js"
   },
   "keywords": [
     "shayari",
