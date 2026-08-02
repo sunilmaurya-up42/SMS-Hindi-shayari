@@ -11,7 +11,8 @@
     "format": "prettier --write .",
     "create-admin": "node scripts/createAdmin.js",
     "create-settings": "node scripts/createSettings.js",
-    "cleanup": "node scripts/cleanupUploads.js"
+    "cleanup": "node scripts/cleanupUploads.js",
+    "seed-categories": "node scripts/seedCategories.js"
   },
   "keywords": [
     "shayari",
