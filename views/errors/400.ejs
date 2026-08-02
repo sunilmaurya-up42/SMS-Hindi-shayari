@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <%- include("../partials/head") %>
+
+    <title>400 - Bad Request</title>
+
+</head>
+
+<body>
+
+    <%- include("../partials/navbar") %>
+
+    <section class="py-5">
+
+        <div class="container">
+
+            <div class="row justify-content-center">
+
+                <div class="col-lg-8 text-center">
+
+                    <img
+                        src="/images/errors/400.svg"
+                        alt="400 Error"
+                        class="img-fluid mb-4"
+                        style="max-height:300px;">
+
+                    <h1 class="display-3 fw-bold text-warning">
+
+                        400
+
+                    </h1>
+
+                    <h2 class="mb-3">
+
+                        Bad Request
+
+                    </h2>
+
+                    <p class="lead text-muted">
+
+                        The request could not be processed because it is invalid
+                        or contains incorrect information.
+
+                    </p>
+
+                    <div class="mt-4">
+
+                        <a
+                            href="/"
+                            class="btn btn-primary me-2">
+
+                            <i class="fa-solid fa-house"></i>
+
+                            Go Home
+
+                        </a>
+
+                        <button
+                            onclick="history.back()"
+                            class="btn btn-outline-secondary">
+
+                            <i class="fa-solid fa-arrow-left"></i>
+
+                            Go Back
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <%- include("../partials/footer") %>
+
+</body>
+
+</html>
