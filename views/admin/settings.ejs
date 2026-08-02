@@ -1,0 +1,466 @@
+
+<section class="py-4">
+
+    <div class="container-fluid">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+            <div>
+
+                <h2 class="fw-bold">
+
+                    Website Settings
+
+                </h2>
+
+                <p class="text-muted mb-0">
+
+                    Configure website settings and integrations.
+
+                </p>
+
+            </div>
+
+        </div>
+
+        <% if(success_msg){ %>
+
+            <div class="alert alert-success">
+
+                <%= success_msg %>
+
+            </div>
+
+        <% } %>
+
+        <% if(error_msg){ %>
+
+            <div class="alert alert-danger">
+
+                <%= error_msg %>
+
+            </div>
+
+        <% } %>
+
+        <form
+            action="/admin/settings"
+            method="POST"
+            enctype="multipart/form-data">
+
+            <input
+                type="hidden"
+                name="_csrf"
+                value="<%= csrfToken %>">
+
+            <!-- General -->
+
+            <div class="card shadow-sm mb-4">
+
+                <div class="card-header">
+
+                    General Settings
+
+                </div>
+
+                <div class="card-body">
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+
+                                Website Name
+
+                            </label>
+
+                            <input
+                                type="text"
+                                name="siteName"
+                                class="form-control"
+                                value="<%= settings.siteName || '' %>">
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+
+                                Website URL
+
+                            </label>
+
+                            <input
+                                type="url"
+                                name="siteUrl"
+                                class="form-control"
+                                value="<%= settings.siteUrl || '' %>">
+
+                        </div>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+
+                            Website Description
+
+                        </label>
+
+                        <textarea
+                            name="siteDescription"
+                            rows="3"
+                            class="form-control"><%= settings.siteDescription || '' %></textarea>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Logo -->
+
+            <div class="card shadow-sm mb-4">
+
+                <div class="card-header">
+
+                    Branding
+
+                </div>
+
+                <div class="card-body">
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+
+                                Logo
+
+                            </label>
+
+                            <input
+                                type="file"
+                                name="logo"
+                                class="form-control"
+                                accept="image/*">
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+
+                                Favicon
+
+                            </label>
+
+                            <input
+                                type="file"
+                                name="favicon"
+                                class="form-control"
+                                accept=".ico,.png">
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- SEO -->
+
+            <div class="card shadow-sm mb-4">
+
+                <div class="card-header">
+
+                    SEO Settings
+
+                </div>
+
+                <div class="card-body">
+
+                    <div class="mb-3">
+
+                        <label>Meta Title</label>
+
+                        <input
+                            type="text"
+                            name="metaTitle"
+                            class="form-control"
+                            value="<%= settings.metaTitle || '' %>">
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label>Meta Description</label>
+
+                        <textarea
+                            name="metaDescription"
+                            rows="3"
+                            class="form-control"><%= settings.metaDescription || '' %></textarea>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label>Meta Keywords</label>
+
+                        <input
+                            type="text"
+                            name="metaKeywords"
+                            class="form-control"
+                            value="<%= settings.metaKeywords || '' %>">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Social -->
+
+            <div class="card shadow-sm mb-4">
+
+                <div class="card-header">
+
+                    Social Media
+
+                </div>
+
+                <div class="card-body">
+
+                    <input
+                        type="url"
+                        name="facebook"
+                        class="form-control mb-3"
+                        placeholder="Facebook URL"
+                        value="<%= settings.facebook || '' %>">
+
+                    <input
+                        type="url"
+                        name="instagram"
+                        class="form-control mb-3"
+                        placeholder="Instagram URL"
+                        value="<%= settings.instagram || '' %>">
+
+                    <input
+                        type="url"
+                        name="youtube"
+                        class="form-control"
+                        placeholder="YouTube URL"
+                        value="<%= settings.youtube || '' %>">
+
+                </div>
+
+            </div>
+
+            <!-- Integrations -->
+
+            <div class="card shadow-sm mb-4">
+
+                <div class="card-header">
+
+                    Integrations
+
+                </div>
+
+                <div class="card-body">
+
+                    <div class="mb-3">
+
+                        <label>Google Analytics ID</label>
+
+                        <input
+                            type="text"
+                            name="googleAnalytics"
+                            class="form-control"
+                            value="<%= settings.googleAnalytics || '' %>">
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label>Google Tag Manager ID</label>
+
+                        <input
+                            type="text"
+                            name="googleTagManager"
+                            class="form-control"
+                            value="<%= settings.googleTagManager || '' %>">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- SMTP -->
+
+            <div class="card shadow-sm mb-4">
+
+                <div class="card-header">
+
+                    SMTP Email
+
+                </div>
+
+                <div class="card-body">
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+
+                            <input
+                                type="text"
+                                name="smtpHost"
+                                class="form-control"
+                                placeholder="SMTP Host"
+                                value="<%= settings.smtpHost || '' %>">
+
+                        </div>
+
+                        <div class="col-md-3 mb-3">
+
+                            <input
+                                type="number"
+                                name="smtpPort"
+                                class="form-control"
+                                placeholder="Port"
+                                value="<%= settings.smtpPort || '' %>">
+
+                        </div>
+
+                        <div class="col-md-3 mb-3">
+
+                            <input
+                                type="text"
+                                name="smtpUser"
+                                class="form-control"
+                                placeholder="Username"
+                                value="<%= settings.smtpUser || '' %>">
+
+                        </div>
+
+                    </div>
+
+                    <input
+                        type="password"
+                        name="smtpPass"
+                        class="form-control"
+                        placeholder="SMTP Password">
+
+                </div>
+
+            </div>
+
+            <!-- Other -->
+
+            <div class="card shadow-sm mb-4">
+
+                <div class="card-header">
+
+                    Other Settings
+
+                </div>
+
+                <div class="card-body">
+
+                    <div class="form-check form-switch mb-3">
+
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            name="maintenanceMode"
+                            <%= settings.maintenanceMode ? "checked" : "" %>>
+
+                        <label class="form-check-label">
+
+                            Maintenance Mode
+
+                        </label>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label>Google reCAPTCHA Site Key</label>
+
+                        <input
+                            type="text"
+                            name="recaptchaSiteKey"
+                            class="form-control"
+                            value="<%= settings.recaptchaSiteKey || '' %>">
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label>Google reCAPTCHA Secret Key</label>
+
+                        <input
+                            type="password"
+                            name="recaptchaSecretKey"
+                            class="form-control"
+                            value="<%= settings.recaptchaSecretKey || '' %>">
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label>ads.txt</label>
+
+                        <textarea
+                            name="adsTxt"
+                            rows="4"
+                            class="form-control"><%= settings.adsTxt || '' %></textarea>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label>robots.txt</label>
+
+                        <textarea
+                            name="robotsTxt"
+                            rows="5"
+                            class="form-control"><%= settings.robotsTxt || '' %></textarea>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="d-flex gap-2">
+
+                <button
+                    type="submit"
+                    class="btn btn-primary">
+
+                    <i class="fa-solid fa-floppy-disk"></i>
+
+                    Save Settings
+
+                </button>
+
+                <button
+                    type="reset"
+                    class="btn btn-secondary">
+
+                    Reset
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</section>
