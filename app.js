@@ -25,6 +25,19 @@ const MongoStore = require("connect-mongo");
 const flash = require("connect-flash");
 const passport = require("passport");
 const csrf = require("csurf");
+const indexRoutes = require("./routes");
+const authRoutes = require("./routes/auth");
+const shayariRoutes = require("./routes/shayari");
+const adminRoutes = require("./routes/admin");
+const apiRoutes = require("./routes/api");
+const pageRoutes = require("./routes/page");
+const searchRoutes = require("./routes/search");
+const rssRoutes = require("./routes/rss");
+const sitemapRoutes = require("./routes/sitemap");
+const healthRoutes = require("./routes/health");
+const reportRoutes = require("./routes/report");
+const settingsRoutes = require("./routes/settings");
+const contactAdminRoutes = require("./routes/contactAdmin");
 
 require("./config/passport");
 
@@ -52,7 +65,7 @@ app.set("layout", "layouts/main");
 
 app.use(express.static(path.join(__dirname, "public")));
 
-/* ===========================
+/* ==========================
    Body Parser
 =========================== */
 
@@ -146,18 +159,28 @@ app.use((req, res, next) => {
 });
 
 /* ===========================
+   Maintenance Mode
+=========================== */
+
+app.use(maintenance);
+
+/* ===========================
    Routes
 =========================== */
 
-app.get("/", (req, res) => {
-
-    res.render("home", {
-
-        title: "SMS Hindi Shayari"
-
-    });
-
-});
+app.use("/", indexRoutes);
+app.use("/auth", authRoutes);
+app.use("/shayari", shayariRoutes);
+app.use("/admin", adminRoutes);
+app.use("/api", apiRoutes);
+app.use("/", pageRoutes);
+app.use("/search", searchRoutes);
+app.use("/", rssRoutes);
+app.use("/", sitemapRoutes);
+app.use("/", healthRoutes);
+app.use("/reports", reportRoutes);
+app.use("/settings", settingsRoutes);
+app.use("/contact-admin", contactAdminRoutes);
 
 /* ===========================
    404
@@ -191,6 +214,6 @@ app.use((err, req, res, next) => {
 
 app.use(notFound);
 app.use(errorHandler);
-app.use(maintenance);
+
 
 module.exports = app;
