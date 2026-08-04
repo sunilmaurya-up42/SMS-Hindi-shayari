@@ -73,15 +73,16 @@ const adsSchema = new mongoose.Schema(
     },
 
     device: {
-      type: String,
-      enum: [
-        "all",
-        "mobile",
-        "tablet",
-        "desktop"
-      ],
-      default: "all"
-    },
+  type: String,
+  enum: [
+    "all",
+    "mobile",
+    "tablet",
+    "desktop"
+  ],
+  default: "all",
+  index: true
+},
 
     startDate: {
       type: Date,
