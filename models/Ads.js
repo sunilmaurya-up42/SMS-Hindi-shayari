@@ -100,9 +100,10 @@ const adsSchema = new mongoose.Schema(
   min: 0
 },
     clicks: {
-      type: Number,
-      default: 0
-    },
+  type: Number,
+  default: 0,
+  min: 0
+},
 
     isActive: {
       type: Boolean,
