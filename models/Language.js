@@ -57,14 +57,16 @@ const languageSchema = new mongoose.Schema(
 },
 
     totalCategories: {
-      type: Number,
-      default: 0
-    },
+  type: Number,
+  default: 0,
+  min: 0
+},
 
     isDefault: {
-      type: Boolean,
-      default: false
-    },
+  type: Boolean,
+  default: false,
+  index: true
+},
 
     isActive: {
       type: Boolean,
