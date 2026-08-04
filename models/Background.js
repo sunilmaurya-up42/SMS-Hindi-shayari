@@ -79,8 +79,9 @@ const backgroundSchema = new mongoose.Schema(
     },
 
     lastUsedAt: {
-      type: Date
-    },
+  type: Date,
+  default: null
+},
 
     tags: {
       type: [String],
@@ -93,9 +94,10 @@ const backgroundSchema = new mongoose.Schema(
     },
 
     isActive: {
-      type: Boolean,
-      default: true
-    },
+  type: Boolean,
+  default: true,
+  index: true
+},
 
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
