@@ -95,10 +95,10 @@ const adsSchema = new mongoose.Schema(
     },
 
     impressions: {
-      type: Number,
-      default: 0
-    },
-
+  type: Number,
+  default: 0,
+  min: 0
+},
     clicks: {
       type: Number,
       default: 0
