@@ -62,9 +62,10 @@ const commentSchema = new mongoose.Schema(
 },
 
     userAgent: {
-      type: String,
-      default: ""
-    },
+  type: String,
+  default: "",
+  trim: true
+},
 
     likes: {
       type: Number,
