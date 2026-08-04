@@ -4,7 +4,7 @@ const router = express.Router();
 const authController = require("../controllers/auth/authController");
 
 const auth = require("../middleware/auth");
-const rateLimiter = require("../middleware/rateLimiter");
+const { loginLimiter } = require("../middleware/rateLimiter");
 
 /**
  * Public Routes
@@ -13,7 +13,7 @@ const rateLimiter = require("../middleware/rateLimiter");
 // Admin Login
 router.post(
     "/login",
-    rateLimiter,
+    loginLimiter,
     authController.login
 );
 
