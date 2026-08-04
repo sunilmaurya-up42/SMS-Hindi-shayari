@@ -115,3 +115,43 @@ exports.logout = async (req,res)=>{
     });
 
 };
+
+/**
+ * Forgot Password
+ */
+exports.forgotPassword = async (req, res) => {
+  return res.status(501).json({
+    success: false,
+    message: "Forgot password feature is not implemented yet."
+  });
+};
+
+/**
+ * Reset Password
+ */
+exports.resetPassword = async (req, res) => {
+  return res.status(501).json({
+    success: false,
+    message: "Reset password feature is not implemented yet."
+  });
+};
+
+/**
+ * Refresh Token
+ */
+exports.refreshToken = async (req, res) => {
+  return res.status(501).json({
+    success: false,
+    message: "Refresh token feature is not implemented yet."
+  });
+};
+
+/**
+ * Change Password
+ */
+exports.changePassword = async (req, res) => {
+  return res.status(501).json({
+    success: false,
+    message: "Change password feature is not implemented yet."
+  });
+};
