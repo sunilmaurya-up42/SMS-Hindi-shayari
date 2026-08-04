@@ -62,9 +62,10 @@ const backgroundSchema = new mongoose.Schema(
     },
 
     dominantColor: {
-      type: String,
-      default: "#ffffff"
-    },
+  type: String,
+  default: "#ffffff",
+  trim: true
+},
 
     hash: {
       type: String,
