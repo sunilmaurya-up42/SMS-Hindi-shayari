@@ -32,9 +32,10 @@ const analyticsSchema = new mongoose.Schema(
     },
 
     pageViews: {
-      type: Number,
-      default: 0
-    },
+  type: Number,
+  default: 0,
+  min: 0
+},
 
     shayariViews: {
       type: Number,
