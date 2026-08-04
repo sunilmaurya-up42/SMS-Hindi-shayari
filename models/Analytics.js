@@ -22,10 +22,10 @@ const analyticsSchema = new mongoose.Schema(
     },
 
     visitors: {
-      type: Number,
-      default: 0
-    },
-
+  type: Number,
+  default: 0,
+  min: 0
+},
     uniqueVisitors: {
       type: Number,
       default: 0
