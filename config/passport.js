@@ -20,8 +20,8 @@ passport.use(
             try {
 
                 const admin = await Admin.findOne({
-                    email: email.toLowerCase()
-                });
+                    email: email.toLowerCase(),
+                    }).select("+password");
 
                 if (!admin) {
                     return done(null, false, {
