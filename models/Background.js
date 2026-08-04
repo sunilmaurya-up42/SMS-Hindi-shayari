@@ -50,9 +50,10 @@ const backgroundSchema = new mongoose.Schema(
     },
 
     mimeType: {
-      type: String,
-      default: "image/jpeg"
-    },
+  type: String,
+  default: "image/jpeg",
+  trim: true
+},
 
     orientation: {
       type: String,
