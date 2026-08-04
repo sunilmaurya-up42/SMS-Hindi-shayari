@@ -6,14 +6,7 @@ const authController = require("../controllers/auth/authController");
 const auth = require("../middleware/auth");
 const { loginLimiter } = require("../middleware/rateLimiter");
 
-/**
- * Public Routes
- */
-const {
-    loginLimiter,
-    apiLimiter
-} = require("../middleware/rateLimiter");
-// Admin Login
+// login 
 router.post(
     "/login",
     loginLimiter,
