@@ -27,9 +27,10 @@ const languageSchema = new mongoose.Schema(
     },
 
     flag: {
-      type: String,
-      default: ""
-    },
+  type: String,
+  default: "",
+  trim: true
+},
 
     direction: {
       type: String,
@@ -38,19 +39,22 @@ const languageSchema = new mongoose.Schema(
     },
 
     fontFamily: {
-      type: String,
-      default: "Noto Sans"
-    },
+  type: String,
+  default: "Noto Sans",
+  trim: true
+},
 
     sortOrder: {
-      type: Number,
-      default: 0
-    },
+  type: Number,
+  default: 0,
+  min: 0
+},
 
     totalShayari: {
-      type: Number,
-      default: 0
-    },
+  type: Number,
+  default: 0,
+  min: 0
+},
 
     totalCategories: {
       type: Number,
