@@ -43,9 +43,10 @@ const adsSchema = new mongoose.Schema(
 },
 
     adClient: {
-      type: String,
-      default: ""
-    },
+  type: String,
+  default: "",
+  trim: true
+},
 
     code: {
       type: String,
