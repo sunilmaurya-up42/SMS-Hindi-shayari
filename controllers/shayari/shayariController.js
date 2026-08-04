@@ -1,10 +1,7 @@
-const Shayari = require("../../models/Shayari");
 const Category = require("../../models/Category");
 const Background = require("../../models/Background");
 const Comment = require("../../models/Comment");
 const Shayari = require("../../models/Shayari");
-const Background = require("../../models/Background");
-
 const imageService = require("../../services/image/imageService");
 const githubService = require("../../services/github/githubService");
 const sitemapService = require("../../services/seo/sitemapService");
