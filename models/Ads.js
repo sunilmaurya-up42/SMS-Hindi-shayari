@@ -38,9 +38,9 @@ const adsSchema = new mongoose.Schema(
     },
 
     adSlot: {
-      type: String,
-      default: ""
-    },
+  type: String,
+  default: ""
+},
 
     adClient: {
       type: String,
