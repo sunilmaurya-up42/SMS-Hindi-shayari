@@ -29,9 +29,10 @@ const backgroundSchema = new mongoose.Schema(
     },
 
     sha: {
-      type: String,
-      default: ""
-    },
+  type: String,
+  default: "",
+  trim: true
+},
 
     width: {
       type: Number,
