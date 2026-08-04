@@ -55,8 +55,9 @@ const adminSchema = new mongoose.Schema(
     },
 
     passwordChangedAt: {
-      type: Date,
-    },
+    type: Date,
+    default: null
+   },
   },
   {
     timestamps: true,
