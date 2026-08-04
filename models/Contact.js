@@ -87,14 +87,16 @@ const contactSchema = new mongoose.Schema(
 },
 
     userAgent: {
-      type: String,
-      default: ""
-    },
+  type: String,
+  default: "",
+  trim: true
+},
 
     isRead: {
-      type: Boolean,
-      default: false
-    }
+  type: Boolean,
+  default: false,
+  index: true
+}
   },
   {
     timestamps: true,
