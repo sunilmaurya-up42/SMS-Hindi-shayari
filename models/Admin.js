@@ -28,8 +28,9 @@ const adminSchema = new mongoose.Schema(
     },
 
     avatar: {
-      type: String,
-      default: "",
+    type: String,
+    default: "",
+    trim: true
     },
 
     role: {
