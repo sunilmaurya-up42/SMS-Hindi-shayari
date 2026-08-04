@@ -45,7 +45,8 @@ const adminSchema = new mongoose.Schema(
     },
 
     lastLogin: {
-      type: Date,
+    type: Date,
+    default: null
     },
 
     loginCount: {
