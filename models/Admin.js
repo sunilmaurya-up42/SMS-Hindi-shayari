@@ -40,8 +40,9 @@ const adminSchema = new mongoose.Schema(
     },
 
     isActive: {
-      type: Boolean,
-      default: true,
+    type: Boolean,
+    default: true,
+    index: true
     },
 
     lastLogin: {
