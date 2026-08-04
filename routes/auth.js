@@ -20,20 +20,21 @@ router.post(
 // Forgot Password
 router.post(
     "/forgot-password",
-    rateLimiter,
+    loginLimiter,
     authController.forgotPassword
 );
 
 // Reset Password
 router.post(
     "/reset-password",
-    rateLimiter,
+    loginLimiter,
     authController.resetPassword
 );
 
 // Refresh Token
 router.post(
     "/refresh-token",
+    apiLimiter,
     authController.refreshToken
 );
 
