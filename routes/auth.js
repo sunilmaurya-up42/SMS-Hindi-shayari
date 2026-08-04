@@ -9,7 +9,10 @@ const { loginLimiter } = require("../middleware/rateLimiter");
 /**
  * Public Routes
  */
-
+const {
+    loginLimiter,
+    apiLimiter
+} = require("../middleware/rateLimiter");
 // Admin Login
 router.post(
     "/login",
