@@ -56,9 +56,10 @@ const commentSchema = new mongoose.Schema(
     },
 
     ipAddress: {
-      type: String,
-      default: ""
-    },
+  type: String,
+  default: "",
+  trim: true
+},
 
     userAgent: {
       type: String,
