@@ -37,19 +37,22 @@ const downloadSchema = new mongoose.Schema(
     },
 
     fileName: {
-      type: String,
-      default: ""
-    },
+  type: String,
+  default: "",
+  trim: true
+},
 
     fileSize: {
-      type: Number,
-      default: 0
-    },
+  type: Number,
+  default: 0,
+  min: 0
+},
 
     ipAddress: {
-      type: String,
-      default: ""
-    },
+  type: String,
+  default: "",
+  trim: true
+},
 
     country: {
       type: String,
