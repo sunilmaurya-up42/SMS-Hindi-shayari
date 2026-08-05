@@ -1108,3 +1108,4 @@ exports.redirect = async (req, res) => {
     res.redirect(`/shayari/${shayari.slug}`);
 
 };
+
