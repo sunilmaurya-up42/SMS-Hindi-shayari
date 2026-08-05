@@ -254,3 +254,57 @@ exports.analytics = async (req, res) => {
     });
 
 };
+exports.updateReply = async (req, res) => {
+    try {
+        const comment = await Comment.findById(req.params.id);
+
+        if (!comment) {
+            return res.status(404).json({
+                success: false,
+                message: "Comment not found."
+            });
+        }
+
+        comment.adminReply = req.body.reply;
+        comment.repliedAt = new Date();
+
+        await comment.save();
+
+        res.json({
+            success: true,
+            message: "Reply updated successfully.",
+            data: comment
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
+};
+
+exports.report = async (req, res) => {
+    res.json({
+        success: true,
+        message: "Comment reported successfully."
+    });
+};
+
+exports.like = async (req, res) => {
+    const comment = await Comment.findById(req.params.id);
+
+    if (!comment) {
+        return res.status(404).json({
+            success: false,
+            message: "Comment not found."
+        });
+    }
+
+    comment.likes = (comment.likes || 0) + 1;
+    await comment.save();
+
+    res.json({
+        success: true,
+        likes: comment.likes
+    });
+};
