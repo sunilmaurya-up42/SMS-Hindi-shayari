@@ -807,3 +807,304 @@ exports.suggestions = async (req, res) => {
     });
 
 };
+
+/**
+ * Restore Deleted Shayari
+ */
+exports.restore = async (req, res) => {
+    try {
+        const shayari = await Shayari.findById(req.params.id);
+
+        if (!shayari) {
+            return res.status(404).json({
+                success: false,
+                message: "Shayari not found."
+            });
+        }
+
+        shayari.published = true;
+        await shayari.save();
+
+        res.json({
+            success: true,
+            message: "Shayari restored successfully."
+        });
+
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
+
+/**
+ * Force Delete
+ */
+exports.forceDelete = async (req, res) => {
+    try {
+
+        await Shayari.findByIdAndDelete(req.params.id);
+
+        res.json({
+            success: true,
+            message: "Shayari permanently deleted."
+        });
+
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+};
+
+/**
+ * Toggle Featured
+ */
+exports.toggleFeatured = async (req, res) => {
+
+    try {
+
+        const shayari = await Shayari.findById(req.params.id);
+
+        if (!shayari)
+            return res.status(404).json({ success: false });
+
+        shayari.featured = !shayari.featured;
+
+        await shayari.save();
+
+        res.json({
+            success: true,
+            featured: shayari.featured
+        });
+
+    } catch (err) {
+
+        res.status(500).json({ success: false });
+
+    }
+
+};
+
+/**
+ * Toggle Trending
+ */
+exports.toggleTrending = async (req, res) => {
+
+    try {
+
+        const shayari = await Shayari.findById(req.params.id);
+
+        if (!shayari)
+            return res.status(404).json({ success: false });
+
+        shayari.trending = !shayari.trending;
+
+        await shayari.save();
+
+        res.json({
+            success: true,
+            trending: shayari.trending
+        });
+
+    } catch (err) {
+
+        res.status(500).json({ success: false });
+
+    }
+
+};
+
+/**
+ * Publish / Unpublish
+ */
+exports.togglePublish = async (req, res) => {
+
+    try {
+
+        const shayari = await Shayari.findById(req.params.id);
+
+        if (!shayari)
+            return res.status(404).json({ success: false });
+
+        shayari.published = !shayari.published;
+
+        await shayari.save();
+
+        res.json({
+            success: true,
+            published: shayari.published
+        });
+
+    } catch (err) {
+
+        res.status(500).json({ success: false });
+
+    }
+
+};
+
+/**
+ * Search
+ */
+exports.search = exports.getAll;
+
+/**
+ * Category Wise
+ */
+exports.categoryWise = async (req, res) => {
+
+    const data = await Shayari.find({
+        published: true
+    }).populate("category");
+
+    res.json({
+        success: true,
+        data
+    });
+
+};
+
+/**
+ * Language Wise
+ */
+exports.languageWise = async (req, res) => {
+
+    const data = await Shayari.find({
+        language: req.params.language,
+        published: true
+    });
+
+    res.json({
+        success: true,
+        data
+    });
+
+};
+
+/**
+ * Tag Wise
+ */
+exports.tagWise = async (req, res) => {
+
+    const data = await Shayari.find({
+        tags: req.params.tag,
+        published: true
+    });
+
+    res.json({
+        success: true,
+        data
+    });
+
+};
+
+/**
+ * Archive
+ */
+exports.archive = async (req, res) => {
+
+    const year = Number(req.params.year);
+    const month = Number(req.params.month);
+
+    const start = new Date(year, month - 1, 1);
+    const end = new Date(year, month, 1);
+
+    const data = await Shayari.find({
+        createdAt: {
+            $gte: start,
+            $lt: end
+        }
+    });
+
+    res.json({
+        success: true,
+        data
+    });
+
+};
+
+/**
+ * Most Viewed
+ */
+exports.mostViewed = async (req, res) => {
+
+    const data = await Shayari.find({ published: true })
+        .sort({ views: -1 })
+        .limit(20);
+
+    res.json({ success: true, data });
+
+};
+
+/**
+ * Most Downloaded
+ */
+exports.mostDownloaded = async (req, res) => {
+
+    const data = await Shayari.find({ published: true })
+        .sort({ downloads: -1 })
+        .limit(20);
+
+    res.json({ success: true, data });
+
+};
+
+/**
+ * Most Shared
+ */
+exports.mostShared = async (req, res) => {
+
+    const data = await Shayari.find({ published: true })
+        .sort({ shares: -1 })
+        .limit(20);
+
+    res.json({ success: true, data });
+
+};
+
+/**
+ * Most Copied
+ */
+exports.mostCopied = async (req, res) => {
+
+    const data = await Shayari.find({ published: true })
+        .sort({ copies: -1 })
+        .limit(20);
+
+    res.json({ success: true, data });
+
+};
+
+/**
+ * Validate Slug
+ */
+exports.validateSlug = async (req, res) => {
+
+    const exists = await Shayari.exists({
+        slug: req.params.slug
+    });
+
+    res.json({
+        success: true,
+        available: !exists
+    });
+
+};
+
+/**
+ * Redirect
+ */
+exports.redirect = async (req, res) => {
+
+    const shayari = await Shayari.findOne({
+        slug: req.params.slug
+    });
+
+    if (!shayari) {
+
+        return res.status(404).json({
+            success: false
+        });
+
+    }
+
+    res.redirect(`/shayari/${shayari.slug}`);
+
+};
