@@ -9,7 +9,7 @@ router.use("/comment", require("./comment"));
 router.use("/background", require("./background"));
 router.use("/analytics", require("./analytics"));
 router.use("/contact", require("./contact"));
-router.use("/setting", require("./setting"));
+router.use("/settings", require("./settings"));
 router.use("/seo", require("./seo"));
 
 router.get("/", (req, res) => {
