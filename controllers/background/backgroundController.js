@@ -253,3 +253,65 @@ exports.analytics = async (req, res) => {
     });
 
 };
+exports.preview = async (req, res) => {
+    try {
+        const background = await Background.findById(req.params.id);
+
+        if (!background) {
+            return res.status(404).json({
+                success: false,
+                message: "Background not found."
+            });
+        }
+
+        res.json({
+            success: true,
+            data: background
+        });
+    } catch (err) {
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
+};
+
+exports.categories = async (req, res) => {
+    try {
+        const categories = await Background.distinct("category");
+
+        res.json({
+            success: true,
+            data: categories
+        });
+    } catch (err) {
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
+};
+
+exports.githubUpload = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({
+                success: false,
+                message: "Background image is required."
+            });
+        }
+
+        const github = await githubService.uploadBackground(req.file);
+
+        res.json({
+            success: true,
+            url: github.url,
+            path: github.path
+        });
+    } catch (err) {
+        res.status(500).json({
+            success: false,
+            message: "GitHub upload failed."
+        });
+    }
+};
