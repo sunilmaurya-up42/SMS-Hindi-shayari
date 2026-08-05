@@ -7,17 +7,13 @@
  */
 
 require("dotenv").config();
-
 const http = require("http");
 const app = require("./app");
 const connectDB = require("./config/db");
 
 console.log("Step 1");
-require("dotenv").config();
 console.log("Step 2");
-const app = require("./app");
 console.log("Step 3");
-const connectDB = require("./config/db");
 console.log("Step 4");
 
 const PORT = process.env.PORT || 3000;
