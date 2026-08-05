@@ -1109,3 +1109,37 @@ exports.redirect = async (req, res) => {
 
 };
 
+exports.shayari = async (req, res) => {
+    res.status(501).json({
+        success: false,
+        message: "Not implemented yet."
+    });
+};
+
+exports.toggle = async (req, res) => {
+    res.status(501).json({
+        success: false,
+        message: "Not implemented yet."
+    });
+};
+
+exports.featured = async (req, res) => {
+    res.status(501).json({
+        success: false,
+        message: "Not implemented yet."
+    });
+};
+
+exports.analytics = async (req, res) => {
+    res.status(501).json({
+        success: false,
+        message: "Not implemented yet."
+    });
+};
+
+exports.seo = async (req, res) => {
+    res.status(501).json({
+        success: false,
+        message: "Not implemented yet."
+    });
+};
