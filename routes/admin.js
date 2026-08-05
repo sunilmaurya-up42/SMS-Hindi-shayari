@@ -6,7 +6,7 @@ const admin = require("../middleware/admin");
 
 const dashboardController = require("../controllers/admin/dashboardController");
 const analyticsController = require("../controllers/analytics/analyticsController");
-const settingController = require("../controllers/setting/settingController");
+const settingsController = require("../controllers/settings/settingsController");
 
 /*
 |--------------------------------------------------------------------------
