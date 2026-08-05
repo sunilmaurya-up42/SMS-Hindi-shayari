@@ -17,23 +17,20 @@ const PORT = process.env.PORT || 3000;
 /**
  * Connect MongoDB
  */
-connectDB();
+const startServer = async () => {
+    try {
+        await connectDB();
 
-/**
- * Create HTTP Server
- */
-const server = http.createServer(app);
+        server.listen(PORT, () => {
+            console.log(`Server running on ${PORT}`);
+        });
+    } catch (err) {
+        console.error(err);
+        process.exit(1);
+    }
+};
 
-/**
- * Start Server
- */
-server.listen(PORT, () => {
-  console.log("===========================================");
-  console.log("🚀 SMS Hindi Shayari Server Started");
-  console.log(`🌍 Environment : ${process.env.NODE_ENV || "development"}`);
-  console.log(`📡 Port        : ${PORT}`);
-  console.log("===========================================");
-});
+startServer();
 
 /**
  * Handle Promise Rejections
