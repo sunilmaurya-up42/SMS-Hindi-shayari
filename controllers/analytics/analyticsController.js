@@ -261,3 +261,69 @@ exports.graph = async (req, res) => {
     });
 
 };
+
+exports.yearlyVisitors = async (req, res) => {
+    const data = await Visitor.aggregate([
+        {
+            $group: {
+                _id: { $dateToString: { format: "%Y", date: "$createdAt" } },
+                visitors: { $sum: 1 }
+            }
+        },
+        { $sort: { _id: 1 } }
+    ]);
+
+    res.json({ success: true, data });
+};
+
+exports.liveVisitors = async (req, res) => {
+    const total = await Visitor.countDocuments({
+        createdAt: {
+            $gte: new Date(Date.now() - 5 * 60 * 1000)
+        }
+    });
+
+    res.json({
+        success: true,
+        liveVisitors: total
+    });
+};
+
+exports.shareReport = async (req, res) => {
+    const total = await Shayari.aggregate([
+        {
+            $group: {
+                _id: null,
+                shares: { $sum: "$shares" }
+            }
+        }
+    ]);
+
+    res.json({
+        success: true,
+        total: total[0]?.shares || 0
+    });
+};
+
+exports.copyReport = async (req, res) => {
+    const total = await Shayari.aggregate([
+        {
+            $group: {
+                _id: null,
+                copies: { $sum: "$copies" }
+            }
+        }
+    ]);
+
+    res.json({
+        success: true,
+        total: total[0]?.copies || 0
+    });
+};
+
+exports.searchKeywords = async (req, res) => {
+    res.json({
+        success: true,
+        data: []
+    });
+};
