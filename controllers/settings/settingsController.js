@@ -233,3 +233,4 @@ exports.clearCache = async (req, res, next) => {
     }
 
 };
+console.log(Object.keys(module.exports));
