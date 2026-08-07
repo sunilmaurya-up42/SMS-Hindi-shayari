@@ -13,11 +13,8 @@ router.use("/settings", require("./settings"));
 router.use("/seo", require("./seo"));
 
 router.get("/", (req, res) => {
-    res.json({
-        success: true,
-        name: "SMS Hindi Shayari API",
-        version: "1.0.0",
-        status: "Running"
+    res.render("index", {
+        title: "SMS Hindi Shayari"
     });
 });
 
