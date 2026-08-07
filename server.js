@@ -8,7 +8,18 @@
 
 require("dotenv").config();
 const http = require("http");
-const app = require("./app");
+
+let app;
+
+try {
+    app = require("./app");
+    console.log("✅ app.js loaded");
+} catch (err) {
+    console.error("❌ Error loading app.js");
+    console.error(err);
+    process.exit(1);
+}
+
 const connectDB = require("./config/db");
 
 console.log("Step 1");
