@@ -103,7 +103,14 @@ app.use(
     })
 );
 
-app.use(mongoSanitize());
+app.use(
+    mongoSanitize({
+        replaceWith: "_",
+        onSanitize: ({ key }) => {
+            console.warn(`Sanitized key: ${key}`);
+        }
+    })
+);
 
 app.use(hpp());
 
