@@ -37,6 +37,7 @@ const healthRoutes = require("./routes/health");
 const reportRoutes = require("./routes/report");
 const settingsRoutes = require("./routes/settings");
 const contactAdminRoutes = require("./routes/contactAdmin");
+const mongoSanitize = require("./middleware/mongoSanitize");
 
 require("./config/passport");
 
@@ -101,7 +102,7 @@ app.use(
         contentSecurityPolicy: false
     })
 );
-
+app.use(mongoSanitize);
 app.use(hpp());
 
 app.use(cors());
