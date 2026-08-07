@@ -14,7 +14,6 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const expressLayouts = require("express-ejs-layouts");
 const rateLimit = require("express-rate-limit");
-const mongoSanitize = require("express-mongo-sanitize");
 const hpp = require("hpp");
 const methodOverride = require("method-override");
 const notFound = require("./middleware/notFound");
@@ -100,15 +99,6 @@ app.use(csrf({ cookie: true }));
 app.use(
     helmet({
         contentSecurityPolicy: false
-    })
-);
-
-app.use(
-    mongoSanitize({
-        replaceWith: "_",
-        onSanitize: ({ key }) => {
-            console.warn(`Sanitized key: ${key}`);
-        }
     })
 );
 
