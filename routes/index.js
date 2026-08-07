@@ -13,7 +13,7 @@ router.use("/settings", require("./settings"));
 router.use("/seo", require("./seo"));
 
 router.get("/", (req, res) => {
-    res.render("index", {
+    res.render("home/index", {
         title: "SMS Hindi Shayari"
     });
 });
