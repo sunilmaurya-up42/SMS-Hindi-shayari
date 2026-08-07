@@ -233,4 +233,112 @@ exports.clearCache = async (req, res, next) => {
     }
 
 };
+exports.updateAdsense = async (req, res, next) => {
+    try {
+        let settings = await Setting.findOne();
+        if (!settings) settings = await Setting.create({});
+
+        settings.adsense = {
+            enabled: req.body.enabled === "true",
+            clientId: req.body.clientId
+        };
+
+        await settings.save();
+
+        req.flash("success_msg", "Adsense settings updated.");
+        res.redirect("/admin/settings");
+    } catch (err) {
+        logger.error(err);
+        next(err);
+    }
+};
+
+exports.updateGithub = async (req, res, next) => {
+    try {
+        let settings = await Setting.findOne();
+        if (!settings) settings = await Setting.create({});
+
+        settings.github = {
+            username: req.body.username,
+            repository: req.body.repository,
+            branch: req.body.branch,
+            backgroundFolder: req.body.backgroundFolder
+        };
+
+        await settings.save();
+
+        req.flash("success_msg", "Github settings updated.");
+        res.redirect("/admin/settings");
+    } catch (err) {
+        logger.error(err);
+        next(err);
+    }
+};
+
+exports.updateAI = async (req, res, next) => {
+    try {
+        let settings = await Setting.findOne();
+        if (!settings) settings = await Setting.create({});
+
+        settings.aiImage = {
+            enabled: req.body.enabled === "true",
+            defaultFont: req.body.defaultFont,
+            textColor: req.body.textColor,
+            strokeColor: req.body.strokeColor,
+            shadow: req.body.shadow === "true"
+        };
+
+        await settings.save();
+
+        req.flash("success_msg", "AI settings updated.");
+        res.redirect("/admin/settings");
+    } catch (err) {
+        logger.error(err);
+        next(err);
+    }
+};
+
+exports.toggleMaintenance = async (req, res, next) => {
+    try {
+        let settings = await Setting.findOne();
+        if (!settings) settings = await Setting.create({});
+
+        settings.maintenanceMode = !settings.maintenanceMode;
+
+        await settings.save();
+
+        req.flash("success_msg", "Maintenance mode updated.");
+        res.redirect("/admin/settings");
+    } catch (err) {
+        logger.error(err);
+        next(err);
+    }
+};
+
+exports.backup = async (req, res, next) => {
+    try {
+        const settings = await Setting.findOne();
+
+        res.json({
+            success: true,
+            settings
+        });
+    } catch (err) {
+        logger.error(err);
+        next(err);
+    }
+};
+
+exports.restore = async (req, res, next) => {
+    try {
+        await Setting.deleteMany({});
+        await Setting.create(req.body);
+
+        req.flash("success_msg", "Settings restored successfully.");
+        res.redirect("/admin/settings");
+    } catch (err) {
+        logger.error(err);
+        next(err);
+    }
+};
 console.log(Object.keys(module.exports));
