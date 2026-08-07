@@ -107,49 +107,49 @@ router.get(
     "/settings",
     auth,
     admin,
-    settingController.getSettings
+    settingsController.getSettings
 );
 
 router.put(
     "/settings",
     auth,
     admin,
-    settingController.updateSettings
+    settingsController.updateSettings
 );
 
 router.put(
     "/settings/seo",
     auth,
     admin,
-    settingController.updateSeo
+    settingsController.updateSeo
 );
 
 router.put(
     "/settings/adsense",
     auth,
     admin,
-    settingController.updateAdsense
+    settingsController.updateAdsense
 );
 
 router.put(
     "/settings/github",
     auth,
     admin,
-    settingController.updateGithub
+    settingsController.updateGithub
 );
 
 router.put(
     "/settings/ai",
     auth,
     admin,
-    settingController.updateAI
+    settingsController.updateAI
 );
 
 router.put(
     "/settings/maintenance",
     auth,
     admin,
-    settingController.toggleMaintenance
+    settingsController.toggleMaintenance
 );
 
 /*
@@ -162,14 +162,14 @@ router.get(
     "/backup",
     auth,
     admin,
-    settingController.backup
+    settingsController.backup
 );
 
 router.post(
     "/restore",
     auth,
     admin,
-    settingController.restore
+    settingsController.restore
 );
 
 module.exports = router;
