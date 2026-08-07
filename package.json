@@ -76,7 +76,8 @@
     "nodemailer": "^7.0.5",
     "winston": "^3.17.0",
     "winston-daily-rotate-file": "^5.0.0",
-    "rss": "^1.2.2"
+    "rss": "^1.2.2",
+    "sitemap": "^8.0.0"
   },
   "devDependencies": {
     "eslint": "^9.34.0",
