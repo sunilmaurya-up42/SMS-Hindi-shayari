@@ -107,14 +107,13 @@ router.get(
     "/settings",
     auth,
     admin,
-    settingsController.getSettings
+    settingsController.index
 );
-
-router.put(
-    "/settings",
+router.post(
+    "/settings/general",
     auth,
     admin,
-    settingsController.updateSettings
+    settingsController.updateGeneral
 );
 
 router.put(
