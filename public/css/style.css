@@ -136,3 +136,311 @@ footer{
 }
 
 }
+/* =========================================================
+   SMS HINDI SHAYARI - RESPONSIVE HEADER
+   ========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    overflow-x: hidden;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    font-family: "Poppins", sans-serif;
+}
+
+/* Header */
+
+.site-header {
+    width: 100%;
+    position: relative;
+    z-index: 1030;
+}
+
+.site-header-inner {
+    min-height: 86px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 12px 0;
+}
+
+/* Logo */
+
+.site-logo {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    min-width: 0;
+}
+
+.site-logo-img {
+    width: 55px;
+    height: 55px;
+    object-fit: contain;
+    flex-shrink: 0;
+    margin-right: 10px;
+}
+
+.site-logo-text {
+    min-width: 0;
+}
+
+.site-title {
+    color: #111;
+    font-size: 22px;
+    line-height: 1.2;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.site-tagline {
+    color: #777;
+    font-size: 13px;
+    margin-top: 3px;
+}
+
+/* Desktop Search */
+
+.header-search {
+    flex: 1;
+    max-width: 550px;
+    min-width: 220px;
+}
+
+.header-search .form-control {
+    height: 44px;
+    border-radius: 8px 0 0 8px;
+}
+
+.header-search .btn {
+    min-width: 100px;
+}
+
+/* Header Actions */
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.theme-btn {
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Navbar */
+
+.main-navbar {
+    width: 100%;
+    z-index: 1020;
+}
+
+.main-navbar .navbar-nav {
+    gap: 4px;
+}
+
+.main-navbar .nav-link {
+    padding: 10px 14px !important;
+    border-radius: 6px;
+    white-space: nowrap;
+}
+
+.main-navbar .nav-link:hover,
+.main-navbar .nav-link.active {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.mobile-navbar-search {
+    display: none;
+}
+
+/* Main */
+
+.site-main {
+    width: 100%;
+    min-height: 60vh;
+}
+
+/* Images */
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 991.98px) {
+
+    .site-header-inner {
+        min-height: 74px;
+        gap: 12px;
+    }
+
+    .site-logo-img {
+        width: 48px;
+        height: 48px;
+    }
+
+    .site-title {
+        font-size: 19px;
+    }
+
+    .site-tagline {
+        font-size: 12px;
+    }
+
+    .header-search {
+        display: none;
+    }
+
+    .main-navbar .navbar-collapse {
+        padding: 12px 0;
+    }
+
+    .main-navbar .navbar-nav {
+        width: 100%;
+    }
+
+    .main-navbar .nav-link {
+        padding: 11px 12px !important;
+    }
+
+    .mobile-navbar-search {
+        display: flex;
+        width: 100%;
+        gap: 8px;
+        margin-top: 10px;
+    }
+
+    .mobile-navbar-search .form-control {
+        min-width: 0;
+    }
+
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 575.98px) {
+
+    .site-header-inner {
+        min-height: 70px;
+        padding: 9px 0;
+        gap: 7px;
+    }
+
+    .site-logo-img {
+        width: 42px;
+        height: 42px;
+        margin-right: 7px;
+    }
+
+    .site-title {
+        font-size: 16px;
+        white-space: nowrap;
+    }
+
+    .site-tagline {
+        font-size: 10px;
+        white-space: nowrap;
+    }
+
+    .header-actions {
+        gap: 5px;
+    }
+
+    .theme-btn {
+        width: 40px;
+        height: 40px;
+        padding: 0;
+    }
+
+    .header-actions .btn {
+        min-height: 40px;
+        padding: 7px 10px;
+        font-size: 14px;
+    }
+
+    .header-actions .user-name {
+        display: none;
+    }
+
+    .header-actions .dropdown .btn {
+        width: 40px;
+        padding: 0;
+    }
+
+    .header-actions .dropdown .btn::after {
+        display: none;
+    }
+
+    .main-navbar .navbar-brand {
+        font-size: 16px;
+        max-width: 70%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .main-navbar .navbar-toggler {
+        padding: 6px 9px;
+    }
+
+    .main-navbar .navbar-collapse {
+        padding-bottom: 12px;
+    }
+
+    .site-main .container-fluid {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+}
+
+/* =========================================================
+   VERY SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 380px) {
+
+    .site-logo-img {
+        width: 38px;
+        height: 38px;
+    }
+
+    .site-title {
+        font-size: 14px;
+    }
+
+    .site-tagline {
+        font-size: 9px;
+    }
+
+    .header-actions .btn {
+        padding: 6px 8px;
+        font-size: 13px;
+    }
+
+    .theme-btn {
+        width: 36px;
+        height: 36px;
+    }
+
+}
