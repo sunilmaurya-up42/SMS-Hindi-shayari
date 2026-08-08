@@ -12,7 +12,7 @@
         content="width=device-width, initial-scale=1.0">
 
     <!-- Primary SEO -->
-    <title><%= seo?.title || "SMS Hindi Shayari" %></title>
+    <title><%= (typeof seo !== 'undefined' && seo?.title) ? seo.title : "SMS Hindi Shayari" %></title>
 
     <meta
         name="description"
