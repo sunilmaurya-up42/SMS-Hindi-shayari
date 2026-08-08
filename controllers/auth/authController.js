@@ -120,18 +120,18 @@ exports.login = async (req, res) => {
             }
         );
 
-        return res.json({
-            success: true,
-            message: "Login successful.",
-            token,
-            user: {
-                id: user._id,
-                name: user.name,
-                email: user.email,
-                role: user.role,
-                avatar: user.avatar
-            }
+        req.login(user, (err) => {
+    if (err) {
+        console.error("Session Login Error:", err);
+
+        return res.status(500).render("auth/login", {
+            title: "Login - SMS Hindi Shayari",
+            error_msg: "Login failed. Please try again."
         });
+    }
+
+    return res.redirect("/");
+});
 
     } catch (error) {
 
@@ -468,19 +468,23 @@ exports.register = async (req, res) => {
             maxAge: 1000 * 60 * 60 * 24 * 7
         });
 
-        return res.status(201).json({
-            success: true,
-            message: "Registration successful.",
-            token,
-            user: {
-                id: user._id,
-                name: user.name,
-                email: user.email,
-                role: user.role,
-                avatar: user.avatar
-            }
-        });
+        req.login(user, (err) => {
+    if (err) {
+        console.error("Session Registration Error:", err);
 
+        return res.status(500).render("auth/register", {
+            title: "Register - SMS Hindi Shayari",
+            error_msg: "Registration failed. Please try again."
+        });
+    }
+
+    req.flash(
+        "success_msg",
+        "Registration successful. Welcome to SMS Hindi Shayari!"
+    );
+
+    return res.redirect("/");
+});
     } catch (error) {
 
         console.error("Registration Error:", error);
