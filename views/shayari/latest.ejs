@@ -1,0 +1,334 @@
+<section class="py-5">
+
+    <div class="container">
+
+        <!-- Page Header -->
+        <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
+
+            <div>
+
+                <h1 class="fw-bold">
+                    Latest Shayari
+                </h1>
+
+                <p class="text-muted mb-0">
+                    SMS Hindi Shayari की सबसे नई Shayari का संग्रह।
+                </p>
+
+            </div>
+
+            <a
+                href="/"
+                class="btn btn-outline-primary">
+
+                <i class="fa-solid fa-house me-2"></i>
+                Home
+
+            </a>
+
+        </div>
+
+
+        <!-- Search -->
+        <div class="card shadow-sm mb-4">
+
+            <div class="card-body">
+
+                <form
+                    action="/search"
+                    method="GET">
+
+                    <div class="input-group">
+
+                        <input
+                            type="search"
+                            name="q"
+                            class="form-control"
+                            placeholder="Search Shayari..."
+                            autocomplete="off">
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary">
+
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            Search
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+
+        <!-- Latest Shayari -->
+        <div class="row">
+
+            <% if (
+                typeof shayari !== "undefined" &&
+                Array.isArray(shayari) &&
+                shayari.length > 0
+            ) { %>
+
+                <% shayari.forEach(item => { %>
+
+                    <div class="col-lg-4 col-md-6 mb-4">
+
+                        <article class="card h-100 shadow-sm">
+
+
+                            <!-- Image -->
+                            <% if (item.imageUrl) { %>
+
+                                <img
+                                    src="<%= item.imageUrl %>"
+                                    class="card-img-top"
+                                    alt="<%= item.title || 'Hindi Shayari' %>"
+                                    loading="lazy">
+
+                            <% } else if (item.aiImage) { %>
+
+                                <img
+                                    src="<%= item.aiImage %>"
+                                    class="card-img-top"
+                                    alt="<%= item.title || 'Hindi Shayari' %>"
+                                    loading="lazy">
+
+                            <% } %>
+
+
+                            <div class="card-body">
+
+                                <!-- Category -->
+                                <div class="mb-2">
+
+                                    <% if (
+                                        item.category &&
+                                        typeof item.category === "object"
+                                    ) { %>
+
+                                        <a
+                                            href="/category/<%= item.category.slug %>"
+                                            class="badge bg-primary text-decoration-none">
+
+                                            <%= item.category.name %>
+
+                                        </a>
+
+                                    <% } else { %>
+
+                                        <span class="badge bg-primary">
+                                            Shayari
+                                        </span>
+
+                                    <% } %>
+
+                                </div>
+
+
+                                <!-- Title -->
+                                <h5 class="card-title fw-bold">
+
+                                    <%= item.title %>
+
+                                </h5>
+
+
+                                <!-- Content -->
+                                <p class="card-text text-muted">
+
+                                    <%
+                                        const content =
+                                            item.content || "";
+
+                                        const shortContent =
+                                            content.length > 160
+                                                ? content.substring(0, 160) + "..."
+                                                : content;
+                                    %>
+
+                                    <%= shortContent %>
+
+                                </p>
+
+                            </div>
+
+
+                            <!-- Card Footer -->
+                            <div class="card-footer bg-white">
+
+                                <div
+                                    class="d-flex justify-content-between mb-3">
+
+                                    <small class="text-muted">
+
+                                        <i class="fa-solid fa-eye"></i>
+
+                                        <%= item.views || 0 %>
+
+                                    </small>
+
+
+                                    <small class="text-danger">
+
+                                        <i class="fa-solid fa-heart"></i>
+
+                                        <%= item.likes || 0 %>
+
+                                    </small>
+
+
+                                    <small class="text-success">
+
+                                        <i class="fa-solid fa-share-nodes"></i>
+
+                                        <%= item.shares || 0 %>
+
+                                    </small>
+
+                                </div>
+
+
+                                <!-- Buttons -->
+                                <div class="d-grid gap-2">
+
+                                    <a
+                                        href="/shayari/<%= item.slug %>"
+                                        class="btn btn-primary btn-sm">
+
+                                        <i class="fa-solid fa-book-open me-1"></i>
+                                        Read More
+
+                                    </a>
+
+
+                                    <button
+                                        type="button"
+                                        class="btn btn-outline-secondary btn-sm shareBtn"
+                                        data-url="/shayari/<%= item.slug %>">
+
+                                        <i class="fa-solid fa-share-nodes me-1"></i>
+                                        Share
+
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        </article>
+
+                    </div>
+
+                <% }) %>
+
+
+            <% } else { %>
+
+                <!-- No Shayari -->
+                <div class="col-12">
+
+                    <div class="card shadow-sm">
+
+                        <div class="card-body text-center py-5">
+
+                            <i
+                                class="fa-solid fa-file-circle-xmark fa-3x text-muted mb-3">
+                            </i>
+
+                            <h4>
+                                No Shayari Found
+                            </h4>
+
+                            <p class="text-muted">
+                                अभी कोई नई Shayari उपलब्ध नहीं है।
+                            </p>
+
+                            <a
+                                href="/"
+                                class="btn btn-primary">
+
+                                <i class="fa-solid fa-house me-1"></i>
+                                Go Home
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            <% } %>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- Share Script -->
+<script>
+
+document
+    .querySelectorAll(".shareBtn")
+    .forEach(button => {
+
+        button.addEventListener("click", async function () {
+
+            const url =
+                window.location.origin +
+                this.dataset.url;
+
+            try {
+
+                if (navigator.share) {
+
+                    await navigator.share({
+
+                        title: "SMS Hindi Shayari",
+
+                        url: url
+
+                    });
+
+                } else if (
+                    navigator.clipboard
+                ) {
+
+                    await navigator.clipboard.writeText(url);
+
+                    alert("Link copied.");
+
+                } else {
+
+                    window.prompt(
+                        "Copy this link:",
+                        url
+                    );
+
+                }
+
+            } catch (error) {
+
+                if (error.name !== "AbortError") {
+
+                    console.error(
+                        "Share Error:",
+                        error
+                    );
+
+                }
+
+            }
+
+        });
+
+    });
+
+</script>
