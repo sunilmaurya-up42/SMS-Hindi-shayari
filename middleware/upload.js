@@ -28,8 +28,8 @@ const storage = multer.diskStorage({
             folder = "favicon";
         }
 
-        if (file.fieldname === "shayariImage") {
-            folder = "shayari";
+        if (file.fieldname === "avatar") {
+    folder = "avatars";
         }
 
         const dir = path.join(uploadDir, folder);
@@ -149,7 +149,9 @@ upload.paths = {
 
     logo: "/uploads/logo/",
 
-    favicon: "/uploads/favicon/"
+    favicon: "/uploads/favicon/",
+
+    avatars: "/uploads/avatars/"
 
 };
 
