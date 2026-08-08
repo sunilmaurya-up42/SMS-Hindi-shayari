@@ -98,5 +98,28 @@ router.get("/", async (req, res, next) => {
         next(error);
     }
 });
+/*
+|--------------------------------------------------------------------------
+| LOGIN PAGE
+|--------------------------------------------------------------------------
+*/
 
+router.get("/login", (req, res) => {
+    res.render("auth/login", {
+        title: "Login - SMS Hindi Shayari"
+    });
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| REGISTER PAGE
+|--------------------------------------------------------------------------
+*/
+
+router.get("/register", (req, res) => {
+    res.render("auth/register", {
+        title: "Register - SMS Hindi Shayari"
+    });
+});
 module.exports = router;
