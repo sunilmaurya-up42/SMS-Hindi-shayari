@@ -61,12 +61,4 @@ router.get("/", async (req, res, next) => {
         next(error);
     }
 });
-
-router.use((req, res) => {
-    res.status(404).json({
-        success: false,
-        message: "API Route Not Found"
-    });
-});
-
 module.exports = router;
