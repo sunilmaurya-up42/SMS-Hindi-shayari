@@ -1,80 +1,89 @@
 const jwt = require("jsonwebtoken");
-const Admin = require("../models/Admin");
 
-module.exports = async (req, res, next) => {
+/*
+|--------------------------------------------------------------------------
+| Authentication Middleware
+|--------------------------------------------------------------------------
+| Checks JWT from:
+| 1. Authorization: Bearer <token>
+| 2. token cookie
+|--------------------------------------------------------------------------
+*/
 
+module.exports = (req, res, next) => {
     try {
 
-        let token = req.headers.authorization;
+        let token = null;
+
+        /*
+        |--------------------------------------------------------------------------
+        | Authorization Header
+        |--------------------------------------------------------------------------
+        */
+
+        const authHeader =
+            req.headers.authorization;
+
+        if (
+            authHeader &&
+            authHeader.startsWith("Bearer ")
+        ) {
+            token =
+                authHeader.split(" ")[1];
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Cookie
+        |--------------------------------------------------------------------------
+        */
+
+        if (!token && req.cookies) {
+            token = req.cookies.token;
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Token Missing
+        |--------------------------------------------------------------------------
+        */
 
         if (!token) {
+
             return res.status(401).json({
                 success: false,
                 message: "Access denied. Token required."
             });
+
         }
 
-        if (token.startsWith("Bearer ")) {
-            token = token.substring(7);
-        }
+        /*
+        |--------------------------------------------------------------------------
+        | Verify Token
+        |--------------------------------------------------------------------------
+        */
 
-        const decoded = jwt.verify(
-            token,
-            process.env.JWT_SECRET
-        );
+        const decoded =
+            jwt.verify(
+                token,
+                process.env.JWT_SECRET
+            );
 
-        const admin = await Admin.findById(decoded.id);
-
-        if (!admin) {
-            return res.status(401).json({
-                success: false,
-                message: "Invalid token."
-            });
-        }
-
-        if (!admin.isActive) {
-            return res.status(403).json({
-                success: false,
-                message: "Account disabled."
-            });
-        }
-
-        req.user = {
-            id: admin._id,
-            name: admin.name,
-            email: admin.email,
-            role: admin.role
-        };
+        req.user = decoded;
 
         next();
 
     } catch (error) {
 
-        if (error.name === "TokenExpiredError") {
+        console.error(
+            "Authentication Error:",
+            error.message
+        );
 
-            return res.status(401).json({
-                success: false,
-                message: "Token expired."
-            });
-
-        }
-
-        if (error.name === "JsonWebTokenError") {
-
-            return res.status(401).json({
-                success: false,
-                message: "Invalid token."
-            });
-
-        }
-
-        console.error(error);
-
-        return res.status(500).json({
+        return res.status(401).json({
             success: false,
-            message: "Authentication failed."
+            message: "Invalid or expired token."
         });
 
     }
-
 };
