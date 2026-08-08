@@ -130,10 +130,4 @@ router.post(
     authController.changePassword
 );
 
-/* Registration */
-
-router.post(
-    "/register",
-    authController.register
-);
 module.exports = router;
