@@ -7,44 +7,67 @@
 
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
-const Admin = require("../models/Admin");
+
+const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 
+/*
+|--------------------------------------------------------------------------
+| USER LOCAL LOGIN
+|--------------------------------------------------------------------------
+*/
+
 passport.use(
+    "user-local",
     new LocalStrategy(
         {
-            usernameField: "email"
+            usernameField: "email",
+            passwordField: "password"
         },
+
         async (email, password, done) => {
 
             try {
 
-                const admin = await Admin.findOne({
-                    email: email.toLowerCase(),
-                    }).select("+password");
+                const user = await User.findOne({
+                    email: email.toLowerCase()
+                }).select("+password");
 
-                if (!admin) {
+                if (!user) {
+
                     return done(null, false, {
                         message: "Invalid email or password."
                     });
+
                 }
 
-                const isMatch = await bcrypt.compare(
-                    password,
-                    admin.password
-                );
+                if (!user.isActive) {
+
+                    return done(null, false, {
+                        message: "Your account is inactive."
+                    });
+
+                }
+
+                const isMatch =
+                    await bcrypt.compare(
+                        password,
+                        user.password
+                    );
 
                 if (!isMatch) {
+
                     return done(null, false, {
                         message: "Invalid email or password."
                     });
+
                 }
 
-                return done(null, admin);
+                return done(null, user);
 
-            } catch (err) {
+            } catch (error) {
 
-                return done(err);
+                return done(error);
 
             }
 
@@ -52,24 +75,68 @@ passport.use(
     )
 );
 
-passport.serializeUser((admin, done) => {
-    done(null, admin.id);
+
+/*
+|--------------------------------------------------------------------------
+| SERIALIZE USER
+|--------------------------------------------------------------------------
+*/
+
+passport.serializeUser((user, done) => {
+
+    done(null, {
+        id: user.id,
+        type: user.role === "admin" ||
+              user.role === "super-admin"
+            ? "admin"
+            : "user"
+    });
+
 });
 
-passport.deserializeUser(async (id, done) => {
+
+/*
+|--------------------------------------------------------------------------
+| DESERIALIZE USER
+|--------------------------------------------------------------------------
+*/
+
+passport.deserializeUser(async (data, done) => {
 
     try {
 
-        const admin = await Admin.findById(id).select("-password");
+        if (!data || !data.id) {
 
-        done(null, admin);
+            return done(null, false);
 
-    } catch (err) {
+        }
 
-        done(err);
+        if (data.type === "admin") {
+
+            const Admin =
+                require("../models/Admin");
+
+            const admin =
+                await Admin.findById(data.id)
+                    .select("-password");
+
+            return done(null, admin);
+
+        }
+
+        const user =
+            await User.findById(data.id)
+                .select("-password");
+
+        return done(null, user);
+
+    } catch (error) {
+
+        return done(error);
 
     }
 
 });
+
 
 module.exports = passport;
