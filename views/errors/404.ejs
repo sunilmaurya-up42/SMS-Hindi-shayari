@@ -1,130 +1,126 @@
-<!DOCTYPE html>
+<section class="py-5">
 
-<html lang="en">
+    <div class="container">
 
-<head>
+        <div class="row justify-content-center">
 
-    <%- include("../partials/head") %>
+            <div class="col-lg-8 text-center">
 
-    <title>404 - Page Not Found</title>
+                <!-- 404 Image -->
+                <img
+                    src="/images/errors/404.svg"
+                    alt="404 Not Found"
+                    class="img-fluid mb-4"
+                    style="max-height:300px;"
+                    onerror="this.style.display='none';">
 
-</head>
+                <!-- Error Code -->
+                <h1 class="display-1 fw-bold text-primary">
+                    404
+                </h1>
 
-<body>
+                <!-- Title -->
+                <h2 class="fw-bold mb-3">
+                    Page Not Found
+                </h2>
 
-    <%- include("../partials/navbar") %>
+                <!-- Message -->
+                <p class="lead text-muted">
+                    Sorry, the page you are looking for doesn't exist
+                    or has been moved.
+                </p>
 
-    <section class="py-5">
+                <!-- Search -->
+                <form
+                    action="/search"
+                    method="GET"
+                    class="my-4">
 
-        <div class="container">
+                    <div class="input-group">
 
-            <div class="row justify-content-center">
+                        <input
+                            type="search"
+                            name="q"
+                            class="form-control"
+                            placeholder="Search Shayari..."
+                            autocomplete="off"
+                            required>
 
-                <div class="col-lg-8 text-center">
+                        <button
+                            type="submit"
+                            class="btn btn-primary">
 
-                    <img
-                        src="/images/errors/404.svg"
-                        alt="404 Not Found"
-                        class="img-fluid mb-4"
-                        style="max-height:300px;">
+                            <i class="fa-solid fa-magnifying-glass"></i>
 
-                    <h1 class="display-1 fw-bold text-primary">
+                        </button>
 
-                        404
+                    </div>
 
-                    </h1>
+                </form>
 
-                    <h2 class="fw-bold mb-3">
 
-                        Page Not Found
+                <!-- Popular Categories -->
+                <div class="mb-4">
 
-                    </h2>
+                    <h5 class="mb-3">
+                        Popular Categories
+                    </h5>
 
-                    <p class="lead text-muted">
+                    <div class="d-flex flex-wrap justify-content-center gap-2">
 
-                        Sorry, the page you are looking for doesn't exist or has been moved.
+                        <% if (
+                            typeof popularCategories !== "undefined" &&
+                            Array.isArray(popularCategories) &&
+                            popularCategories.length > 0
+                        ) { %>
 
-                    </p>
-
-                    <!-- Search -->
-
-                    <form
-                        action="/search"
-                        method="GET"
-                        class="my-4">
-
-                        <div class="input-group">
-
-                            <input
-                                type="text"
-                                name="q"
-                                class="form-control"
-                                placeholder="Search Shayari...">
-
-                            <button
-                                class="btn btn-primary">
-
-                                <i class="fa-solid fa-magnifying-glass"></i>
-
-                            </button>
-
-                        </div>
-
-                    </form>
-
-                    <!-- Popular Categories -->
-
-                    <div class="mb-4">
-
-                        <h5 class="mb-3">
-
-                            Popular Categories
-
-                        </h5>
-
-                        <div class="d-flex flex-wrap justify-content-center gap-2">
-
-                            <% popularCategories.forEach(category=>{ %>
+                            <% popularCategories.forEach(category => { %>
 
                                 <a
                                     href="/category/<%= category.slug %>"
                                     class="btn btn-outline-primary btn-sm">
 
+                                    <%= category.icon || "📝" %>
                                     <%= category.name %>
 
                                 </a>
 
                             <% }) %>
 
-                        </div>
+                        <% } else { %>
+
+                            <span class="text-muted">
+                                No categories available.
+                            </span>
+
+                        <% } %>
 
                     </div>
 
-                    <!-- Buttons -->
+                </div>
 
-                    <div class="d-flex justify-content-center flex-wrap gap-2">
 
-                        <a
-                            href="/"
-                            class="btn btn-primary">
+                <!-- Buttons -->
+                <div class="d-flex justify-content-center flex-wrap gap-2">
 
-                            <i class="fa-solid fa-house"></i>
+                    <a
+                        href="/"
+                        class="btn btn-primary">
 
-                            Home
+                        <i class="fa-solid fa-house me-1"></i>
+                        Home
 
-                        </a>
+                    </a>
 
-                        <button
-                            class="btn btn-outline-secondary"
-                            onclick="history.back()">
+                    <button
+                        type="button"
+                        class="btn btn-outline-secondary"
+                        onclick="history.back()">
 
-                            <i class="fa-solid fa-arrow-left"></i>
+                        <i class="fa-solid fa-arrow-left me-1"></i>
+                        Go Back
 
-                            Go Back
-
-                        </button>
-
-                    </div>
+                    </button>
 
                 </div>
 
@@ -132,10 +128,6 @@
 
         </div>
 
-    </section>
+    </div>
 
-    <%- include("../partials/footer") %>
-
-</body>
-
-</html>
+</section>
