@@ -21,7 +21,6 @@ router.get("/", async (req, res, next) => {
             latestShayari,
             popularShayari
         ] = await Promise.all([
-
             Category.find({
                 isActive: true
             })
@@ -44,7 +43,8 @@ router.get("/", async (req, res, next) => {
                 published: true
             })
                 .sort({
-                    views: -1
+                    views: -1,
+                    createdAt: -1
                 })
                 .limit(6)
                 .lean()
@@ -52,6 +52,7 @@ router.get("/", async (req, res, next) => {
 
         res.render("home/index", {
             title: "SMS Hindi Shayari",
+            activePage: "home",
             categories,
             latestShayari,
             popularShayari
