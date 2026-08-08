@@ -1,42 +1,155 @@
 const express = require("express");
 const router = express.Router();
 
-const categoryController = require("../controllers/category/categoryController");
+const Category = require("../models/Category");
+const Shayari = require("../models/Shayari");
 
 const auth = require("../middleware/auth");
 const admin = require("../middleware/admin");
 
-/*
-|--------------------------------------------------------------------------
-| Public Routes
-|--------------------------------------------------------------------------
-*/
+const categoryController =
+    require("../controllers/category/categoryController");
 
-// Get All Categories
+const wantsJson = (req) => {
+
+    return (
+        req.xhr ||
+        req.query.format === "json" ||
+        req.get("Accept")?.includes(
+            "application/json"
+        )
+    );
+
+};
+
+/* =========================
+   ALL CATEGORIES
+========================= */
+
+router.get("/", async (req, res, next) => {
+
+    try {
+
+        const categories =
+            await Category.find({
+                isActive: true
+            })
+                .sort({
+                    sortOrder: 1,
+                    name: 1
+                })
+                .lean();
+
+        if (wantsJson(req)) {
+
+            return res.json({
+                success: true,
+                categories
+            });
+
+        }
+
+        return res.render(
+            "pages/categories",
+            {
+                title: "Shayari Categories",
+                activePage: "categories",
+                categories
+            }
+        );
+
+    } catch (error) {
+        next(error);
+    }
+
+});
+
+/* =========================
+   CATEGORY SHAYARI
+========================= */
+
 router.get(
-    "/",
-    categoryController.getAll
+    "/:slug",
+    async (req, res, next) => {
+
+        try {
+
+            const category =
+                await Category.findOne({
+                    slug: req.params.slug,
+                    isActive: true
+                }).lean();
+
+            if (!category) {
+
+                return res
+                    .status(404)
+                    .render("errors/404", {
+                        title: "Category Not Found",
+                        popularCategories: [],
+                        categories: [],
+                        latestShayari: [],
+                        popularShayari: []
+                    });
+
+            }
+
+            const shayari =
+                await Shayari.find({
+                    category: category._id,
+                    published: true
+                })
+                    .sort({
+                        createdAt: -1
+                    })
+                    .lean();
+
+            if (wantsJson(req)) {
+
+                return res.json({
+                    success: true,
+                    category,
+                    shayari
+                });
+
+            }
+
+            return res.render(
+                "shayari/category",
+                {
+                    title:
+                        `${category.name} Shayari`,
+
+                    activePage:
+                        "categories",
+
+                    category,
+                    shayari,
+
+                    sort:
+                        req.query.sort ||
+                        "latest",
+
+                    pagination: {
+                        totalItems:
+                            shayari.length,
+                        totalPages: 1,
+                        currentPage: 1
+                    }
+                }
+            );
+
+        } catch (error) {
+            next(error);
+        }
+
+    }
 );
 
-// Get Category By ID
-router.get(
-    "/:id",
-    categoryController.getOne
-);
+/* =========================
+   ADMIN
+========================= */
 
-// Category Wise Shayari
-router.get(
-    "/:id/shayari",
-    categoryController.shayari
-);
-
-/*
-|--------------------------------------------------------------------------
-| Admin Routes
-|--------------------------------------------------------------------------
-*/
-
-// Create Category
 router.post(
     "/create",
     auth,
@@ -44,7 +157,6 @@ router.post(
     categoryController.create
 );
 
-// Update Category
 router.put(
     "/update/:id",
     auth,
@@ -52,7 +164,6 @@ router.put(
     categoryController.update
 );
 
-// Delete Category
 router.delete(
     "/delete/:id",
     auth,
@@ -60,7 +171,6 @@ router.delete(
     categoryController.remove
 );
 
-// Toggle Active Status
 router.patch(
     "/toggle/:id",
     auth,
@@ -68,7 +178,6 @@ router.patch(
     categoryController.toggle
 );
 
-// Toggle Featured
 router.patch(
     "/featured/:id",
     auth,
@@ -76,20 +185,18 @@ router.patch(
     categoryController.featured
 );
 
-// Category Analytics
-router.get(
-    "/analytics/report",
-    auth,
-    admin,
-    categoryController.analytics
-);
-
-// Category SEO
 router.post(
     "/seo/:id",
     auth,
     admin,
     categoryController.seo
+);
+
+router.get(
+    "/analytics/report",
+    auth,
+    admin,
+    categoryController.analytics
 );
 
 module.exports = router;
