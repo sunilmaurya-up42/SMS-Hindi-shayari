@@ -1,5 +1,7 @@
 const express = require("express");
 const router = express.Router();
+const Category = require("../models/Category");
+const Shayari = require("../models/Shayari");
 
 router.use("/auth", require("./auth"));
 router.use("/admin", require("./admin"));
@@ -12,10 +14,52 @@ router.use("/contact", require("./contact"));
 router.use("/settings", require("./settings"));
 router.use("/seo", require("./seo"));
 
-router.get("/", (req, res) => {
-    res.render("home/index", {
-        title: "SMS Hindi Shayari"
-    });
+router.get("/", async (req, res, next) => {
+    try {
+        const [
+            categories,
+            latestShayari,
+            popularShayari
+        ] = await Promise.all([
+
+            Category.find({
+                isActive: true
+            })
+                .sort({
+                    sortOrder: 1,
+                    name: 1
+                })
+                .lean(),
+
+            Shayari.find({
+                published: true
+            })
+                .sort({
+                    createdAt: -1
+                })
+                .limit(9)
+                .lean(),
+
+            Shayari.find({
+                published: true
+            })
+                .sort({
+                    views: -1
+                })
+                .limit(6)
+                .lean()
+        ]);
+
+        res.render("home/index", {
+            title: "SMS Hindi Shayari",
+            categories,
+            latestShayari,
+            popularShayari
+        });
+
+    } catch (error) {
+        next(error);
+    }
 });
 
 router.use((req, res) => {
