@@ -106,5 +106,17 @@ router.get("/categories", (req, res) => {
 
 });
 
+// Login Page
+router.get("/login", (req, res) => {
+    res.render("auth/login", {
+        title: "Login - SMS Hindi Shayari"
+    });
+});
 
+// Register Page
+router.get("/register", (req, res) => {
+    res.render("auth/register", {
+        title: "Register - SMS Hindi Shayari"
+    });
+});
 module.exports = router;
