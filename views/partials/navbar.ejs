@@ -1,16 +1,12 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top main-navbar">
-
-    <div class="container-fluid container-lg">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+    <div class="container">
 
         <!-- Mobile Brand -->
-        <a
-            class="navbar-brand fw-bold d-lg-none"
-            href="/"
-        >
+        <a class="navbar-brand fw-bold d-lg-none" href="/">
             SMS Hindi Shayari
         </a>
 
-        <!-- Mobile Button -->
+        <!-- Mobile Toggle -->
         <button
             class="navbar-toggler"
             type="button"
@@ -18,73 +14,73 @@
             data-bs-target="#mainNavbar"
             aria-controls="mainNavbar"
             aria-expanded="false"
-            aria-label="Toggle navigation"
-        >
+            aria-label="Toggle navigation">
+
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div
-            class="collapse navbar-collapse"
-            id="mainNavbar"
-        >
+        <!-- Navbar Menu -->
+        <div class="collapse navbar-collapse" id="mainNavbar">
 
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
+                <!-- Home -->
                 <li class="nav-item">
                     <a
-                        class="nav-link <%= (typeof activePage !== 'undefined' && activePage === 'home') ? 'active' : '' %>"
                         href="/"
-                    >
+                        class="nav-link <%= (typeof activePage !== 'undefined' && activePage === 'home') ? 'active' : '' %>">
+
                         <i class="fa-solid fa-house me-1"></i>
                         Home
                     </a>
                 </li>
 
+                <!-- Latest -->
                 <li class="nav-item">
                     <a
-                        class="nav-link <%= (typeof activePage !== 'undefined' && activePage === 'latest') ? 'active' : '' %>"
                         href="/latest"
-                    >
+                        class="nav-link <%= (typeof activePage !== 'undefined' && activePage === 'latest') ? 'active' : '' %>">
+
                         Latest
                     </a>
                 </li>
 
+                <!-- Popular -->
                 <li class="nav-item">
                     <a
-                        class="nav-link <%= (typeof activePage !== 'undefined' && activePage === 'popular') ? 'active' : '' %>"
                         href="/popular"
-                    >
+                        class="nav-link <%= (typeof activePage !== 'undefined' && activePage === 'popular') ? 'active' : '' %>">
+
                         Popular
                     </a>
                 </li>
 
+                <!-- Categories -->
                 <li class="nav-item dropdown">
 
                     <a
-                        class="nav-link dropdown-toggle"
                         href="#"
+                        class="nav-link dropdown-toggle"
                         role="button"
                         data-bs-toggle="dropdown"
-                    >
+                        aria-expanded="false">
+
                         Categories
                     </a>
 
                     <ul class="dropdown-menu">
 
-                        <% if (
-                            typeof categories !== 'undefined' &&
-                            categories &&
-                            categories.length
-                        ) { %>
+                        <% if (typeof categories !== 'undefined' && categories && categories.length) { %>
 
                             <% categories.forEach(category => { %>
 
                                 <li>
                                     <a
                                         class="dropdown-item"
-                                        href="/category/<%= category.slug %>"
-                                    >
+                                        href="/category/<%= category.slug %>">
+
                                         <%= category.name %>
+
                                     </a>
                                 </li>
 
@@ -101,191 +97,36 @@
                         <% } %>
 
                     </ul>
-
-                </li>
-
-                <li class="nav-item">
-                    <a
-                        class="nav-link <%= (typeof activePage !== 'undefined' && activePage === 'festival') ? 'active' : '' %>"
-                        href="/festival"
-                    >
-                        Festival
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a
-                        class="nav-link <%= (typeof activePage !== 'undefined' && activePage === 'about') ? 'active' : '' %>"
-                        href="/about"
-                    >
-                        About
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a
-                        class="nav-link <%= (typeof activePage !== 'undefined' && activePage === 'contact') ? 'active' : '' %>"
-                        href="/contact"
-                    >
-                        Contact
-                    </a>
-                </li>
-
-            </ul>
-
-            <!-- Mobile Search -->
-            <form
-                action="/search"
-                method="GET"
-                class="mobile-navbar-search"
-            >
-
-                <input
-                    class="form-control"
-                    type="search"
-                    name="q"
-                    placeholder="Search Shayari..."
-                    value="<%= typeof query !== 'undefined' ? query : '' %>"
-                >
-
-                <button class="btn btn-light" type="submit">
-                    <i class="fa-solid fa-search"></i>
-                </button>
-
-            </form>
-
-        </div>
-
-    </div>
-
-</nav>                        href="/">
-
-                        <i class="fa-solid fa-house me-1"></i>
-
-                        Home
-
-                    </a>
-
-                </li>
-
-                <!-- Latest -->
-                <li class="nav-item">
-
-                    <a
-                        class="nav-link <%= activePage === 'latest' ? 'active' : '' %>"
-                        href="/latest">
-
-                        Latest
-
-                    </a>
-
-                </li>
-
-                <!-- Popular -->
-                <li class="nav-item">
-
-                    <a
-                        class="nav-link <%= activePage === 'popular' ? 'active' : '' %>"
-                        href="/popular">
-
-                        Popular
-
-                    </a>
-
-                </li>
-
-                <!-- Categories -->
-                <li class="nav-item dropdown">
-
-                    <a
-                        class="nav-link dropdown-toggle"
-                        href="#"
-                        role="button"
-                        data-bs-toggle="dropdown">
-
-                        Categories
-
-                    </a>
-
-                    <ul class="dropdown-menu">
-
-                        <% if (
-                            categories &&
-                            categories.length
-                        ) { %>
-
-                            <% categories.forEach(category => { %>
-
-                                <li>
-
-                                    <a
-                                        class="dropdown-item"
-                                        href="/category/<%= category.slug %>">
-
-                                        <%= category.name %>
-
-                                    </a>
-
-                                </li>
-
-                            <% }) %>
-
-                        <% } else { %>
-
-                            <li>
-
-                                <span
-                                    class="dropdown-item-text text-muted">
-
-                                    No Categories
-
-                                </span>
-
-                            </li>
-
-                        <% } %>
-
-                    </ul>
-
                 </li>
 
                 <!-- Festival -->
                 <li class="nav-item">
-
                     <a
-                        class="nav-link <%= activePage === 'festival' ? 'active' : '' %>"
-                        href="/festival">
+                        href="/festival"
+                        class="nav-link <%= (typeof activePage !== 'undefined' && activePage === 'festival') ? 'active' : '' %>">
 
                         Festival
-
                     </a>
-
                 </li>
 
                 <!-- About -->
                 <li class="nav-item">
-
                     <a
-                        class="nav-link <%= activePage === 'about' ? 'active' : '' %>"
-                        href="/about">
+                        href="/about"
+                        class="nav-link <%= (typeof activePage !== 'undefined' && activePage === 'about') ? 'active' : '' %>">
 
                         About
-
                     </a>
-
                 </li>
 
                 <!-- Contact -->
                 <li class="nav-item">
-
                     <a
-                        class="nav-link <%= activePage === 'contact' ? 'active' : '' %>"
-                        href="/contact">
+                        href="/contact"
+                        class="nav-link <%= (typeof activePage !== 'undefined' && activePage === 'contact') ? 'active' : '' %>">
 
                         Contact
-
                     </a>
-
                 </li>
 
             </ul>
@@ -294,27 +135,25 @@
             <form
                 action="/search"
                 method="GET"
-                class="d-flex d-lg-none mt-3">
+                class="d-flex d-lg-none mt-3 mb-3">
 
                 <input
                     class="form-control me-2"
                     type="search"
                     name="q"
                     placeholder="Search Shayari"
-                    value="<%= typeof query !== 'undefined' ? query : '' %>">
+                    value="<%= typeof query !== 'undefined' ? query : '' %>"
+                    autocomplete="off">
 
                 <button
                     class="btn btn-light"
                     type="submit">
 
                     <i class="fa-solid fa-search"></i>
-
                 </button>
 
             </form>
 
         </div>
-
     </div>
-
 </nav>
