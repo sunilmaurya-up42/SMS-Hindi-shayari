@@ -1,16 +1,23 @@
 const express = require("express");
 const router = express.Router();
 
-const authController = require("../controllers/auth/authController");
+const authController =
+    require("../controllers/auth/authController");
+
+const auth =
+    require("../middleware/auth");
 
 const {
     loginLimiter,
     apiLimiter
 } = require("../middleware/rateLimiter");
 
+
 /*
 |--------------------------------------------------------------------------
-| Login
+| USER LOGIN
+|--------------------------------------------------------------------------
+| POST /auth/login
 |--------------------------------------------------------------------------
 */
 
@@ -20,21 +27,25 @@ router.post(
     authController.login
 );
 
+
 /*
 |--------------------------------------------------------------------------
-| Register
+| ADMIN LOGIN
+|--------------------------------------------------------------------------
+| POST /auth/admin-login
 |--------------------------------------------------------------------------
 */
 
 router.post(
-    "/register",
-    apiLimiter,
-    authController.register
+    "/admin-login",
+    loginLimiter,
+    authController.adminLogin
 );
+
 
 /*
 |--------------------------------------------------------------------------
-| Forgot Password
+| FORGOT PASSWORD
 |--------------------------------------------------------------------------
 */
 
@@ -44,9 +55,10 @@ router.post(
     authController.forgotPassword
 );
 
+
 /*
 |--------------------------------------------------------------------------
-| Reset Password
+| RESET PASSWORD
 |--------------------------------------------------------------------------
 */
 
@@ -56,9 +68,10 @@ router.post(
     authController.resetPassword
 );
 
+
 /*
 |--------------------------------------------------------------------------
-| Refresh Token
+| REFRESH TOKEN
 |--------------------------------------------------------------------------
 */
 
@@ -68,15 +81,46 @@ router.post(
     authController.refreshToken
 );
 
+
 /*
 |--------------------------------------------------------------------------
-| Logout
+| PROFILE
+|--------------------------------------------------------------------------
+| GET /auth/profile
+|--------------------------------------------------------------------------
+*/
+
+router.get(
+    "/profile",
+    auth,
+    authController.profile
+);
+
+
+/*
+|--------------------------------------------------------------------------
+| LOGOUT
 |--------------------------------------------------------------------------
 */
 
 router.post(
     "/logout",
+    auth,
     authController.logout
 );
+
+
+/*
+|--------------------------------------------------------------------------
+| CHANGE PASSWORD
+|--------------------------------------------------------------------------
+*/
+
+router.post(
+    "/change-password",
+    auth,
+    authController.changePassword
+);
+
 
 module.exports = router;
