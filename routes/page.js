@@ -1,24 +1,144 @@
 const express = require("express");
 const router = express.Router();
 
-router.get("/about", (req, res) => {
-    res.render("pages/about");
+const Shayari = require("../models/Shayari");
+const Category = require("../models/Category");
+
+/* ==========================================================
+   Latest Shayari
+========================================================== */
+
+router.get("/latest", async (req, res, next) => {
+    try {
+
+        const latestShayari = await Shayari.find({
+            published: true
+        })
+            .sort({
+                createdAt: -1
+            })
+            .limit(30)
+            .lean();
+
+        const categories = await Category.find({
+            isActive: true
+        })
+            .sort({
+                sortOrder: 1,
+                name: 1
+            })
+            .lean();
+
+        res.render("pages/latest", {
+            title: "Latest Hindi Shayari",
+            activePage: "latest",
+            latestShayari,
+            categories
+        });
+
+    } catch (error) {
+        next(error);
+    }
 });
 
-router.get("/contact", (req, res) => {
-    res.render("pages/contact");
+
+/* ==========================================================
+   Popular Shayari
+========================================================== */
+
+router.get("/popular", async (req, res, next) => {
+    try {
+
+        const popularShayari = await Shayari.find({
+            published: true
+        })
+            .sort({
+                views: -1,
+                createdAt: -1
+            })
+            .limit(30)
+            .lean();
+
+        const categories = await Category.find({
+            isActive: true
+        })
+            .sort({
+                sortOrder: 1,
+                name: 1
+            })
+            .lean();
+
+        res.render("pages/popular", {
+            title: "Popular Hindi Shayari",
+            activePage: "popular",
+            popularShayari,
+            categories
+        });
+
+    } catch (error) {
+        next(error);
+    }
 });
 
-router.get("/privacy-policy", (req, res) => {
-    res.render("pages/privacy-policy");
+
+/* ==========================================================
+   About
+========================================================== */
+
+router.get("/about", (req, res, next) => {
+    res.render("pages/about", {
+        title: "About Us",
+        activePage: "about"
+    });
 });
 
-router.get("/terms", (req, res) => {
-    res.render("pages/terms");
+
+/* ==========================================================
+   Contact
+========================================================== */
+
+router.get("/contact", (req, res, next) => {
+    res.render("pages/contact", {
+        title: "Contact Us",
+        activePage: "contact"
+    });
 });
 
-router.get("/disclaimer", (req, res) => {
-    res.render("pages/disclaimer");
+
+/* ==========================================================
+   Privacy Policy
+========================================================== */
+
+router.get("/privacy-policy", (req, res, next) => {
+    res.render("pages/privacy-policy", {
+        title: "Privacy Policy",
+        activePage: "privacy"
+    });
 });
+
+
+/* ==========================================================
+   Terms
+========================================================== */
+
+router.get("/terms", (req, res, next) => {
+    res.render("pages/terms", {
+        title: "Terms & Conditions",
+        activePage: "terms"
+    });
+});
+
+
+/* ==========================================================
+   Disclaimer
+========================================================== */
+
+router.get("/disclaimer", (req, res, next) => {
+    res.render("pages/disclaimer", {
+        title: "Disclaimer",
+        activePage: "disclaimer"
+    });
+});
+
 
 module.exports = router;
