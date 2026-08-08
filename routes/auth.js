@@ -3,63 +3,80 @@ const router = express.Router();
 
 const authController = require("../controllers/auth/authController");
 
-const auth = require("../middleware/auth");
 const {
-  loginLimiter,
-  apiLimiter
+    loginLimiter,
+    apiLimiter
 } = require("../middleware/rateLimiter");
 
-// login 
+/*
+|--------------------------------------------------------------------------
+| Login
+|--------------------------------------------------------------------------
+*/
+
 router.post(
     "/login",
     loginLimiter,
     authController.login
 );
 
-// Forgot Password
+/*
+|--------------------------------------------------------------------------
+| Register
+|--------------------------------------------------------------------------
+*/
+
+router.post(
+    "/register",
+    apiLimiter,
+    authController.register
+);
+
+/*
+|--------------------------------------------------------------------------
+| Forgot Password
+|--------------------------------------------------------------------------
+*/
+
 router.post(
     "/forgot-password",
     loginLimiter,
     authController.forgotPassword
 );
 
-// Reset Password
+/*
+|--------------------------------------------------------------------------
+| Reset Password
+|--------------------------------------------------------------------------
+*/
+
 router.post(
     "/reset-password",
     loginLimiter,
     authController.resetPassword
 );
 
-// Refresh Token
+/*
+|--------------------------------------------------------------------------
+| Refresh Token
+|--------------------------------------------------------------------------
+*/
+
 router.post(
     "/refresh-token",
     apiLimiter,
     authController.refreshToken
 );
 
-/**
- * Protected Routes
- */
+/*
+|--------------------------------------------------------------------------
+| Logout
+|--------------------------------------------------------------------------
+*/
 
-// Profile
-router.get(
-    "/profile",
-    auth,
-    authController.profile
-);
-
-// Logout
 router.post(
     "/logout",
-    auth,
     authController.logout
-);
-
-// Change Password
-router.post(
-    "/change-password",
-    auth,
-    authController.changePassword
 );
 
 module.exports = router;
