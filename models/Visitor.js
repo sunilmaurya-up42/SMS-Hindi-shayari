@@ -106,7 +106,6 @@ const visitorSchema = new mongoose.Schema(
   }
 );
 
-visitorSchema.index({ sessionId: 1 });
 visitorSchema.index({ country: 1 });
 visitorSchema.index({ state: 1 });
 visitorSchema.index({ device: 1 });
