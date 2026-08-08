@@ -159,6 +159,12 @@ app.use((req, res, next) => {
 
     res.locals.error = req.flash("error");
 
+    res.locals.seo = {
+        title: "SMS Hindi Shayari",
+        description: "Love, Sad, Attitude, Friendship और Motivational Hindi Shayari का विशाल संग्रह।",
+        keywords: "hindi shayari, love shayari, sad shayari, attitude shayari"
+    };
+
     if (req.csrfToken) {
 
         res.locals.csrfToken = req.csrfToken();
@@ -168,7 +174,6 @@ app.use((req, res, next) => {
     next();
 
 });
-
 /* ===========================
    Maintenance Mode
 =========================== */
