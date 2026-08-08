@@ -91,7 +91,22 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(flash());
-app.use(csrf({ cookie: true }));
+
+/*
+|--------------------------------------------------------------------------
+| CSRF Protection
+|--------------------------------------------------------------------------
+*/
+
+const csrfProtection = csrf({
+    cookie: {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production"
+    }
+});
+
+app.use(csrfProtection);
 
 /* ===========================
    Security
@@ -172,7 +187,6 @@ app.use((req, res, next) => {
         res.locals.csrfToken = req.csrfToken();
 
     }
-
     next();
 
 });
@@ -209,6 +223,44 @@ app.use(notFound);
 /* ===========================
    Global Error Handler
 =========================== */
+/*
+|--------------------------------------------------------------------------
+| CSRF Error Handler
+|--------------------------------------------------------------------------
+*/
+
+app.use((err, req, res, next) => {
+
+    if (err.code === "EBADCSRFTOKEN") {
+
+        console.error(
+            "CSRF Error:",
+            req.method,
+            req.originalUrl
+        );
+
+        if (
+            req.accepts("html") &&
+            !req.xhr
+        ) {
+
+            return res.status(403).render(
+                "errors/403",
+                {
+                    title: "Invalid CSRF Token"
+                }
+            );
+
+        }
+
+        return res.status(403).json({
+            success: false,
+            message: "Invalid CSRF token. Please refresh the page and try again."
+        });
+    }
+
+    next(err);
+});
 
 app.use(errorHandler);
 
