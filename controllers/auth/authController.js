@@ -403,3 +403,93 @@ exports.changePassword = async (req, res) => {
     });
 
 };
+/*
+|--------------------------------------------------------------------------
+| USER REGISTRATION
+|--------------------------------------------------------------------------
+*/
+
+exports.register = async (req, res) => {
+
+    try {
+
+        const {
+            name,
+            email,
+            password,
+            confirmPassword
+        } = req.body;
+
+        if (!name || !email || !password) {
+            return res.status(400).json({
+                success: false,
+                message: "Name, email and password are required."
+            });
+        }
+
+        if (password !== confirmPassword) {
+            return res.status(400).json({
+                success: false,
+                message: "Passwords do not match."
+            });
+        }
+
+        if (password.length < 8) {
+            return res.status(400).json({
+                success: false,
+                message: "Password must be at least 8 characters."
+            });
+        }
+
+        const existingUser = await User.findOne({
+            email: email.toLowerCase()
+        });
+
+        if (existingUser) {
+            return res.status(409).json({
+                success: false,
+                message: "Email is already registered."
+            });
+        }
+
+        const user = await User.create({
+            name: name.trim(),
+            email: email.toLowerCase(),
+            password,
+            avatar: req.file?.filename || ""
+        });
+
+        const token = generateToken(user, "user");
+
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+            maxAge: 1000 * 60 * 60 * 24 * 7
+        });
+
+        return res.status(201).json({
+            success: true,
+            message: "Registration successful.",
+            token,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                avatar: user.avatar
+            }
+        });
+
+    } catch (error) {
+
+        console.error("Registration Error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error."
+        });
+
+    }
+
+};
