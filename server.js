@@ -21,12 +21,6 @@ try {
 }
 
 const connectDB = require("./config/db");
-
-console.log("Step 1");
-console.log("Step 2");
-console.log("Step 3");
-console.log("Step 4");
-
 const PORT = process.env.PORT || 3000;
 /**
  * Create HTTP Server
