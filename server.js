@@ -13,7 +13,6 @@ let app;
 
 try {
     app = require("./app");
-    console.log("✅ app.js loaded");
 } catch (err) {
     console.error("❌ Error loading app.js");
     console.error(err);
@@ -21,12 +20,6 @@ try {
 }
 
 const connectDB = require("./config/db");
-
-console.log("Step 1");
-console.log("Step 2");
-console.log("Step 3");
-console.log("Step 4");
-
 const PORT = process.env.PORT || 3000;
 /**
  * Create HTTP Server
@@ -36,12 +29,9 @@ const server = http.createServer(app);
  * Connect MongoDB
  */
 const startServer = async () => {
-    try { console.log("Before DB");
-         
+    try { 
         await connectDB();
-         
-          console.log("After DB");
-         
+        await createAdmin();
         server.listen(PORT, () => {
             console.log(`Server running on ${PORT}`);
         });
