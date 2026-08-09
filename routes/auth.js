@@ -1,181 +1,193 @@
 const express = require("express");
 const router = express.Router();
 
-const authController = require("../controllers/auth/authController");
-
 const auth = require("../middleware/auth");
+const admin = require("../middleware/admin");
 
-const {
-  loginLimiter,
-  apiLimiter
-} = require("../middleware/rateLimiter");
+const dashboardController =
+    require("../controllers/admin/dashboardController");
 
+const analyticsController =
+    require("../controllers/analytics/analyticsController");
 
-// ==========================================================
-// BROWSER PAGES
-// ==========================================================
-
-router.get("/login", (req, res) => {
-
-    if (req.user) {
-        return res.redirect("/");
-    }
-
-    res.render("auth/login", {
-        title: "Login",
-        activePage: "login",
-        redirect: req.query.redirect || ""
-    });
-
-});
-
-
-router.get("/register", (req, res) => {
-
-    if (req.user) {
-        return res.redirect("/");
-    }
-
-    res.render("auth/register", {
-        title: "Register",
-        activePage: "register"
-    });
-
-});
-
-
-router.get("/forgot-password", (req, res) => {
-
-    res.render("auth/forgot-password", {
-        title: "Forgot Password"
-    });
-
-});
-
-
-router.get("/reset-password", (req, res) => {
-
-    res.render("auth/reset-password", {
-        title: "Reset Password"
-    });
-
-});
+const settingsController =
+    require("../controllers/settings/settingsController");
 
 
 // ==========================================================
-// USER LOGIN
-// ==========================================================
-
-router.post(
-    "/login",
-    loginLimiter,
-    authController.login
-);
-
-
-// ==========================================================
-// FORGOT PASSWORD
-// ==========================================================
-
-router.post(
-    "/forgot-password",
-    loginLimiter,
-    authController.forgotPassword
-);
-
-
-// ==========================================================
-// RESET PASSWORD
-// ==========================================================
-
-router.post(
-    "/reset-password",
-    loginLimiter,
-    authController.resetPassword
-);
-
-
-// ==========================================================
-// REFRESH TOKEN
-// ==========================================================
-
-router.post(
-    "/refresh-token",
-    apiLimiter,
-    authController.refreshToken
-);
-
-
-// ==========================================================
-// PROTECTED USER ROUTES
-// ==========================================================
-
-
-// Profile
-
-router.get(
-    "/profile",
-    auth,
-    authController.profile
-);
-
-
-// Logout
-
-router.post(
-    "/logout",
-    auth,
-    authController.logout
-);
-
-
-// Change Password
-
-router.post(
-    "/change-password",
-    auth,
-    authController.changePassword
-);
-
-
-// ==========================================================
-// ADMIN LOGIN PAGE
-// ==========================================================
-// GET /auth/admin-login
+// ADMIN ROOT
+// GET /admin
 // ==========================================================
 
 router.get(
-    "/admin-login",
+    "/",
+    auth,
+    admin(),
     (req, res) => {
-
-        if (req.user) {
-            return res.redirect("/admin/dashboard");
-        }
-
-        res.render("admin/login", {
-            title: "Admin Login - SMS Hindi Shayari",
-            activePage: "admin-login"
-        });
-
+        return res.redirect("/admin/dashboard");
     }
 );
 
 
 // ==========================================================
-// ADMIN LOGIN
-// ==========================================================
-// POST /auth/admin-login
+// ADMIN DASHBOARD
+// GET /admin/dashboard
 // ==========================================================
 
-router.post(
-    "/admin-login",
-    loginLimiter,
-    authController.login
+router.get(
+    "/dashboard",
+    auth,
+    admin(),
+    dashboardController.dashboard
 );
 
 
 // ==========================================================
-// EXPORT
+// ANALYTICS
 // ==========================================================
+
+router.get(
+    "/analytics",
+    auth,
+    admin(),
+    analyticsController.dashboard
+);
+
+router.get(
+    "/analytics/daily",
+    auth,
+    admin(),
+    analyticsController.dailyVisitors
+);
+
+router.get(
+    "/analytics/monthly",
+    auth,
+    admin(),
+    analyticsController.monthlyVisitors
+);
+
+router.get(
+    "/analytics/top-shayari",
+    auth,
+    admin(),
+    analyticsController.topShayari
+);
+
+router.get(
+    "/analytics/top-category",
+    auth,
+    admin(),
+    analyticsController.topCategories
+);
+
+router.get(
+    "/analytics/downloads",
+    auth,
+    admin(),
+    analyticsController.downloadReport
+);
+
+router.get(
+    "/analytics/devices",
+    auth,
+    admin(),
+    analyticsController.deviceStatistics
+);
+
+router.get(
+    "/analytics/browser",
+    auth,
+    admin(),
+    analyticsController.browserStatistics
+);
+
+router.get(
+    "/analytics/country",
+    auth,
+    admin(),
+    analyticsController.countryStatistics
+);
+
+router.get(
+    "/analytics/graph",
+    auth,
+    admin(),
+    analyticsController.graph
+);
+
+
+// ==========================================================
+// WEBSITE SETTINGS
+// ==========================================================
+
+router.get(
+    "/settings",
+    auth,
+    admin(),
+    settingsController.index
+);
+
+router.post(
+    "/settings/general",
+    auth,
+    admin(),
+    settingsController.updateGeneral
+);
+
+router.put(
+    "/settings/seo",
+    auth,
+    admin(),
+    settingsController.updateSeo
+);
+
+router.put(
+    "/settings/adsense",
+    auth,
+    admin(),
+    settingsController.updateAdsense
+);
+
+router.put(
+    "/settings/github",
+    auth,
+    admin(),
+    settingsController.updateGithub
+);
+
+router.put(
+    "/settings/ai",
+    auth,
+    admin(),
+    settingsController.updateAI
+);
+
+router.put(
+    "/settings/maintenance",
+    auth,
+    admin(),
+    settingsController.toggleMaintenance
+);
+
+
+// ==========================================================
+// BACKUP / RESTORE
+// ==========================================================
+
+router.get(
+    "/backup",
+    auth,
+    admin(),
+    settingsController.backup
+);
+
+router.post(
+    "/restore",
+    auth,
+    admin(),
+    settingsController.restore
+);
+
 
 module.exports = router;
