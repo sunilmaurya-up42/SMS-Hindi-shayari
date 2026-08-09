@@ -67,18 +67,42 @@ exports.login = async (req, res) => {
       userAgent: req.headers["user-agent"]
     });
 
-    return res.json({
-      success: true,
-      message: "Login successful.",
-      token,
-      admin: {
-        id: admin._id,
-        name: admin.name,
-        email: admin.email,
-        role: admin.role
-      }
-    });
+    res.cookie("token", token, {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "lax",
+  maxAge: 1000 * 60 * 60 * 24 * 7
+});
 
+req.login(admin, (err) => {
+
+  if (err) {
+
+    console.error(
+      "Admin Session Login Error:",
+      err
+    );
+
+    return res.status(500).render(
+      "admin/login",
+      {
+        title: "Admin Login - SMS Hindi Shayari",
+        error_msg: "Login failed. Please try again."
+      }
+    );
+
+  }
+
+  req.flash(
+    "success_msg",
+    "Admin login successful."
+  );
+
+  return res.redirect(
+    "/admin/dashboard"
+  );
+
+});
   } catch (error) {
 
     console.error(error);
