@@ -5,7 +5,7 @@ const rateLimit = require("express-rate-limit");
  */
 const apiLimiter = rateLimit({
 
-    windowMs: 15 * 60 * 1000, // 15 Minutes
+    windowMs: 15 * 60 * 1000,
 
     max: 300,
 
@@ -20,14 +20,18 @@ const apiLimiter = rateLimit({
 
 });
 
+
 /**
  * Login Rate Limiter
+ *
+ * 10 failed attempts allowed within 5 minutes.
+ * Successful login attempts are not counted.
  */
 const loginLimiter = rateLimit({
 
-    windowMs: 15 * 60 * 1000,
+    windowMs: 5 * 60 * 1000,
 
-    max: 5,
+    max: 10,
 
     standardHeaders: true,
 
@@ -37,10 +41,11 @@ const loginLimiter = rateLimit({
 
     message: {
         success: false,
-        message: "Too many login attempts. Please try again after 15 minutes."
+        message: "Too many failed login attempts. Please try again after 5 minutes."
     }
 
 });
+
 
 /**
  * Contact Form Limiter
@@ -62,6 +67,7 @@ const contactLimiter = rateLimit({
 
 });
 
+
 /**
  * Comment Limiter
  */
@@ -77,6 +83,7 @@ const commentLimiter = rateLimit({
     }
 
 });
+
 
 /**
  * AI Image Generate Limiter
@@ -94,6 +101,7 @@ const aiImageLimiter = rateLimit({
 
 });
 
+
 /**
  * Download Limiter
  */
@@ -109,6 +117,7 @@ const downloadLimiter = rateLimit({
     }
 
 });
+
 
 /**
  * Search Limiter
@@ -126,6 +135,7 @@ const searchLimiter = rateLimit({
 
 });
 
+
 /**
  * Admin API Limiter
  */
@@ -141,6 +151,7 @@ const adminLimiter = rateLimit({
     }
 
 });
+
 
 /**
  * Export
