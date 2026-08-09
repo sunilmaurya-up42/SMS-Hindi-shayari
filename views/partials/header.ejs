@@ -1,0 +1,262 @@
+<header class="site-header bg-white border-bottom shadow-sm">
+
+    <div class="container-fluid container-lg">
+
+        <div class="site-header-inner">
+
+            <!-- Logo -->
+            <a href="/" class="site-logo text-decoration-none">
+
+                <img
+                    src="/images/logo.png"
+                    alt="SMS Hindi Shayari"
+                    class="site-logo-img">
+
+                <div class="site-logo-text">
+
+                    <div class="site-title">
+                        SMS Hindi Shayari
+                    </div>
+
+                    <div class="site-tagline">
+                        Shayari Collection
+                    </div>
+
+                </div>
+
+            </a>
+
+
+            <!-- Desktop Search -->
+            <form
+                action="/search"
+                method="GET"
+                class="header-search">
+
+                <div class="input-group">
+
+                    <input
+                        type="search"
+                        name="q"
+                        class="form-control"
+                        placeholder="Search Shayari..."
+                        value="<%= typeof query !== 'undefined' ? query : '' %>"
+                        autocomplete="off">
+
+                    <button
+                        class="btn btn-primary"
+                        type="submit">
+
+                        <i class="fa-solid fa-magnifying-glass"></i>
+
+                        <span>Search</span>
+
+                    </button>
+
+                </div>
+
+            </form>
+
+
+            <!-- Right Menu -->
+            <div class="header-actions">
+
+                <!-- Theme -->
+                <button
+                    id="themeToggle"
+                    type="button"
+                    class="btn btn-primary theme-btn"
+                    aria-label="Toggle theme">
+
+                    <i class="fa-solid fa-moon"></i>
+
+                </button>
+
+
+                <% if (typeof user !== 'undefined' && user) { %>
+
+                    <!-- Logged-in User -->
+                    <div class="dropdown">
+
+                        <button
+                            class="btn btn-outline-primary dropdown-toggle"
+                            type="button"
+                            data-bs-toggle="dropdown">
+
+                            <i class="fa-solid fa-user me-1"></i>
+
+                            <span class="user-name">
+                                <%= user.name %>
+                            </span>
+
+                        </button>
+
+
+                        <ul class="dropdown-menu dropdown-menu-end">
+
+                            <li>
+                                <a
+                                    class="dropdown-item"
+                                    href="/profile">
+
+                                    <i class="fa-solid fa-user me-2"></i>
+                                    Profile
+
+                                </a>
+                            </li>
+
+
+                            <li>
+                                <a
+                                    class="dropdown-item"
+                                    href="/downloads">
+
+                                    <i class="fa-solid fa-download me-2"></i>
+                                    Downloads
+
+                                </a>
+                            </li>
+
+
+                            <% if (
+                                user.role === "admin" ||
+                                user.role === "super-admin"
+                            ) { %>
+
+                                <li>
+
+                                    <a
+                                        class="dropdown-item"
+                                        href="/admin">
+
+                                        <i class="fa-solid fa-gauge me-2"></i>
+                                        Admin Dashboard
+
+                                    </a>
+
+                                </li>
+
+                            <% } %>
+
+
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+
+
+                            <li>
+
+                                <a
+                                    class="dropdown-item text-danger"
+                                    href="/logout">
+
+                                    <i class="fa-solid fa-right-from-bracket me-2"></i>
+                                    Logout
+
+                                </a>
+
+                            </li>
+
+                        </ul>
+
+                    </div>
+
+
+                <% } else { %>
+
+                    <!-- Guest -->
+                    <a
+                        href="/login"
+                        class="btn btn-primary header-login">
+
+                        Login
+
+                    </a>
+
+
+                    <a
+                        href="/register"
+                        class="btn btn-primary header-register">
+
+                        Register
+
+                    </a>
+
+                <% } %>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<script>
+(function () {
+
+    const themeButton =
+        document.getElementById("themeToggle");
+
+    if (!themeButton) return;
+
+
+    function updateThemeIcon() {
+
+        const icon =
+            themeButton.querySelector("i");
+
+        if (!icon) return;
+
+        if (
+            document.body.classList.contains("dark-mode")
+        ) {
+
+            icon.className =
+                "fa-solid fa-sun";
+
+        } else {
+
+            icon.className =
+                "fa-solid fa-moon";
+
+        }
+
+    }
+
+
+    themeButton.addEventListener(
+        "click",
+        function () {
+
+            document.body.classList.toggle(
+                "dark-mode"
+            );
+
+            localStorage.setItem(
+                "theme",
+                document.body.classList.contains("dark-mode")
+                    ? "dark"
+                    : "light"
+            );
+
+            updateThemeIcon();
+
+        }
+    );
+
+
+    if (
+        localStorage.getItem("theme") === "dark"
+    ) {
+
+        document.body.classList.add("dark-mode");
+
+    }
+
+
+    updateThemeIcon();
+
+})();
+</script>
