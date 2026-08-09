@@ -135,7 +135,27 @@ router.get(
     "/settings",
     auth,
     admin(),
-    settingsController.index
+    (req, res, next) => {
+
+        try {
+
+            return res.render("admin/settings", {
+                title: "Settings - Admin",
+                activePage: "settings",
+                user: req.user
+            });
+
+        } catch (error) {
+
+            console.error(
+                "❌ Admin Settings Page Error:",
+                error
+            );
+
+            return next(error);
+        }
+
+    }
 );
 
 router.post(
