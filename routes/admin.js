@@ -4,15 +4,19 @@ const router = express.Router();
 const auth = require("../middleware/auth");
 const admin = require("../middleware/admin");
 
-const dashboardController = require("../controllers/admin/dashboardController");
-const analyticsController = require("../controllers/analytics/analyticsController");
-const settingsController = require("../controllers/settings/settingsController");
+const dashboardController =
+    require("../controllers/admin/dashboardController");
+
+const analyticsController =
+    require("../controllers/analytics/analyticsController");
+
+const settingsController =
+    require("../controllers/settings/settingsController");
+
 
 /*
 |--------------------------------------------------------------------------
 | ADMIN ROOT
-|--------------------------------------------------------------------------
-| GET /admin
 |--------------------------------------------------------------------------
 */
 
@@ -25,23 +29,24 @@ router.get(
         }
 
         return res.redirect("/admin/dashboard");
+
     }
 );
+
 
 /*
 |--------------------------------------------------------------------------
 | ADMIN DASHBOARD
-|--------------------------------------------------------------------------
-| GET /admin/dashboard
 |--------------------------------------------------------------------------
 */
 
 router.get(
     "/dashboard",
     auth,
-    admin,
+    admin(),
     dashboardController.dashboard
 );
+
 
 /*
 |--------------------------------------------------------------------------
@@ -52,72 +57,73 @@ router.get(
 router.get(
     "/analytics",
     auth,
-    admin,
+    admin(),
     analyticsController.dashboard
 );
 
 router.get(
     "/analytics/daily",
     auth,
-    admin,
+    admin(),
     analyticsController.dailyVisitors
 );
 
 router.get(
     "/analytics/monthly",
     auth,
-    admin,
+    admin(),
     analyticsController.monthlyVisitors
 );
 
 router.get(
     "/analytics/top-shayari",
     auth,
-    admin,
+    admin(),
     analyticsController.topShayari
 );
 
 router.get(
     "/analytics/top-category",
     auth,
-    admin,
+    admin(),
     analyticsController.topCategories
 );
 
 router.get(
     "/analytics/downloads",
     auth,
-    admin,
+    admin(),
     analyticsController.downloadReport
 );
 
 router.get(
     "/analytics/devices",
     auth,
-    admin,
+    admin(),
     analyticsController.deviceStatistics
 );
 
 router.get(
     "/analytics/browser",
     auth,
-    admin,
+    admin(),
     analyticsController.browserStatistics
 );
 
 router.get(
     "/analytics/country",
     auth,
-    admin,
+    admin(),
     analyticsController.countryStatistics
 );
 
 router.get(
     "/analytics/graph",
     auth,
-    admin,
+    admin(),
     analyticsController.graph
 );
+
 
 /*
 |--------------------------------------------------------------------------
@@ -128,51 +134,52 @@ router.get(
 router.get(
     "/settings",
     auth,
-    admin,
+    admin(),
     settingsController.index
 );
 
 router.post(
     "/settings/general",
     auth,
-    admin,
+    admin(),
     settingsController.updateGeneral
 );
 
 router.put(
     "/settings/seo",
     auth,
-    admin,
+    admin(),
     settingsController.updateSeo
 );
 
 router.put(
     "/settings/adsense",
     auth,
-    admin,
+    admin(),
     settingsController.updateAdsense
 );
 
 router.put(
     "/settings/github",
     auth,
-    admin,
+    admin(),
     settingsController.updateGithub
 );
 
 router.put(
     "/settings/ai",
     auth,
-    admin,
+    admin(),
     settingsController.updateAI
 );
 
 router.put(
     "/settings/maintenance",
     auth,
-    admin,
+    admin(),
     settingsController.toggleMaintenance
 );
+
 
 /*
 |--------------------------------------------------------------------------
@@ -183,15 +190,16 @@ router.put(
 router.get(
     "/backup",
     auth,
-    admin,
+    admin(),
     settingsController.backup
 );
 
 router.post(
     "/restore",
     auth,
-    admin,
+    admin(),
     settingsController.restore
 );
+
 
 module.exports = router;
