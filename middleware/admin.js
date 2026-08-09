@@ -1,3 +1,11 @@
+/*
+|--------------------------------------------------------------------------
+| Admin Authorization Middleware
+|--------------------------------------------------------------------------
+| Checks whether the authenticated user has admin privileges.
+|--------------------------------------------------------------------------
+*/
+
 module.exports = (options = {}) => {
 
     return (req, res, next) => {
@@ -15,25 +23,39 @@ module.exports = (options = {}) => {
 
             const userRole = req.user.role;
 
-            // Super Admin
-            if (userRole === "super-admin") {
+            /*
+            |--------------------------------------------------------------------------
+            | Super Admin
+            |--------------------------------------------------------------------------
+            */
+
+            if (userRole === "super_admin") {
                 return next();
             }
 
-            // Admin
+            /*
+            |--------------------------------------------------------------------------
+            | Admin
+            |--------------------------------------------------------------------------
+            */
+
             if (userRole === "admin") {
 
                 if (!options.roles) {
                     return next();
                 }
 
-                if (options.roles.includes(userRole)) {
+                if (options.roles.includes("admin")) {
                     return next();
                 }
-
             }
 
-            // Custom Roles
+            /*
+            |--------------------------------------------------------------------------
+            | Custom Roles
+            |--------------------------------------------------------------------------
+            */
+
             if (
                 options.roles &&
                 options.roles.includes(userRole)
@@ -48,7 +70,10 @@ module.exports = (options = {}) => {
 
         } catch (error) {
 
-            console.error(error);
+            console.error(
+                "Admin Authorization Error:",
+                error
+            );
 
             return res.status(500).json({
                 success: false,
@@ -61,9 +86,13 @@ module.exports = (options = {}) => {
 
 };
 
-/**
- * Super Admin Middleware
- */
+
+/*
+|--------------------------------------------------------------------------
+| Super Admin Middleware
+|--------------------------------------------------------------------------
+*/
+
 module.exports.superAdmin = (req, res, next) => {
 
     if (!req.user) {
@@ -75,7 +104,7 @@ module.exports.superAdmin = (req, res, next) => {
 
     }
 
-    if (req.user.role !== "super-admin") {
+    if (req.user.role !== "super_admin") {
 
         return res.status(403).json({
             success: false,
@@ -88,9 +117,13 @@ module.exports.superAdmin = (req, res, next) => {
 
 };
 
-/**
- * Permission Middleware
- */
+
+/*
+|--------------------------------------------------------------------------
+| Permission Middleware
+|--------------------------------------------------------------------------
+*/
+
 module.exports.permission = (...permissions) => {
 
     return (req, res, next) => {
@@ -98,20 +131,30 @@ module.exports.permission = (...permissions) => {
         if (!req.user) {
 
             return res.status(401).json({
-                success: false
+                success: false,
+                message: "Authentication required."
             });
 
         }
 
-        if (req.user.role === "super-admin") {
+        /*
+        |--------------------------------------------------------------------------
+        | Super Admin has all permissions
+        |--------------------------------------------------------------------------
+        */
+
+        if (req.user.role === "super_admin") {
             return next();
         }
 
-        const userPermissions = req.user.permissions || [];
+        const userPermissions =
+            req.user.permissions || [];
 
-        const allowed = permissions.every(permission =>
-            userPermissions.includes(permission)
-        );
+        const allowed =
+            permissions.every(
+                permission =>
+                    userPermissions.includes(permission)
+            );
 
         if (!allowed) {
 
@@ -128,26 +171,21 @@ module.exports.permission = (...permissions) => {
 
 };
 
-/**
- * Read Permission
- */
+
+/*
+|--------------------------------------------------------------------------
+| Standard Permissions
+|--------------------------------------------------------------------------
+*/
+
 module.exports.canRead =
     module.exports.permission("read");
 
-/**
- * Write Permission
- */
 module.exports.canWrite =
     module.exports.permission("write");
 
-/**
- * Delete Permission
- */
 module.exports.canDelete =
     module.exports.permission("delete");
 
-/**
- * Manage Settings Permission
- */
 module.exports.manageSettings =
     module.exports.permission("settings");
