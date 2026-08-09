@@ -1,0 +1,273 @@
+<section class="py-5">
+
+    <div class="container">
+
+        <!-- Page Header -->
+        <div class="mb-4">
+
+            <h1 class="fw-bold">
+
+                Search Results
+
+            </h1>
+
+            <p class="text-muted">
+
+                <% if (query) { %>
+
+                    Showing results for
+                    <strong>"<%= query %>"</strong>
+
+                <% } else { %>
+
+                    Search Hindi Shayari
+
+                <% } %>
+
+            </p>
+
+        </div>
+
+        <div class="row">
+
+            <!-- Sidebar Filters -->
+            <div class="col-lg-3 mb-4">
+
+                <div class="card shadow-sm">
+
+                    <div class="card-header">
+
+                        <strong>
+
+                            Filters
+
+                        </strong>
+
+                    </div>
+
+                    <div class="card-body">
+
+                        <form
+                            action="/search"
+                            method="GET">
+
+                            <input
+                                type="hidden"
+                                name="q"
+                                value="<%= query || '' %>">
+
+                            <!-- Category -->
+                            <div class="mb-3">
+
+                                <label class="form-label">
+
+                                    Category
+
+                                </label>
+
+                                <select
+                                    name="category"
+                                    class="form-select">
+
+                                    <option value="">
+
+                                        All Categories
+
+                                    </option>
+
+                                    <% if (categories) { %>
+
+                                        <% categories.forEach(category => { %>
+
+                                            <option
+                                                value="<%= category.slug %>"
+                                                <%= selectedCategory === category.slug ? "selected" : "" %>>
+
+                                                <%= category.name %>
+
+                                            </option>
+
+                                        <% }) %>
+
+                                    <% } %>
+
+                                </select>
+
+                            </div>
+
+                            <!-- Sort -->
+                            <div class="mb-3">
+
+                                <label class="form-label">
+
+                                    Sort By
+
+                                </label>
+
+                                <select
+                                    name="sort"
+                                    class="form-select">
+
+                                    <option value="latest">
+
+                                        Latest
+
+                                    </option>
+
+                                    <option value="popular">
+
+                                        Popular
+
+                                    </option>
+
+                                    <option value="oldest">
+
+                                        Oldest
+
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                            <button
+                                class="btn btn-primary w-100"
+                                type="submit">
+
+                                Apply Filters
+
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Results -->
+            <div class="col-lg-9">
+
+                <% if (results && results.length) { %>
+
+                    <div class="row">
+
+                        <% results.forEach(item => { %>
+
+                            <div class="col-md-6 mb-4">
+
+                                <div class="card h-100 shadow-sm">
+
+                                    <% if (item.imageUrl) { %>
+
+                                        <img
+                                            src="<%= item.imageUrl %>"
+                                            class="card-img-top"
+                                            alt="<%= item.title %>">
+
+                                    <% } %>
+
+                                    <div class="card-body">
+
+                                        <h5>
+
+                                            <%= item.title %>
+
+                                        </h5>
+
+                                        <p>
+
+                                            <%= item.content.substring(0,150) %>...
+
+                                        </p>
+
+                                        <div class="d-flex justify-content-between align-items-center">
+
+                                            <small class="text-muted">
+
+                                                <%= item.category?.name || "" %>
+
+                                            </small>
+
+                                            <a
+                                                href="/shayari/<%= item.slug %>"
+                                                class="btn btn-sm btn-primary">
+
+                                                Read More
+
+                                            </a>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        <% }) %>
+
+                    </div>
+
+                <% } else { %>
+
+                    <div class="alert alert-warning text-center">
+
+                        <h4>
+
+                            No Results Found
+
+                        </h4>
+
+                        <p>
+
+                            Try searching with different keywords.
+
+                        </p>
+
+                    </div>
+
+                <% } %>
+
+                <!-- Pagination -->
+                <% if (pagination && pagination.totalPages > 1) { %>
+
+                    <nav class="mt-4">
+
+                        <ul class="pagination justify-content-center">
+
+                            <% for (
+                                let i = 1;
+                                i <= pagination.totalPages;
+                                i++
+                            ) { %>
+
+                                <li
+                                    class="page-item <%= pagination.page === i ? 'active' : '' %>">
+
+                                    <a
+                                        class="page-link"
+                                        href="?q=<%= query %>&page=<%= i %>">
+
+                                        <%= i %>
+
+                                    </a>
+
+                                </li>
+
+                            <% } %>
+
+                        </ul>
+
+                    </nav>
+
+                <% } %>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>

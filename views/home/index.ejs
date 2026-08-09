@@ -1,0 +1,303 @@
+<section class="hero py-5">
+
+    <div class="container">
+
+        <div class="row align-items-center">
+
+            <div class="col-lg-7">
+
+                <h1 class="display-5 fw-bold">
+
+                    SMS Hindi Shayari
+
+                </h1>
+
+                <p class="lead">
+
+                    Love, Sad, Attitude, Friendship, Motivational,
+                    Festival और अन्य सभी प्रकार की बेहतरीन
+                    हिंदी शायरी का विशाल संग्रह।
+
+                </p>
+
+                <form
+                    action="/search"
+                    method="GET"
+                    class="mt-4">
+
+                    <div class="input-group input-group-lg">
+
+                        <input
+                            type="search"
+                            name="q"
+                            class="form-control"
+                            placeholder="Search Shayari..."
+                            required>
+
+                        <button
+                            class="btn btn-primary"
+                            type="submit">
+
+                            <i class="fa-solid fa-search"></i>
+
+                            Search
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+            <div class="col-lg-5 text-center mt-4 mt-lg-0">
+
+                <img
+                    src="/images/banner-default.png"
+                    alt="SMS Hindi Shayari"
+                    class="img-fluid rounded shadow">
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- Categories -->
+
+<section class="py-5 bg-light">
+
+    <div class="container">
+
+        <h2 class="mb-4">
+
+            Browse Categories
+
+        </h2>
+
+        <div class="row">
+
+            <% if (categories && categories.length) { %>
+
+                <% categories.forEach(category => { %>
+
+                    <div class="col-lg-3 col-md-4 col-6 mb-4">
+
+                        <a
+                            href="/category/<%= category.slug %>"
+                            class="text-decoration-none">
+
+                            <div class="card h-100 shadow-sm">
+
+                                <% if (category.image) { %>
+
+                                    <img
+                                        src="<%= category.image %>"
+                                        class="card-img-top"
+                                        alt="<%= category.name %>">
+
+                                <% } %>
+
+                                <div class="card-body text-center">
+
+                                    <h5>
+
+                                        <%= category.name %>
+
+                                    </h5>
+
+                                </div>
+
+                            </div>
+
+                        </a>
+
+                    </div>
+
+                <% }) %>
+
+            <% } else { %>
+
+                <div class="col-12">
+
+                    <div class="alert alert-info">
+
+                        No Categories Found.
+
+                    </div>
+
+                </div>
+
+            <% } %>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- Latest Shayari -->
+
+<section class="py-5">
+
+    <div class="container">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+            <h2>
+
+                Latest Shayari
+
+            </h2>
+
+            <a
+                href="/latest"
+                class="btn btn-outline-primary">
+
+                View All
+
+            </a>
+
+        </div>
+
+        <div class="row">
+
+            <% if (latestShayari && latestShayari.length) { %>
+
+                <% latestShayari.forEach(item => { %>
+
+                    <div class="col-lg-4 mb-4">
+
+                        <div class="card shadow-sm h-100">
+
+                            <% if (item.imageUrl) { %>
+
+                                <img
+                                    src="<%= item.imageUrl %>"
+                                    class="card-img-top"
+                                    alt="<%= item.title %>">
+
+                            <% } %>
+
+                            <div class="card-body">
+
+                                <h5>
+
+                                    <%= item.title %>
+
+                                </h5>
+
+                                <p>
+
+                                    <%= item.content.substring(0,150) %>...
+
+                                </p>
+
+                                <a
+                                    href="/shayari/<%= item.slug %>"
+                                    class="btn btn-primary">
+
+                                    Read More
+
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                <% }) %>
+
+            <% } else { %>
+
+                <div class="col-12">
+
+                    <div class="alert alert-warning">
+
+                        No Shayari Available.
+
+                    </div>
+
+                </div>
+
+            <% } %>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- Popular Shayari -->
+
+<section class="py-5 bg-light">
+
+    <div class="container">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+            <h2>
+
+                Popular Shayari
+
+            </h2>
+
+            <a
+                href="/popular"
+                class="btn btn-outline-primary">
+
+                View All
+
+            </a>
+
+        </div>
+
+        <div class="row">
+
+            <% if (popularShayari && popularShayari.length) { %>
+
+                <% popularShayari.forEach(item => { %>
+
+                    <div class="col-md-6 mb-3">
+
+                        <div class="card shadow-sm">
+
+                            <div class="card-body">
+
+                                <h5>
+
+                                    <%= item.title %>
+
+                                </h5>
+
+                                <p>
+
+                                    <%= item.content.substring(0,120) %>...
+
+                                </p>
+
+                                <a
+                                    href="/shayari/<%= item.slug %>">
+
+                                    Read More →
+
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                <% }) %>
+
+            <% } %>
+
+        </div>
+
+    </div>
+
+</section>

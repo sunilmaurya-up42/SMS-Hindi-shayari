@@ -1,0 +1,249 @@
+<section class="py-5">
+
+    <div class="container">
+
+        <!-- Page Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+            <div>
+
+                <h1 class="fw-bold">
+
+                    Latest Shayari
+
+                </h1>
+
+                <p class="text-muted mb-0">
+
+                    Recently published Hindi Shayari collection.
+
+                </p>
+
+            </div>
+
+            <a
+                href="/"
+                class="btn btn-outline-primary">
+
+                <i class="fa-solid fa-house me-2"></i>
+
+                Home
+
+            </a>
+
+        </div>
+
+        <!-- View Toggle -->
+        <div class="d-flex justify-content-end mb-4">
+
+            <button
+                class="btn btn-outline-secondary me-2"
+                id="gridView">
+
+                <i class="fa-solid fa-table"></i>
+
+            </button>
+
+            <button
+                class="btn btn-outline-secondary"
+                id="listView">
+
+                <i class="fa-solid fa-list"></i>
+
+            </button>
+
+        </div>
+
+        <!-- Shayari List -->
+        <div
+            class="row"
+            id="shayariContainer">
+
+            <% if (latestShayari && latestShayari.length) { %>
+
+                <% latestShayari.forEach(item => { %>
+
+                    <div class="col-lg-4 mb-4 shayari-item">
+
+                        <div class="card h-100 shadow-sm">
+
+                            <% if (item.imageUrl) { %>
+
+                                <img
+                                    src="<%= item.imageUrl %>"
+                                    class="card-img-top"
+                                    alt="<%= item.title %>">
+
+                            <% } %>
+
+                            <div class="card-body">
+
+                                <span
+                                    class="badge bg-primary mb-2">
+
+                                    <%= item.category?.name || "General" %>
+
+                                </span>
+
+                                <h5 class="card-title">
+
+                                    <%= item.title %>
+
+                                </h5>
+
+                                <p class="card-text">
+
+                                    <%= item.content.substring(0, 180) %>...
+
+                                </p>
+
+                            </div>
+
+                            <div class="card-footer bg-white">
+
+                                <div class="d-flex justify-content-between small text-muted mb-2">
+
+                                    <span>
+
+                                        <i class="fa-solid fa-user"></i>
+
+                                        <%= item.author?.name || "Admin" %>
+
+                                    </span>
+
+                                    <span>
+
+                                        <i class="fa-solid fa-calendar"></i>
+
+                                        <%= new Date(item.createdAt).toLocaleDateString() %>
+
+                                    </span>
+
+                                </div>
+
+                                <div class="d-flex justify-content-between align-items-center">
+
+                                    <div>
+
+                                        <span class="me-3">
+
+                                            <i class="fa-solid fa-eye"></i>
+
+                                            <%= item.views || 0 %>
+
+                                        </span>
+
+                                        <span>
+
+                                            <i class="fa-solid fa-heart text-danger"></i>
+
+                                            <%= item.likes || 0 %>
+
+                                        </span>
+
+                                    </div>
+
+                                    <a
+                                        href="/shayari/<%= item.slug %>"
+                                        class="btn btn-sm btn-primary">
+
+                                        Read More
+
+                                    </a>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                <% }) %>
+
+            <% } else { %>
+
+                <div class="col-12">
+
+                    <div class="alert alert-warning text-center">
+
+                        No Latest Shayari Found.
+
+                    </div>
+
+                </div>
+
+            <% } %>
+
+        </div>
+
+        <!-- Pagination -->
+        <% if (pagination && pagination.totalPages > 1) { %>
+
+            <nav class="mt-4">
+
+                <ul class="pagination justify-content-center">
+
+                    <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+
+                        <li
+                            class="page-item <%= pagination.page === i ? 'active' : '' %>">
+
+                            <a
+                                class="page-link"
+                                href="?page=<%= i %>">
+
+                                <%= i %>
+
+                            </a>
+
+                        </li>
+
+                    <% } %>
+
+                </ul>
+
+            </nav>
+
+        <% } %>
+
+    </div>
+
+</section>
+
+<script>
+
+const container =
+    document.getElementById("shayariContainer");
+
+document.getElementById("listView")
+?.addEventListener("click", () => {
+
+    container
+        .querySelectorAll(".shayari-item")
+        .forEach(item => {
+
+            item.classList.remove("col-lg-4");
+
+            item.classList.add("col-12");
+
+        });
+
+});
+
+document.getElementById("gridView")
+?.addEventListener("click", () => {
+
+    container
+        .querySelectorAll(".shayari-item")
+        .forEach(item => {
+
+            item.classList.remove("col-12");
+
+            item.classList.add("col-lg-4");
+
+        });
+
+});
+
+</script>
