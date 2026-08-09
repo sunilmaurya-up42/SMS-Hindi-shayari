@@ -1,0 +1,29 @@
+<section class="py-5">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h1 class="fw-bold">Shayari Categories</h1>
+      <p class="text-muted">अपनी पसंद की शायरी की कैटेगरी चुनें।</p>
+    </div>
+    <div class="row">
+      <% if (categories && categories.length) { %>
+        <% categories.forEach(category => { %>
+          <div class="col-lg-3 col-md-4 col-6 mb-4">
+            <a href="/category/<%= category.slug %>" class="text-decoration-none">
+              <div class="card h-100 shadow-sm border-0">
+                <% if (category.image) { %>
+                  <img src="<%= category.image %>" class="card-img-top" alt="<%= category.name %>">
+                <% } %>
+                <div class="card-body text-center">
+                  <div class="fs-3 mb-2"><%= category.icon || "📝" %></div>
+                  <h5 class="mb-0"><%= category.name %></h5>
+                </div>
+              </div>
+            </a>
+          </div>
+        <% }) %>
+      <% } else { %>
+        <div class="col-12"><div class="alert alert-info text-center">No Categories Found.</div></div>
+      <% } %>
+    </div>
+  </div>
+</section>
