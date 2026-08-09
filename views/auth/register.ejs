@@ -1,0 +1,289 @@
+<section class="py-5">
+
+    <div class="container">
+
+        <div class="row justify-content-center">
+
+            <div class="col-lg-6 col-md-8">
+
+                <div class="card shadow border-0">
+
+                    <div class="card-body p-4">
+
+                        <div class="text-center mb-4">
+
+                            <h2 class="fw-bold">
+
+                                Create Account
+
+                            </h2>
+
+                            <p class="text-muted">
+
+                                Join SMS Hindi Shayari today.
+
+                            </p>
+
+                        </div>
+
+                        <% if(success_msg){ %>
+
+                            <div class="alert alert-success">
+
+                                <%= success_msg %>
+
+                            </div>
+
+                        <% } %>
+
+                        <% if(error_msg){ %>
+
+                            <div class="alert alert-danger">
+
+                                <%= error_msg %>
+
+                            </div>
+
+                        <% } %>
+
+                        <form
+                            action="/auth/register"
+                            method="POST"
+                            enctype="multipart/form-data">
+
+                            <input
+                                type="hidden"
+                                name="_csrf"
+                                value="<%= csrfToken %>">
+
+                            <!-- Name -->
+                            <div class="mb-3">
+
+                                <label class="form-label">
+
+                                    Full Name
+
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="name"
+                                    class="form-control"
+                                    placeholder="Enter your full name"
+                                    required>
+
+                            </div>
+
+                            <!-- Email -->
+                            <div class="mb-3">
+
+                                <label class="form-label">
+
+                                    Email
+
+                                </label>
+
+                                <input
+                                    type="email"
+                                    name="email"
+                                    class="form-control"
+                                    placeholder="Enter your email"
+                                    required>
+
+                            </div>
+
+                            <!-- Avatar -->
+                            <div class="mb-3">
+
+                                <label class="form-label">
+
+                                    Profile Picture (Optional)
+
+                                </label>
+
+                                <input
+                                    type="file"
+                                    name="avatar"
+                                    class="form-control"
+                                    accept="image/*">
+
+                            </div>
+
+                            <!-- Password -->
+                            <div class="mb-3">
+
+                                <label class="form-label">
+
+                                    Password
+
+                                </label>
+
+                                <div class="input-group">
+
+                                    <input
+                                        type="password"
+                                        id="password"
+                                        name="password"
+                                        class="form-control"
+                                        minlength="8"
+                                        required>
+
+                                    <button
+                                        class="btn btn-outline-secondary"
+                                        type="button"
+                                        id="togglePassword">
+
+                                        <i class="fa-solid fa-eye"></i>
+
+                                    </button>
+
+                                </div>
+
+                                <div class="form-text">
+
+                                    Minimum 8 characters.
+
+                                </div>
+
+                            </div>
+
+                            <!-- Confirm Password -->
+                            <div class="mb-3">
+
+                                <label class="form-label">
+
+                                    Confirm Password
+
+                                </label>
+
+                                <input
+                                    type="password"
+                                    id="confirmPassword"
+                                    name="confirmPassword"
+                                    class="form-control"
+                                    required>
+
+                                <small
+                                    id="passwordMessage"
+                                    class="text-danger d-none">
+
+                                    Passwords do not match.
+
+                                </small>
+
+                            </div>
+
+                            <!-- Terms -->
+                            <div class="form-check mb-3">
+
+                                <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    id="terms"
+                                    required>
+
+                                <label
+                                    class="form-check-label"
+                                    for="terms">
+
+                                    I agree to the
+
+                                    <a
+                                        href="/terms"
+                                        target="_blank">
+
+                                        Terms & Conditions
+
+                                    </a>
+
+                                </label>
+
+                            </div>
+
+                            <!-- Submit -->
+                            <button
+                                type="submit"
+                                class="btn btn-primary w-100">
+
+                                <i class="fa-solid fa-user-plus"></i>
+
+                                Register
+
+                            </button>
+
+                        </form>
+
+                        <hr>
+
+                        <a
+                            href="/auth/google"
+                            class="btn btn-danger w-100">
+
+                            <i class="fa-brands fa-google"></i>
+
+                            Sign up with Google
+
+                        </a>
+
+                        <div class="text-center mt-4">
+
+                            Already have an account?
+
+                            <a href="/auth/login">
+
+                                Login
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<script>
+
+const password =
+    document.getElementById("password");
+
+const confirmPassword =
+    document.getElementById("confirmPassword");
+
+const message =
+    document.getElementById("passwordMessage");
+
+document
+.getElementById("togglePassword")
+.addEventListener("click", () => {
+
+    password.type =
+        password.type === "password"
+        ? "text"
+        : "password";
+
+});
+
+confirmPassword
+.addEventListener("input", () => {
+
+    if(password.value !== confirmPassword.value){
+
+        message.classList.remove("d-none");
+
+    }else{
+
+        message.classList.add("d-none");
+
+    }
+
+});
+
+</script>
