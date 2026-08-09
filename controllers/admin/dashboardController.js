@@ -1,49 +1,88 @@
 const Admin = require("../../models/Admin");
-const User = require("../../models/User");
 const Shayari = require("../../models/Shayari");
 const Category = require("../../models/Category");
 const Comment = require("../../models/Comment");
-const Image = require("../../models/Image");
+const Background = require("../../models/Background");
+const Download = require("../../models/Download");
 const Visitor = require("../../models/Visitor");
+const Contact = require("../../models/Contact");
 
-exports.dashboard = async (req, res, next) => {
+/*
+|--------------------------------------------------------------------------
+| ADMIN DASHBOARD
+|--------------------------------------------------------------------------
+| Optimized dashboard:
+| - Heavy historical Visitor aggregation removed
+| - Dashboard queries run in parallel
+| - Only required records are loaded
+|--------------------------------------------------------------------------
+*/
+
+exports.dashboard = async (req, res) => {
     try {
 
         const [
-            totalShayari,
-            totalUsers,
-            totalComments,
-            totalImages,
+            shayariCount,
+            userCount,
+            commentCount,
+            backgroundCount,
+            downloadCount,
+            visitorCount,
+            contactCount,
             latestShayari,
             latestUsers,
-            categoryStats,
-            visitorStats
+            latestComments,
+            latestContacts,
+            categories
         ] = await Promise.all([
 
+            // Shayari count
             Shayari.countDocuments(),
 
-            User.countDocuments(),
+            // Admin/User count
+            Admin.countDocuments(),
 
+            // Comments count
             Comment.countDocuments(),
 
-            Image.countDocuments(),
+            // Background count
+            Background.countDocuments(),
 
+            // Downloads count
+            Download.countDocuments(),
+
+            // Total visitors
+            Visitor.countDocuments(),
+
+            // Contact messages
+            Contact.countDocuments(),
+
+            // Latest Shayari
             Shayari.find()
-                .select("title slug createdAt")
-                .sort({
-                    createdAt: -1
-                })
+                .sort({ createdAt: -1 })
                 .limit(10)
                 .lean(),
 
-            User.find()
-                .select("name email createdAt")
-                .sort({
-                    createdAt: -1
-                })
+            // Latest Admin/User records
+            Admin.find()
+                .select("name email role isActive createdAt lastLogin")
+                .sort({ createdAt: -1 })
                 .limit(10)
                 .lean(),
 
+            // Latest comments
+            Comment.find()
+                .sort({ createdAt: -1 })
+                .limit(10)
+                .lean(),
+
+            // Latest contacts
+            Contact.find()
+                .sort({ createdAt: -1 })
+                .limit(10)
+                .lean(),
+
+            // Category counts
             Category.aggregate([
                 {
                     $match: {
@@ -55,14 +94,14 @@ exports.dashboard = async (req, res, next) => {
                         from: "shayaris",
                         localField: "_id",
                         foreignField: "category",
-                        as: "shayari"
+                        as: "shayaris"
                     }
                 },
                 {
                     $project: {
                         name: 1,
                         count: {
-                            $size: "$shayari"
+                            $size: "$shayaris"
                         }
                     }
                 },
@@ -74,102 +113,97 @@ exports.dashboard = async (req, res, next) => {
                 {
                     $limit: 10
                 }
-            ]),
-
-            Visitor.aggregate([
-                {
-                    $group: {
-                        _id: {
-                            $dateToString: {
-                                format: "%Y-%m-%d",
-                                date: "$createdAt"
-                            }
-                        },
-                        visitors: {
-                            $sum: 1
-                        }
-                    }
-                },
-                {
-                    $sort: {
-                        _id: 1
-                    }
-                },
-                {
-                    $limit: 30
-                }
             ])
+
         ]);
 
-        const trafficChartData = {
-            labels: visitorStats.map(item => item._id),
+        /*
+        |--------------------------------------------------------------------------
+        | Dashboard Statistics
+        |--------------------------------------------------------------------------
+        */
 
-            datasets: [
-                {
-                    label: "Visitors",
-                    data: visitorStats.map(
-                        item => item.visitors
-                    ),
-                    tension: 0.3,
-                    fill: false
-                }
-            ]
+        const stats = {
+            shayari: shayariCount,
+            users: userCount,
+            comments: commentCount,
+            images: backgroundCount,
+            downloads: downloadCount,
+            visitors: visitorCount,
+            contacts: contactCount
         };
 
-        const categoryChartData = {
-            labels: categoryStats.map(
-                item => item.name
-            ),
+        /*
+        |--------------------------------------------------------------------------
+        | Render Dashboard
+        |--------------------------------------------------------------------------
+        */
 
-            datasets: [
-                {
-                    label: "Shayari",
-                    data: categoryStats.map(
-                        item => item.count
-                    )
-                }
-            ]
-        };
+        return res.render("admin/dashboard", {
 
-        return res.render(
-            "admin/dashboard",
-            {
-                title: "Admin Dashboard - SMS Hindi Shayari",
+            title: "Admin Dashboard - SMS Hindi Shayari",
 
-                activePage: "dashboard",
+            activePage: "dashboard",
 
-                user: req.user,
+            admin: req.user,
 
-                stats: {
-                    shayari: totalShayari,
-                    users: totalUsers,
-                    comments: totalComments,
-                    images: totalImages
-                },
+            stats,
 
-                latestShayari,
+            latestShayari,
 
-                latestUsers,
+            latestUsers,
 
-                trafficChartData:
-                    JSON.stringify(
-                        trafficChartData
-                    ),
+            latestComments,
 
-                categoryChartData:
-                    JSON.stringify(
-                        categoryChartData
-                    )
-            }
-        );
+            latestContacts,
+
+            categories,
+
+            visitorChart: [],
+
+            downloadChart: [],
+
+            categoryChart: categories
+
+        });
 
     } catch (error) {
 
-        console.error(
-            "Admin Dashboard Error:",
-            error
-        );
+        console.error("==========================================");
+        console.error("❌ ADMIN DASHBOARD ERROR");
+        console.error(error);
+        console.error("==========================================");
 
-        next(error);
+        return res.status(500).render("admin/dashboard", {
+
+            title: "Admin Dashboard - SMS Hindi Shayari",
+
+            activePage: "dashboard",
+
+            admin: req.user,
+
+            stats: {
+                shayari: 0,
+                users: 0,
+                comments: 0,
+                images: 0,
+                downloads: 0,
+                visitors: 0,
+                contacts: 0
+            },
+
+            latestShayari: [],
+            latestUsers: [],
+            latestComments: [],
+            latestContacts: [],
+            categories: [],
+
+            visitorChart: [],
+            downloadChart: [],
+            categoryChart: [],
+
+            error_msg: "Dashboard data load nahi ho saka."
+        });
+
     }
 };
