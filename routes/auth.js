@@ -4,101 +4,153 @@ const router = express.Router();
 const authController = require("../controllers/auth/authController");
 
 const auth = require("../middleware/auth");
+
 const {
   loginLimiter,
   apiLimiter
 } = require("../middleware/rateLimiter");
 
-// Browser pages
+
+// ==========================================================
+// BROWSER PAGES
+// ==========================================================
+
 router.get("/login", (req, res) => {
-    if (req.user) return res.redirect("/");
+
+    if (req.user) {
+        return res.redirect("/");
+    }
+
     res.render("auth/login", {
         title: "Login",
         activePage: "login",
         redirect: req.query.redirect || ""
     });
+
 });
 
+
 router.get("/register", (req, res) => {
-    if (req.user) return res.redirect("/");
+
+    if (req.user) {
+        return res.redirect("/");
+    }
+
     res.render("auth/register", {
         title: "Register",
         activePage: "register"
     });
+
 });
+
 
 router.get("/forgot-password", (req, res) => {
-    res.render("auth/forgot-password", { title: "Forgot Password" });
+
+    res.render("auth/forgot-password", {
+        title: "Forgot Password"
+    });
+
 });
+
 
 router.get("/reset-password", (req, res) => {
-    res.render("auth/reset-password", { title: "Reset Password" });
+
+    res.render("auth/reset-password", {
+        title: "Reset Password"
+    });
+
 });
 
-// login 
+
+// ==========================================================
+// USER LOGIN
+// ==========================================================
+
 router.post(
     "/login",
     loginLimiter,
     authController.login
 );
 
-// Forgot Password
+
+// ==========================================================
+// FORGOT PASSWORD
+// ==========================================================
+
 router.post(
     "/forgot-password",
     loginLimiter,
     authController.forgotPassword
 );
 
-// Reset Password
+
+// ==========================================================
+// RESET PASSWORD
+// ==========================================================
+
 router.post(
     "/reset-password",
     loginLimiter,
     authController.resetPassword
 );
 
-// Refresh Token
+
+// ==========================================================
+// REFRESH TOKEN
+// ==========================================================
+
 router.post(
     "/refresh-token",
     apiLimiter,
     authController.refreshToken
 );
 
-/**
- * Protected Routes
- */
+
+// ==========================================================
+// PROTECTED USER ROUTES
+// ==========================================================
+
 
 // Profile
+
 router.get(
     "/profile",
     auth,
     authController.profile
 );
 
+
 // Logout
+
 router.post(
     "/logout",
     auth,
     authController.logout
 );
 
+
 // Change Password
+
 router.post(
     "/change-password",
     auth,
     authController.changePassword
 );
 
-/*
-|--------------------------------------------------------------------------
-| ADMIN LOGIN PAGE
-|--------------------------------------------------------------------------
-| GET /auth/admin-login
-|--------------------------------------------------------------------------
-*/
+
+// ==========================================================
+// ADMIN LOGIN PAGE
+// ==========================================================
+// GET /auth/admin-login
+// ==========================================================
 
 router.get(
     "/admin-login",
     (req, res) => {
+
+        if (req.user) {
+            return res.redirect("/admin/dashboard");
+        }
 
         res.render("admin/login", {
             title: "Admin Login - SMS Hindi Shayari",
@@ -107,4 +159,23 @@ router.get(
 
     }
 );
+
+
+// ==========================================================
+// ADMIN LOGIN
+// ==========================================================
+// POST /auth/admin-login
+// ==========================================================
+
+router.post(
+    "/admin-login",
+    loginLimiter,
+    authController.login
+);
+
+
+// ==========================================================
+// EXPORT
+// ==========================================================
+
 module.exports = router;
