@@ -1,0 +1,383 @@
+
+<section class="py-5">
+
+    <div class="container">
+
+        <div class="row justify-content-center">
+
+            <div class="col-lg-10">
+
+                <div class="card shadow-sm">
+
+                    <div class="card-header bg-warning">
+
+                        <h2 class="mb-0">
+
+                            Edit Shayari
+
+                        </h2>
+
+                    </div>
+
+                    <div class="card-body">
+
+                        <form
+                            action="/admin/shayari/<%= shayari._id %>?_method=PUT"
+                            method="POST"
+                            enctype="multipart/form-data">
+
+                            <!-- Title -->
+                            <div class="mb-3">
+
+                                <label class="form-label">
+
+                                    Title
+
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="title"
+                                    class="form-control"
+                                    value="<%= shayari.title %>"
+                                    required>
+
+                            </div>
+
+                            <!-- Category -->
+                            <div class="mb-3">
+
+                                <label class="form-label">
+
+                                    Category
+
+                                </label>
+
+                                <select
+                                    name="category"
+                                    class="form-select"
+                                    required>
+
+                                    <% categories.forEach(category => { %>
+
+                                        <option
+                                            value="<%= category._id %>"
+                                            <%= String(shayari.category?._id) === String(category._id) ? "selected" : "" %>>
+
+                                            <%= category.name %>
+
+                                        </option>
+
+                                    <% }) %>
+
+                                </select>
+
+                            </div>
+
+                            <!-- Tags -->
+                            <div class="mb-3">
+
+                                <label class="form-label">
+
+                                    Tags</label>
+
+                                <input
+                                    type="text"
+                                    name="tags"
+                                    class="form-control"
+                                    value="<%= shayari.tags ? shayari.tags.join(', ') : '' %>">
+
+                            </div>
+
+                            <!-- Content -->
+                            <div class="mb-3">
+
+                                <label class="form-label">
+
+                                    Shayari
+
+                                </label>
+
+                                <textarea
+                                    id="content"
+                                    name="content"
+                                    rows="10"
+                                    class="form-control"
+                                    required><%= shayari.content %></textarea>
+
+                            </div>
+
+                            <!-- Current Image -->
+                            <% if (shayari.imageUrl) { %>
+
+                                <div class="mb-3">
+
+                                    <label class="form-label">
+
+                                        Current Image
+
+                                    </label>
+
+                                    <br>
+
+                                    <img
+                                        src="<%= shayari.imageUrl %>"
+                                        class="img-fluid rounded border"
+                                        style="max-height:250px;">
+
+                                </div>
+
+                            <% } %>
+
+                            <!-- Replace Image -->
+                            <div class="mb-3">
+
+                                <label class="form-label">
+
+                                    Replace Image
+
+                                </label>
+
+                                <input
+                                    type="file"
+                                    name="image"
+                                    class="form-control"
+                                    accept="image/*">
+
+                            </div>
+
+                            <!-- AI Prompt -->
+                            <div class="mb-3">
+
+                                <label class="form-label">
+
+                                    AI Image Prompt
+
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="aiPrompt"
+                                    class="form-control"
+                                    value="<%= shayari.aiPrompt || '' %>">
+
+                            </div>
+
+                            <!-- SEO -->
+                            <hr>
+
+                            <h5>
+
+                                SEO Settings
+
+                            </h5>
+
+                            <div class="mb-3">
+
+                                <label class="form-label">
+
+                                    SEO Title
+
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="seoTitle"
+                                    class="form-control"
+                                    value="<%= shayari.seo?.title || '' %>">
+
+                            </div>
+
+                            <div class="mb-3">
+
+                                <label class="form-label">
+
+                                    SEO Description
+
+                                </label>
+
+                                <textarea
+                                    name="seoDescription"
+                                    rows="3"
+                                    class="form-control"><%= shayari.seo?.description || '' %></textarea>
+
+                            </div>
+
+                            <div class="mb-3">
+
+                                <label class="form-label">
+
+                                    SEO Keywords
+
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="seoKeywords"
+                                    class="form-control"
+                                    value="<%= shayari.seo?.keywords || '' %>">
+
+                            </div>
+
+                            <!-- Status -->
+                            <div class="row">
+
+                                <div class="col-md-4">
+
+                                    <div class="form-check">
+
+                                        <input
+                                            class="form-check-input"
+                                            type="checkbox"
+                                            name="featured"
+                                            value="true"
+                                            <%= shayari.featured ? "checked" : "" %>>
+
+                                        <label class="form-check-label">
+
+                                            Featured
+
+                                        </label>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="col-md-4">
+
+                                    <div class="form-check">
+
+                                        <input
+                                            class="form-check-input"
+                                            type="checkbox"
+                                            name="trending"
+                                            value="true"
+                                            <%= shayari.trending ? "checked" : "" %>>
+
+                                        <label class="form-check-label">
+
+                                            Trending
+
+                                        </label>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="col-md-4">
+
+                                    <label class="form-label">
+
+                                        Status
+
+                                    </label>
+
+                                    <select
+                                        name="status"
+                                        class="form-select">
+
+                                        <option
+                                            value="published"
+                                            <%= shayari.status==="published"?"selected":"" %>>
+
+                                            Published
+
+                                        </option>
+
+                                        <option
+                                            value="draft"
+                                            <%= shayari.status==="draft"?"selected":"" %>>
+
+                                            Draft
+
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+                            <!-- Preview -->
+                            <hr>
+
+                            <h5>
+
+                                Live Preview
+
+                            </h5>
+
+                            <div
+                                id="preview"
+                                class="border rounded p-3 bg-light"
+                                style="white-space:pre-wrap;min-height:150px;"><%= shayari.content %></div>
+
+                            <!-- Update History -->
+                            <% if (shayari.updatedAt) { %>
+
+                                <div class="alert alert-secondary mt-3">
+
+                                    Last Updated:
+
+                                    <strong>
+
+                                        <%= new Date(shayari.updatedAt).toLocaleString() %>
+
+                                    </strong>
+
+                                </div>
+
+                            <% } %>
+
+                            <!-- Buttons -->
+                            <div class="mt-4 d-flex gap-2">
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-primary">
+
+                                    <i class="fa-solid fa-pen"></i>
+
+                                    Update Shayari
+
+                                </button>
+
+                                <a
+                                    href="/admin/shayari"
+                                    class="btn btn-secondary">
+
+                                    Cancel
+
+                                </a>
+
+                            </div>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<script>
+
+const editor =
+    document.getElementById("content");
+
+const preview =
+    document.getElementById("preview");
+
+editor.addEventListener("input", () => {
+
+    preview.textContent = editor.value;
+
+});
+
+</script>

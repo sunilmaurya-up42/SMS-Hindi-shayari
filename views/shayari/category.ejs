@@ -1,0 +1,276 @@
+
+<section class="py-5">
+
+    <div class="container">
+
+        <!-- Breadcrumb -->
+
+        <nav aria-label="breadcrumb" class="mb-4">
+
+            <ol class="breadcrumb">
+
+                <li class="breadcrumb-item">
+
+                    <a href="/">Home</a>
+
+                </li>
+
+                <li class="breadcrumb-item">
+
+                    <a href="/categories">
+
+                        Categories
+
+                    </a>
+
+                </li>
+
+                <li
+                    class="breadcrumb-item active"
+                    aria-current="page">
+
+                    <%= category.name %>
+
+                </li>
+
+            </ol>
+
+        </nav>
+
+        <!-- Category Header -->
+
+        <div class="card shadow-sm border-0 mb-4">
+
+            <div class="card-body">
+
+                <div class="row align-items-center">
+
+                    <div class="col-lg-9">
+
+                        <h1 class="fw-bold mb-2">
+
+                            <%= category.name %> Shayari
+
+                        </h1>
+
+                        <p class="text-muted mb-0">
+
+                            <%= category.description || "Beautiful Hindi Shayari Collection." %>
+
+                        </p>
+
+                    </div>
+
+                    <div class="col-lg-3 text-lg-end mt-3 mt-lg-0">
+
+                        <span class="badge bg-primary fs-6">
+
+                            <%= pagination.totalItems || shayari.length %>
+
+                            Shayari
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Sort -->
+
+        <div class="card shadow-sm mb-4">
+
+            <div class="card-body">
+
+                <form
+                    action="/category/<%= category.slug %>"
+                    method="GET">
+
+                    <div class="row">
+
+                        <div class="col-md-4">
+
+                            <select
+                                name="sort"
+                                class="form-select"
+                                onchange="this.form.submit()">
+
+                                <option
+                                    value="latest"
+                                    <%= sort==="latest"?"selected":"" %>>
+
+                                    Latest
+
+                                </option>
+
+                                <option
+                                    value="popular"
+                                    <%= sort==="popular"?"selected":"" %>>
+
+                                    Most Popular
+
+                                </option>
+
+                                <option
+                                    value="likes"
+                                    <%= sort==="likes"?"selected":"" %>>
+
+                                    Most Liked
+
+                                </option>
+
+                                <option
+                                    value="views"
+                                    <%= sort==="views"?"selected":"" %>>
+
+                                    Most Viewed
+
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+        <!-- Shayari List -->
+
+        <div class="row">
+
+            <% if(shayari && shayari.length){ %>
+
+                <% shayari.forEach(item=>{ %>
+
+                    <div class="col-lg-4 col-md-6 mb-4">
+
+                        <div class="card h-100 shadow-sm">
+
+                            <% if(item.imageUrl){ %>
+
+                                <img
+                                    src="<%= item.imageUrl %>"
+                                    alt="<%= item.title %>"
+                                    class="card-img-top">
+
+                            <% } %>
+
+                            <div class="card-body">
+
+                                <h5>
+
+                                    <%= item.title %>
+
+                                </h5>
+
+                                <p>
+
+                                    <%= item.content.substring(0,160) %>...
+
+                                </p>
+
+                            </div>
+
+                            <div class="card-footer bg-white">
+
+                                <div class="d-flex justify-content-between mb-2">
+
+                                    <small>
+
+                                        <i class="fa-solid fa-eye"></i>
+
+                                        <%= item.views || 0 %>
+
+                                    </small>
+
+                                    <small>
+
+                                        <i class="fa-solid fa-heart text-danger"></i>
+
+                                        <%= item.likes || 0 %>
+
+                                    </small>
+
+                                    <small>
+
+                                        <i class="fa-solid fa-calendar"></i>
+
+                                        <%= new Date(item.createdAt).toLocaleDateString() %>
+
+                                    </small>
+
+                                </div>
+
+                                <a
+                                    href="/shayari/<%= item.slug %>"
+                                    class="btn btn-primary btn-sm w-100">
+
+                                    Read More
+
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                <% }) %>
+
+            <% } else { %>
+
+                <div class="col-12">
+
+                    <div class="alert alert-warning text-center">
+
+                        No Shayari Available in this Category.
+
+                    </div>
+
+                </div>
+
+            <% } %>
+
+        </div>
+
+        <!-- Pagination -->
+
+        <% if(pagination && pagination.totalPages > 1){ %>
+
+            <nav class="mt-4">
+
+                <ul class="pagination justify-content-center">
+
+                    <% for(let i=1;i<=pagination.totalPages;i++){ %>
+
+                        <li class="page-item <%= pagination.page===i ? 'active':'' %>">
+
+                            <a
+                                class="page-link"
+                                href="?page=<%= i %>&sort=<%= sort %>">
+
+                                <%= i %>
+
+                            </a>
+
+                        </li>
+
+                    <% } %>
+
+                </ul>
+
+            </nav>
+
+        <% } %>
+
+    </div>
+
+</section>
