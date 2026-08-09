@@ -1,80 +1,145 @@
 const jwt = require("jsonwebtoken");
-const Admin = require("../models/Admin");
 
-module.exports = async (req, res, next) => {
+/*
+|--------------------------------------------------------------------------
+| Authentication Middleware
+|--------------------------------------------------------------------------
+| JWT token:
+| 1. Authorization: Bearer <token>
+| 2. token cookie
+|--------------------------------------------------------------------------
+*/
 
+module.exports = (req, res, next) => {
     try {
 
-        let token = req.headers.authorization;
+        let token = null;
+
+        /*
+        |--------------------------------------------------------------------------
+        | Authorization Header
+        |--------------------------------------------------------------------------
+        */
+
+        const authHeader =
+            req.headers.authorization;
+
+        if (
+            authHeader &&
+            authHeader.startsWith("Bearer ")
+        ) {
+            token =
+                authHeader.substring(7).trim();
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Cookie
+        |--------------------------------------------------------------------------
+        */
+
+        if (!token && req.cookies) {
+            token = req.cookies.token;
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Token Missing
+        |--------------------------------------------------------------------------
+        */
 
         if (!token) {
+
+            /*
+             * Browser request:
+             * redirect to Admin Login
+             */
+
+            if (
+                req.accepts("html") &&
+                !req.originalUrl.startsWith("/api/")
+            ) {
+
+                return res.redirect(
+                    "/admin/login"
+                );
+            }
+
             return res.status(401).json({
                 success: false,
-                message: "Access denied. Token required."
+                message:
+                    "Access denied. Token required."
             });
         }
 
-        if (token.startsWith("Bearer ")) {
-            token = token.substring(7);
-        }
+        /*
+        |--------------------------------------------------------------------------
+        | JWT Secret Check
+        |--------------------------------------------------------------------------
+        */
 
-        const decoded = jwt.verify(
-            token,
-            process.env.JWT_SECRET
-        );
+        if (!process.env.JWT_SECRET) {
 
-        const admin = await Admin.findById(decoded.id);
+            console.error(
+                "JWT_SECRET is missing."
+            );
 
-        if (!admin) {
-            return res.status(401).json({
+            return res.status(500).json({
                 success: false,
-                message: "Invalid token."
+                message:
+                    "Authentication configuration error."
             });
         }
 
-        if (!admin.isActive) {
-            return res.status(403).json({
-                success: false,
-                message: "Account disabled."
-            });
-        }
+        /*
+        |--------------------------------------------------------------------------
+        | Verify Token
+        |--------------------------------------------------------------------------
+        */
 
-        req.user = {
-            id: admin._id,
-            name: admin.name,
-            email: admin.email,
-            role: admin.role
-        };
+        const decoded =
+            jwt.verify(
+                token,
+                process.env.JWT_SECRET
+            );
+
+        req.user = decoded;
 
         next();
 
     } catch (error) {
 
-        if (error.name === "TokenExpiredError") {
+        console.error(
+            "Authentication Error:",
+            error.message
+        );
 
-            return res.status(401).json({
-                success: false,
-                message: "Token expired."
-            });
+        /*
+        |--------------------------------------------------------------------------
+        | Browser
+        |--------------------------------------------------------------------------
+        */
 
+        if (
+            req.accepts("html") &&
+            !req.originalUrl.startsWith("/api/")
+        ) {
+
+            return res.redirect(
+                "/admin/login"
+            );
         }
 
-        if (error.name === "JsonWebTokenError") {
+        /*
+        |--------------------------------------------------------------------------
+        | API
+        |--------------------------------------------------------------------------
+        */
 
-            return res.status(401).json({
-                success: false,
-                message: "Invalid token."
-            });
-
-        }
-
-        console.error(error);
-
-        return res.status(500).json({
+        return res.status(401).json({
             success: false,
-            message: "Authentication failed."
+            message:
+                "Invalid or expired token."
         });
-
     }
-
 };
