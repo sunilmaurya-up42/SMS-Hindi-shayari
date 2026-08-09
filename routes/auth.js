@@ -88,4 +88,23 @@ router.post(
     authController.changePassword
 );
 
+/*
+|--------------------------------------------------------------------------
+| ADMIN LOGIN PAGE
+|--------------------------------------------------------------------------
+| GET /auth/admin-login
+|--------------------------------------------------------------------------
+*/
+
+router.get(
+    "/admin-login",
+    (req, res) => {
+
+        res.render("admin/login", {
+            title: "Admin Login - SMS Hindi Shayari",
+            activePage: "admin-login"
+        });
+
+    }
+);
 module.exports = router;
