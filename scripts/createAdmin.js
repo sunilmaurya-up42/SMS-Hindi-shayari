@@ -1,75 +1,58 @@
-/**
- * ==========================================================
- * SMS Hindi Shayari
- * Create Default Admin
- * ==========================================================
- */
-
-"use strict";
-
 require("dotenv").config();
 
-const bcrypt = require("bcryptjs");
-const connectDB = require("../config/db");
-const User = require("../models/User");
+const mongoose = require("mongoose");
+const Admin = require("../models/Admin");
 
 async function createAdmin() {
-
     try {
 
-        await connectDB();
+        await mongoose.connect(process.env.MONGODB_URI);
 
-        const exists = await User.findOne({
-            email: process.env.ADMIN_EMAIL
+        console.log("MongoDB connected.");
+
+        const name = "YOUR ADMIN NAME";
+        const email = "YOUR ADMIN EMAIL";
+        const password = "YOUR ADMIN PASSWORD";
+
+        const existingAdmin = await Admin.findOne({
+            email: email.toLowerCase()
         });
 
-        if (exists) {
+        if (existingAdmin) {
 
-            console.log("✅ Admin already exists.");
+            console.log("Admin already exists.");
 
             process.exit(0);
-
         }
 
-        const password = await bcrypt.hash(
-            process.env.ADMIN_PASSWORD,
-            12
-        );
-
-        const admin = new User({
-
-            name: process.env.ADMIN_NAME,
-
-            email: process.env.ADMIN_EMAIL,
-
+        const admin = await Admin.create({
+            name,
+            email: email.toLowerCase(),
             password,
-
-            role: "admin",
-
-            isVerified: true,
-
+            role: "super_admin",
             isActive: true
-
         });
 
-        await admin.save();
-
-        console.log("==================================");
-        console.log("✅ Admin Created Successfully");
-        console.log("Name :", admin.name);
+        console.log("--------------------------------");
+        console.log("Admin created successfully.");
+        console.log("ID:", admin._id);
         console.log("Email:", admin.email);
-        console.log("==================================");
+        console.log("Role:", admin.role);
+        console.log("Active:", admin.isActive);
+        console.log("--------------------------------");
+
+        await mongoose.disconnect();
 
         process.exit(0);
 
-    } catch (err) {
+    } catch (error) {
 
-        console.error(err);
+        console.error("Create Admin Error:", error);
+
+        await mongoose.disconnect();
 
         process.exit(1);
-
     }
-
 }
 
 createAdmin();
