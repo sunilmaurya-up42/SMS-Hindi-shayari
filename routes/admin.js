@@ -18,9 +18,12 @@ const settingsController = require("../controllers/settings/settingsController")
 
 router.get(
     "/",
-    auth,
-    admin,
     (req, res) => {
+
+        if (!req.user) {
+            return res.redirect("/auth/admin-login");
+        }
+
         return res.redirect("/admin/dashboard");
     }
 );
