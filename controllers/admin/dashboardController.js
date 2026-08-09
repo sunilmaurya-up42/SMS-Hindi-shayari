@@ -1,94 +1,74 @@
-const Admin = require("../../models/Admin");
 const Shayari = require("../../models/Shayari");
 const Category = require("../../models/Category");
-const Comment = require("../../models/Comment");
-const Background = require("../../models/Background");
+const User = require("../../models/User");
 const Download = require("../../models/Download");
-const Contact = require("../../models/Contact");
-const Visitor = require("../../models/Visitor");
 
-exports.dashboard = async (req, res) => {
-  try {
+exports.dashboard = async (req, res, next) => {
+    try {
+        const [
+            totalShayari,
+            publishedShayari,
+            draftShayari,
+            totalCategories,
+            totalUsers,
+            totalDownloads,
+            latestShayari
+        ] = await Promise.all([
+            Shayari.countDocuments(),
 
-    const [
-      totalAdmins,
-      totalShayari,
-      totalCategories,
-      totalComments,
-      totalBackgrounds,
-      totalDownloads,
-      totalVisitors,
-      totalContacts
-    ] = await Promise.all([
+            Shayari.countDocuments({
+                published: true
+            }),
 
-      Admin.countDocuments({ isActive: true }),
+            Shayari.countDocuments({
+                published: false
+            }),
 
-      Shayari.countDocuments({
-        published: true
-      }),
+            Category.countDocuments(),
 
-      Category.countDocuments({
-        isActive: true
-      }),
+            User.countDocuments(),
 
-      Comment.countDocuments({
-        isApproved: true
-      }),
+            Download.countDocuments(),
 
-      Background.countDocuments({
-        isActive: true
-      }),
+            Shayari.find()
+                .populate("category", "name slug")
+                .sort({
+                    createdAt: -1
+                })
+                .limit(10)
+                .lean()
+        ]);
 
-      Download.countDocuments(),
+        return res.render("admin/dashboard", {
+            title: "Admin Dashboard - SMS Hindi Shayari",
 
-      Visitor.countDocuments(),
+            activePage: "dashboard",
 
-      Contact.countDocuments()
+            stats: {
+                totalShayari,
+                publishedShayari,
+                draftShayari,
+                totalCategories,
+                totalUsers,
+                totalDownloads
+            },
 
-    ]);
+            totalShayari,
+            publishedShayari,
+            draftShayari,
+            totalCategories,
+            totalUsers,
+            totalDownloads,
 
-    const latestComments = await Comment.find()
-      .populate("shayari", "title slug")
-      .sort({ createdAt: -1 })
-      .limit(10);
+            latestShayari
+        });
 
-    const latestContacts = await Contact.find()
-      .sort({ createdAt: -1 })
-      .limit(10);
+    } catch (error) {
+        console.error(
+            "Admin Dashboard Error:",
+            error
+        );
 
-    const latestShayari = await Shayari.find()
-      .select("title slug createdAt")
-      .sort({ createdAt: -1 })
-      .limit(10);
-
-    return res.json({
-      success: true,
-
-      statistics: {
-        totalAdmins,
-        totalShayari,
-        totalCategories,
-        totalComments,
-        totalBackgrounds,
-        totalDownloads,
-        totalVisitors,
-        totalContacts
-      },
-
-      latestShayari,
-      latestComments,
-      latestContacts
-
-    });
-
-  } catch (error) {
-
-    console.error(error);
-
-    return res.status(500).json({
-      success: false,
-      message: "Internal Server Error"
-    });
-
-  }
+        next(error);
+    }
 };
