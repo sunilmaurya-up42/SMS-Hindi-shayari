@@ -1,0 +1,182 @@
+/* ==========================================================
+   SMS Hindi Shayari
+   Shayari Styles
+   ========================================================== */
+
+.shayari-section{
+    padding:40px 0;
+}
+
+.shayari-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+    gap:20px;
+}
+
+.shayari-card{
+    background:#fff;
+    border-radius:12px;
+    padding:20px;
+    box-shadow:0 4px 12px rgba(0,0,0,.08);
+    transition:.3s ease;
+    border:1px solid #eee;
+}
+
+.shayari-card:hover{
+    transform:translateY(-5px);
+    box-shadow:0 10px 25px rgba(0,0,0,.12);
+}
+
+.shayari-category{
+    display:inline-block;
+    background:#e53935;
+    color:#fff;
+    font-size:13px;
+    padding:4px 10px;
+    border-radius:20px;
+    margin-bottom:12px;
+}
+
+.shayari-title{
+    font-size:22px;
+    font-weight:700;
+    margin-bottom:15px;
+    color:#222;
+}
+
+.shayari-text{
+    white-space:pre-line;
+    line-height:2;
+    color:#444;
+    font-size:18px;
+    margin-bottom:20px;
+}
+
+.shayari-footer{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:10px;
+}
+
+.shayari-meta{
+    font-size:14px;
+    color:#777;
+}
+
+.shayari-actions{
+    display:flex;
+    gap:10px;
+}
+
+.shayari-actions .btn{
+    padding:8px 14px;
+    border-radius:6px;
+    border:none;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.btn-like{
+    background:#f44336;
+    color:#fff;
+}
+
+.btn-copy{
+    background:#1976d2;
+    color:#fff;
+}
+
+.btn-share{
+    background:#43a047;
+    color:#fff;
+}
+
+.btn-download{
+    background:#ff9800;
+    color:#fff;
+}
+
+.btn-like:hover{
+    background:#d32f2f;
+}
+
+.btn-copy:hover{
+    background:#1565c0;
+}
+
+.btn-share:hover{
+    background:#2e7d32;
+}
+
+.btn-download:hover{
+    background:#ef6c00;
+}
+
+.pagination{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    margin-top:40px;
+}
+
+.pagination a{
+    width:42px;
+    height:42px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#fff;
+    border:1px solid #ddd;
+    border-radius:8px;
+    color:#333;
+    transition:.3s;
+}
+
+.pagination a:hover,
+.pagination a.active{
+    background:#e53935;
+    color:#fff;
+    border-color:#e53935;
+}
+
+.empty-state{
+    text-align:center;
+    padding:60px 20px;
+    color:#777;
+}
+
+.empty-state h2{
+    margin-bottom:10px;
+}
+
+@media(max-width:768px){
+
+.shayari-grid{
+    grid-template-columns:1fr;
+}
+
+.shayari-title{
+    font-size:20px;
+}
+
+.shayari-text{
+    font-size:17px;
+}
+
+.shayari-footer{
+    flex-direction:column;
+    align-items:flex-start;
+}
+
+.shayari-actions{
+    width:100%;
+    flex-wrap:wrap;
+}
+
+.shayari-actions .btn{
+    flex:1;
+}
+
+}
