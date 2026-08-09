@@ -1,0 +1,9 @@
+/* SMS Hindi Shayari - font fallback.
+   The site uses the Google Poppins font from the layout and a safe
+   Devanagari system fallback, so missing local TTF files cannot cause 404s. */
+:root {
+    --font-family: "Noto Sans Devanagari", "Nirmala UI", "Mangal", "Poppins", Arial, Helvetica, sans-serif;
+}
+body {
+    font-family: var(--font-family);
+}
