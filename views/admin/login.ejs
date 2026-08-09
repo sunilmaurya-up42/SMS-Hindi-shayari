@@ -25,187 +25,178 @@
 
 <body class="bg-light">
 
-    <main
-        class="min-vh-100 d-flex align-items-center justify-content-center py-5">
+<main class="min-vh-100 d-flex align-items-center justify-content-center py-5">
 
-        <div class="container">
+    <div class="container">
 
-            <div class="row justify-content-center">
+        <div class="row justify-content-center">
 
-                <div class="col-12 col-sm-10 col-md-7 col-lg-5">
+            <div class="col-12 col-sm-10 col-md-7 col-lg-5">
 
-                    <div class="card border-0 shadow">
+                <div class="card border-0 shadow">
 
-                        <div class="card-body p-4 p-md-5">
+                    <div class="card-body p-4 p-md-5">
 
-                            <div class="text-center mb-4">
+                        <div class="text-center mb-4">
 
-                                <div class="mb-3">
+                            <div class="mb-3">
 
-                                    <i
-                                        class="fa-solid fa-user-shield fa-3x text-primary">
-                                    </i>
-
-                                </div>
-
-                                <h2 class="fw-bold">
-                                    Admin Login
-                                </h2>
-
-                                <p class="text-muted mb-0">
-                                    SMS Hindi Shayari
-                                </p>
+                                <i class="fa-solid fa-user-shield fa-3x text-primary"></i>
 
                             </div>
 
-                            <% if (typeof error_msg !== "undefined" && error_msg) { %>
+                            <h2 class="fw-bold">
+                                Admin Login
+                            </h2>
 
-                                <div
-                                    class="alert alert-danger"
-                                    role="alert">
+                            <p class="text-muted mb-0">
+                                SMS Hindi Shayari
+                            </p>
 
-                                    <i class="fa-solid fa-circle-exclamation"></i>
+                        </div>
 
-                                    <%= error_msg %>
 
-                                </div>
+                        <% if (typeof error_msg !== "undefined" && error_msg) { %>
 
-                            <% } %>
+                            <div class="alert alert-danger">
 
-                            <% if (typeof success_msg !== "undefined" && success_msg) { %>
+                                <i class="fa-solid fa-circle-exclamation"></i>
 
-                                <div
-                                    class="alert alert-success"
-                                    role="alert">
+                                <%= error_msg %>
 
-                                    <i class="fa-solid fa-circle-check"></i>
+                            </div>
 
-                                    <%= success_msg %>
+                        <% } %>
 
-                                </div>
 
-                            <% } %>
+                        <% if (typeof success_msg !== "undefined" && success_msg) { %>
 
-                            <form
-                                action="/auth/admin-login"
-                                method="POST">
+                            <div class="alert alert-success">
 
-                                <% if (typeof csrfToken !== "undefined") { %>
+                                <i class="fa-solid fa-circle-check"></i>
+
+                                <%= success_msg %>
+
+                            </div>
+
+                        <% } %>
+
+
+                        <form
+                            action="/auth/admin-login"
+                            method="POST">
+
+                            <!-- CSRF TOKEN -->
+
+                            <input
+                                type="hidden"
+                                name="_csrf"
+                                value="<%= csrfToken %>">
+
+
+                            <!-- EMAIL -->
+
+                            <div class="mb-3">
+
+                                <label
+                                    for="email"
+                                    class="form-label">
+
+                                    Admin Email
+
+                                </label>
+
+                                <div class="input-group">
+
+                                    <span class="input-group-text">
+
+                                        <i class="fa-solid fa-envelope"></i>
+
+                                    </span>
 
                                     <input
-                                        type="hidden"
-                                        name="_csrf"
-                                        value="<%= csrfToken %>">
-
-                                <% } %>
-
-                                <div class="mb-3">
-
-                                    <label
-                                        for="email"
-                                        class="form-label">
-
-                                        Admin Email
-
-                                    </label>
-
-                                    <div class="input-group">
-
-                                        <span class="input-group-text">
-
-                                            <i
-                                                class="fa-solid fa-envelope">
-                                            </i>
-
-                                        </span>
-
-                                        <input
-                                            type="email"
-                                            id="email"
-                                            name="email"
-                                            class="form-control"
-                                            placeholder="Enter admin email"
-                                            autocomplete="username"
-                                            required>
-
-                                    </div>
+                                        type="email"
+                                        id="email"
+                                        name="email"
+                                        class="form-control"
+                                        placeholder="Enter admin email"
+                                        autocomplete="username"
+                                        required>
 
                                 </div>
-
-                                <div class="mb-4">
-
-                                    <label
-                                        for="password"
-                                        class="form-label">
-
-                                        Password
-
-                                    </label>
-
-                                    <div class="input-group">
-
-                                        <span class="input-group-text">
-
-                                            <i
-                                                class="fa-solid fa-lock">
-                                            </i>
-
-                                        </span>
-
-                                        <input
-                                            type="password"
-                                            id="password"
-                                            name="password"
-                                            class="form-control"
-                                            placeholder="Enter password"
-                                            autocomplete="current-password"
-                                            required>
-
-                                        <button
-                                            type="button"
-                                            class="btn btn-outline-secondary"
-                                            id="togglePassword"
-                                            aria-label="Show password">
-
-                                            <i
-                                                class="fa-solid fa-eye">
-                                            </i>
-
-                                        </button>
-
-                                    </div>
-
-                                </div>
-
-                                <button
-                                    type="submit"
-                                    class="btn btn-primary w-100">
-
-                                    <i
-                                        class="fa-solid fa-right-to-bracket">
-                                    </i>
-
-                                    Login to Admin Panel
-
-                                </button>
-
-                            </form>
-
-                            <div class="text-center mt-4">
-
-                                <a
-                                    href="/"
-                                    class="text-decoration-none">
-
-                                    <i
-                                        class="fa-solid fa-arrow-left">
-                                    </i>
-
-                                    Back to Website
-
-                                </a>
 
                             </div>
+
+
+                            <!-- PASSWORD -->
+
+                            <div class="mb-4">
+
+                                <label
+                                    for="password"
+                                    class="form-label">
+
+                                    Password
+
+                                </label>
+
+                                <div class="input-group">
+
+                                    <span class="input-group-text">
+
+                                        <i class="fa-solid fa-lock"></i>
+
+                                    </span>
+
+                                    <input
+                                        type="password"
+                                        id="password"
+                                        name="password"
+                                        class="form-control"
+                                        placeholder="Enter password"
+                                        autocomplete="current-password"
+                                        required>
+
+                                    <button
+                                        type="button"
+                                        class="btn btn-outline-secondary"
+                                        id="togglePassword">
+
+                                        <i class="fa-solid fa-eye"></i>
+
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- LOGIN -->
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary w-100">
+
+                                <i class="fa-solid fa-right-to-bracket"></i>
+
+                                Login to Admin Panel
+
+                            </button>
+
+                        </form>
+
+
+                        <div class="text-center mt-4">
+
+                            <a
+                                href="/"
+                                class="text-decoration-none">
+
+                                <i class="fa-solid fa-arrow-left"></i>
+
+                                Back to Website
+
+                            </a>
 
                         </div>
 
@@ -217,48 +208,44 @@
 
         </div>
 
-    </main>
+    </div>
 
-    <script>
+</main>
 
-        const password =
-            document.getElementById("password");
 
-        const togglePassword =
-            document.getElementById("togglePassword");
+<script>
 
-        if (password && togglePassword) {
+const password =
+    document.getElementById("password");
 
-            togglePassword.addEventListener(
-                "click",
-                () => {
+const togglePassword =
+    document.getElementById("togglePassword");
 
-                    const isPassword =
-                        password.type === "password";
+if (password && togglePassword) {
 
-                    password.type =
-                        isPassword
-                            ? "text"
-                            : "password";
+    togglePassword.addEventListener(
+        "click",
+        () => {
 
-                    togglePassword.innerHTML =
-                        isPassword
-                            ? '<i class="fa-solid fa-eye-slash"></i>'
-                            : '<i class="fa-solid fa-eye"></i>';
+            const isPassword =
+                password.type === "password";
 
-                    togglePassword.setAttribute(
-                        "aria-label",
-                        isPassword
-                            ? "Hide password"
-                            : "Show password"
-                    );
+            password.type =
+                isPassword
+                    ? "text"
+                    : "password";
 
-                }
-            );
+            togglePassword.innerHTML =
+                isPassword
+                    ? '<i class="fa-solid fa-eye-slash"></i>'
+                    : '<i class="fa-solid fa-eye"></i>';
 
         }
+    );
 
-    </script>
+}
+
+</script>
 
 </body>
 
