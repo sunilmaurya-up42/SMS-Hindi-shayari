@@ -1,69 +1,170 @@
+const Admin = require("../../models/Admin");
+const User = require("../../models/User");
 const Shayari = require("../../models/Shayari");
 const Category = require("../../models/Category");
-const User = require("../../models/User");
-const Download = require("../../models/Download");
+const Comment = require("../../models/Comment");
+const Image = require("../../models/Image");
+const Visitor = require("../../models/Visitor");
 
 exports.dashboard = async (req, res, next) => {
     try {
+
         const [
             totalShayari,
-            publishedShayari,
-            draftShayari,
-            totalCategories,
             totalUsers,
-            totalDownloads,
-            latestShayari
+            totalComments,
+            totalImages,
+            latestShayari,
+            latestUsers,
+            categoryStats,
+            visitorStats
         ] = await Promise.all([
+
             Shayari.countDocuments(),
-
-            Shayari.countDocuments({
-                published: true
-            }),
-
-            Shayari.countDocuments({
-                published: false
-            }),
-
-            Category.countDocuments(),
 
             User.countDocuments(),
 
-            Download.countDocuments(),
+            Comment.countDocuments(),
+
+            Image.countDocuments(),
 
             Shayari.find()
-                .populate("category", "name slug")
+                .select("title slug createdAt")
                 .sort({
                     createdAt: -1
                 })
                 .limit(10)
-                .lean()
+                .lean(),
+
+            User.find()
+                .select("name email createdAt")
+                .sort({
+                    createdAt: -1
+                })
+                .limit(10)
+                .lean(),
+
+            Category.aggregate([
+                {
+                    $match: {
+                        isActive: true
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "shayaris",
+                        localField: "_id",
+                        foreignField: "category",
+                        as: "shayari"
+                    }
+                },
+                {
+                    $project: {
+                        name: 1,
+                        count: {
+                            $size: "$shayari"
+                        }
+                    }
+                },
+                {
+                    $sort: {
+                        count: -1
+                    }
+                },
+                {
+                    $limit: 10
+                }
+            ]),
+
+            Visitor.aggregate([
+                {
+                    $group: {
+                        _id: {
+                            $dateToString: {
+                                format: "%Y-%m-%d",
+                                date: "$createdAt"
+                            }
+                        },
+                        visitors: {
+                            $sum: 1
+                        }
+                    }
+                },
+                {
+                    $sort: {
+                        _id: 1
+                    }
+                },
+                {
+                    $limit: 30
+                }
+            ])
         ]);
 
-        return res.render("admin/dashboard", {
-            title: "Admin Dashboard - SMS Hindi Shayari",
+        const trafficChartData = {
+            labels: visitorStats.map(item => item._id),
 
-            activePage: "dashboard",
+            datasets: [
+                {
+                    label: "Visitors",
+                    data: visitorStats.map(
+                        item => item.visitors
+                    ),
+                    tension: 0.3,
+                    fill: false
+                }
+            ]
+        };
 
-            stats: {
-                totalShayari,
-                publishedShayari,
-                draftShayari,
-                totalCategories,
-                totalUsers,
-                totalDownloads
-            },
+        const categoryChartData = {
+            labels: categoryStats.map(
+                item => item.name
+            ),
 
-            totalShayari,
-            publishedShayari,
-            draftShayari,
-            totalCategories,
-            totalUsers,
-            totalDownloads,
+            datasets: [
+                {
+                    label: "Shayari",
+                    data: categoryStats.map(
+                        item => item.count
+                    )
+                }
+            ]
+        };
 
-            latestShayari
-        });
+        return res.render(
+            "admin/dashboard",
+            {
+                title: "Admin Dashboard - SMS Hindi Shayari",
+
+                activePage: "dashboard",
+
+                user: req.user,
+
+                stats: {
+                    shayari: totalShayari,
+                    users: totalUsers,
+                    comments: totalComments,
+                    images: totalImages
+                },
+
+                latestShayari,
+
+                latestUsers,
+
+                trafficChartData:
+                    JSON.stringify(
+                        trafficChartData
+                    ),
+
+                categoryChartData:
+                    JSON.stringify(
+                        categoryChartData
+                    )
+            }
+        );
 
     } catch (error) {
+
         console.error(
             "Admin Dashboard Error:",
             error
