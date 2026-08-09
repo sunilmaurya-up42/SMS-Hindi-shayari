@@ -60,9 +60,7 @@ module.exports = (req, res, next) => {
                 !req.originalUrl.startsWith("/api/")
             ) {
 
-                return res.redirect(
-                    "/admin/login"
-                );
+                return res.redirect("/auth/admin-login");
             }
 
             return res.status(401).json({
@@ -125,9 +123,7 @@ module.exports = (req, res, next) => {
             !req.originalUrl.startsWith("/api/")
         ) {
 
-            return res.redirect(
-                "/admin/login"
-            );
+            return res.redirect("/auth/admin-login");
         }
 
         /*
