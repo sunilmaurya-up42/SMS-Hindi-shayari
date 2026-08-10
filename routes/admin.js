@@ -682,4 +682,147 @@ router.post(
 
     }
 );
+/*
+|--------------------------------------------------------------------------
+| UPDATE CATEGORY
+|--------------------------------------------------------------------------
+*/
+
+router.post(
+    "/categories/:id/edit",
+    auth,
+    admin(),
+    async (req, res, next) => {
+
+        try {
+
+            const Category =
+                require("../models/Category");
+
+            const category =
+                await Category.findById(
+                    req.params.id
+                );
+
+            if (!category) {
+
+                req.flash(
+                    "error_msg",
+                    "Category not found."
+                );
+
+                return res.redirect(
+                    "/admin/categories"
+                );
+            }
+
+            const name =
+                (req.body.name || "").trim();
+
+            const slug =
+                (req.body.slug || "")
+                    .trim()
+                    .toLowerCase();
+
+            if (!name || !slug) {
+
+                req.flash(
+                    "error_msg",
+                    "Category name and slug are required."
+                );
+
+                return res.redirect(
+                    `/admin/categories/${req.params.id}/edit`
+                );
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Duplicate Name Check
+            |--------------------------------------------------------------------------
+            */
+
+            const duplicateName =
+                await Category.findOne({
+                    name: name,
+                    _id: {
+                        $ne: req.params.id
+                    }
+                });
+
+            if (duplicateName) {
+
+                req.flash(
+                    "error_msg",
+                    "Another category already uses this name."
+                );
+
+                return res.redirect(
+                    `/admin/categories/${req.params.id}/edit`
+                );
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Duplicate Slug Check
+            |--------------------------------------------------------------------------
+            */
+
+            const duplicateSlug =
+                await Category.findOne({
+                    slug: slug,
+                    _id: {
+                        $ne: req.params.id
+                    }
+                });
+
+            if (duplicateSlug) {
+
+                req.flash(
+                    "error_msg",
+                    "Another category already uses this slug."
+                );
+
+                return res.redirect(
+                    `/admin/categories/${req.params.id}/edit`
+                );
+            }
+
+            category.name = name;
+
+            category.slug = slug;
+
+            category.description =
+                (req.body.description || "").trim();
+
+            category.sortOrder =
+                Number(req.body.sortOrder) || 0;
+
+            category.isActive =
+                req.body.isActive === "true";
+
+            await category.save();
+
+            req.flash(
+                "success_msg",
+                "Category updated successfully."
+            );
+
+            return res.redirect(
+                "/admin/categories"
+            );
+
+        } catch (error) {
+
+            console.error(
+                "❌ Update Category Error:",
+                error
+            );
+
+            next(error);
+
+        }
+
+    }
+);
 module.exports = router;
