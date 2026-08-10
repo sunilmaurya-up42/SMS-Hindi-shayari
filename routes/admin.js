@@ -276,6 +276,169 @@ router.get(
 );
 /*
 |--------------------------------------------------------------------------
+| CREATE SHAYARI
+|--------------------------------------------------------------------------
+| POST /admin/shayari
+|--------------------------------------------------------------------------
+*/
+
+router.post(
+    "/shayari",
+    auth,
+    admin(),
+    async (req, res, next) => {
+
+        try {
+
+            const Shayari =
+                require("../models/Shayari");
+
+            const Category =
+                require("../models/Category");
+
+            const title =
+                (req.body.title || "").trim();
+
+            const content =
+                (req.body.content || "").trim();
+
+            const categoryId =
+                (req.body.category || "").trim();
+
+            /*
+            |--------------------------------------------------------------------------
+            | Validation
+            |--------------------------------------------------------------------------
+            */
+
+            if (!title) {
+
+                req.flash(
+                    "error_msg",
+                    "Shayari title is required."
+                );
+
+                return res.redirect(
+                    "/admin/shayari/new"
+                );
+            }
+
+            if (!content) {
+
+                req.flash(
+                    "error_msg",
+                    "Shayari content is required."
+                );
+
+                return res.redirect(
+                    "/admin/shayari/new"
+                );
+            }
+
+            if (!categoryId) {
+
+                req.flash(
+                    "error_msg",
+                    "Please select a category."
+                );
+
+                return res.redirect(
+                    "/admin/shayari/new"
+                );
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Check Category
+            |--------------------------------------------------------------------------
+            */
+
+            const category =
+                await Category.findById(categoryId);
+
+            if (!category) {
+
+                req.flash(
+                    "error_msg",
+                    "Selected category not found."
+                );
+
+                return res.redirect(
+                    "/admin/shayari/new"
+                );
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Create Shayari
+            |--------------------------------------------------------------------------
+            */
+
+            await Shayari.create({
+
+                title: title,
+
+                content: content,
+
+                category: category._id,
+
+                language: "hi",
+
+                published: true,
+
+                featured: false,
+
+                trending: false,
+
+                tags: []
+
+            });
+
+            /*
+            |--------------------------------------------------------------------------
+            | Update Category Count
+            |--------------------------------------------------------------------------
+            */
+
+            await Category.findByIdAndUpdate(
+                category._id,
+                {
+                    $inc: {
+                        totalShayari: 1
+                    }
+                }
+            );
+
+            req.flash(
+                "success_msg",
+                "Shayari created successfully."
+            );
+
+            /*
+            |--------------------------------------------------------------------------
+            | Redirect
+            |--------------------------------------------------------------------------
+            */
+
+            return res.redirect(
+                "/admin/shayari/new"
+            );
+
+        } catch (error) {
+
+            console.error(
+                "❌ Create Shayari Error:",
+                error
+            );
+
+            return next(error);
+
+        }
+
+    }
+);
+/*
+|--------------------------------------------------------------------------
 | CATEGORY ADMIN
 |--------------------------------------------------------------------------
 */
