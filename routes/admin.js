@@ -825,4 +825,51 @@ router.post(
 
     }
 );
+/*
+|--------------------------------------------------------------------------
+| ADMIN USERS
+|--------------------------------------------------------------------------
+*/
+
+router.get(
+    "/users",
+    auth,
+    admin(),
+    async (req, res, next) => {
+
+        try {
+
+            const User =
+                require("../models/User");
+
+            const users =
+                await User.find({})
+                    .select("-password")
+                    .sort({
+                        createdAt: -1
+                    })
+                    .lean();
+
+            return res.render(
+                "admin/users",
+                {
+                    title: "Users",
+                    activePage: "users",
+                    users
+                }
+            );
+
+        } catch (error) {
+
+            console.error(
+                "❌ Admin Users Error:",
+                error
+            );
+
+            next(error);
+
+        }
+
+    }
+);
 module.exports = router;
