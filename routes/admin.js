@@ -496,4 +496,190 @@ router.post(
 
     }
 );
+/*
+|--------------------------------------------------------------------------
+| CATEGORY EDIT
+|--------------------------------------------------------------------------
+*/
+
+router.get(
+    "/categories/:id/edit",
+    auth,
+    admin(),
+    async (req, res, next) => {
+
+        try {
+
+            const Category =
+                require("../models/Category");
+
+            const category =
+                await Category.findById(
+                    req.params.id
+                ).lean();
+
+            if (!category) {
+
+                req.flash(
+                    "error_msg",
+                    "Category not found."
+                );
+
+                return res.redirect(
+                    "/admin/categories"
+                );
+
+            }
+
+            return res.render(
+                "admin/category-edit",
+                {
+                    title: "Edit Category",
+                    activePage: "categories",
+                    category
+                }
+            );
+
+        } catch (error) {
+
+            next(error);
+
+        }
+
+    }
+);
+
+
+/*
+|--------------------------------------------------------------------------
+| CATEGORY TOGGLE
+|--------------------------------------------------------------------------
+*/
+
+router.post(
+    "/categories/:id/toggle",
+    auth,
+    admin(),
+    async (req, res, next) => {
+
+        try {
+
+            const Category =
+                require("../models/Category");
+
+            const category =
+                await Category.findById(
+                    req.params.id
+                );
+
+            if (!category) {
+
+                req.flash(
+                    "error_msg",
+                    "Category not found."
+                );
+
+                return res.redirect(
+                    "/admin/categories"
+                );
+
+            }
+
+            category.isActive =
+                !category.isActive;
+
+            await category.save();
+
+            req.flash(
+                "success_msg",
+                "Category status updated."
+            );
+
+            return res.redirect(
+                "/admin/categories"
+            );
+
+        } catch (error) {
+
+            next(error);
+
+        }
+
+    }
+);
+
+
+/*
+|--------------------------------------------------------------------------
+| CATEGORY DELETE
+|--------------------------------------------------------------------------
+*/
+
+router.post(
+    "/categories/:id/delete",
+    auth,
+    admin(),
+    async (req, res, next) => {
+
+        try {
+
+            const Category =
+                require("../models/Category");
+
+            const Shayari =
+                require("../models/Shayari");
+
+            const count =
+                await Shayari.countDocuments({
+                    category: req.params.id
+                });
+
+            if (count > 0) {
+
+                req.flash(
+                    "error_msg",
+                    `Category contains ${count} Shayari. Delete not allowed.`
+                );
+
+                return res.redirect(
+                    "/admin/categories"
+                );
+
+            }
+
+            const deleted =
+                await Category.findByIdAndDelete(
+                    req.params.id
+                );
+
+            if (!deleted) {
+
+                req.flash(
+                    "error_msg",
+                    "Category not found."
+                );
+
+                return res.redirect(
+                    "/admin/categories"
+                );
+
+            }
+
+            req.flash(
+                "success_msg",
+                "Category deleted successfully."
+            );
+
+            return res.redirect(
+                "/admin/categories"
+            );
+
+        } catch (error) {
+
+            next(error);
+
+        }
+
+    }
+);
 module.exports = router;
