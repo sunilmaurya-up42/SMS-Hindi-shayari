@@ -1204,4 +1204,397 @@ router.post(
 
     }
 );
+/*
+|--------------------------------------------------------------------------
+| EDIT USER PAGE
+|--------------------------------------------------------------------------
+*/
+
+router.get(
+    "/users/:id/edit",
+    auth,
+    admin(),
+    async (req, res, next) => {
+
+        try {
+
+            const User = require("../models/User");
+
+            const userToEdit = await User.findById(
+                req.params.id
+            )
+            .select("-password")
+            .lean();
+
+            if (!userToEdit) {
+
+                req.flash(
+                    "error_msg",
+                    "User not found."
+                );
+
+                return res.redirect(
+                    "/admin/users"
+                );
+            }
+
+            return res.render(
+                "admin/user-edit",
+                {
+                    title: "Edit User",
+                    activePage: "users",
+                    userToEdit
+                }
+            );
+
+        } catch (error) {
+
+            console.error(
+                "❌ Edit User Page Error:",
+                error
+            );
+
+            return next(error);
+
+        }
+
+    }
+);
+
+
+/*
+|--------------------------------------------------------------------------
+| UPDATE USER
+|--------------------------------------------------------------------------
+*/
+
+router.post(
+    "/users/:id/edit",
+    auth,
+    admin(),
+    async (req, res, next) => {
+
+        try {
+
+            const User = require("../models/User");
+            const bcrypt = require("bcryptjs");
+
+            const user = await User.findById(
+                req.params.id
+            );
+
+            if (!user) {
+
+                req.flash(
+                    "error_msg",
+                    "User not found."
+                );
+
+                return res.redirect(
+                    "/admin/users"
+                );
+            }
+
+            const name =
+                (req.body.name || "").trim();
+
+            const email =
+                (req.body.email || "")
+                    .trim()
+                    .toLowerCase();
+
+            const role =
+                req.body.role === "admin"
+                    ? "admin"
+                    : "user";
+
+            if (!name || !email) {
+
+                req.flash(
+                    "error_msg",
+                    "Name and email are required."
+                );
+
+                return res.redirect(
+                    `/admin/users/${req.params.id}/edit`
+                );
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Duplicate Email Check
+            |--------------------------------------------------------------------------
+            */
+
+            const existingUser =
+                await User.findOne({
+                    email,
+                    _id: {
+                        $ne: req.params.id
+                    }
+                });
+
+            if (existingUser) {
+
+                req.flash(
+                    "error_msg",
+                    "Another user already uses this email."
+                );
+
+                return res.redirect(
+                    `/admin/users/${req.params.id}/edit`
+                );
+            }
+
+            user.name = name;
+            user.email = email;
+            user.role = role;
+
+            /*
+            |--------------------------------------------------------------------------
+            | Optional Password Update
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                req.body.password &&
+                req.body.password.trim()
+            ) {
+
+                const password =
+                    req.body.password.trim();
+
+                if (password.length < 6) {
+
+                    req.flash(
+                        "error_msg",
+                        "Password must be at least 6 characters."
+                    );
+
+                    return res.redirect(
+                        `/admin/users/${req.params.id}/edit`
+                    );
+                }
+
+                const salt =
+                    await bcrypt.genSalt(10);
+
+                user.password =
+                    await bcrypt.hash(
+                        password,
+                        salt
+                    );
+            }
+
+            await user.save();
+
+            req.flash(
+                "success_msg",
+                "User updated successfully."
+            );
+
+            return res.redirect(
+                "/admin/users"
+            );
+
+        } catch (error) {
+
+            console.error(
+                "❌ Update User Error:",
+                error
+            );
+
+            return next(error);
+
+        }
+
+    }
+);
+
+
+/*
+|--------------------------------------------------------------------------
+| ACTIVE / INACTIVE USER
+|--------------------------------------------------------------------------
+*/
+
+router.post(
+    "/users/:id/toggle",
+    auth,
+    admin(),
+    async (req, res, next) => {
+
+        try {
+
+            const User = require("../models/User");
+
+            const user =
+                await User.findById(
+                    req.params.id
+                );
+
+            if (!user) {
+
+                req.flash(
+                    "error_msg",
+                    "User not found."
+                );
+
+                return res.redirect(
+                    "/admin/users"
+                );
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Prevent Admin From Disabling Himself
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                req.user &&
+                req.user._id.toString() ===
+                user._id.toString()
+            ) {
+
+                req.flash(
+                    "error_msg",
+                    "You cannot deactivate your own account."
+                );
+
+                return res.redirect(
+                    "/admin/users"
+                );
+            }
+
+            user.isActive =
+                !user.isActive;
+
+            await user.save();
+
+            req.flash(
+                "success_msg",
+                user.isActive
+                    ? "User activated successfully."
+                    : "User deactivated successfully."
+            );
+
+            return res.redirect(
+                "/admin/users"
+            );
+
+        } catch (error) {
+
+            console.error(
+                "❌ Toggle User Error:",
+                error
+            );
+
+            return next(error);
+
+        }
+
+    }
+);
+
+
+/*
+|--------------------------------------------------------------------------
+| DELETE USER
+|--------------------------------------------------------------------------
+*/
+
+router.post(
+    "/users/:id/delete",
+    auth,
+    admin(),
+    async (req, res, next) => {
+
+        try {
+
+            const User = require("../models/User");
+
+            const user =
+                await User.findById(
+                    req.params.id
+                );
+
+            if (!user) {
+
+                req.flash(
+                    "error_msg",
+                    "User not found."
+                );
+
+                return res.redirect(
+                    "/admin/users"
+                );
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Prevent Self Delete
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                req.user &&
+                req.user._id.toString() ===
+                user._id.toString()
+            ) {
+
+                req.flash(
+                    "error_msg",
+                    "You cannot delete your own account."
+                );
+
+                return res.redirect(
+                    "/admin/users"
+                );
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Prevent Admin Account Deletion
+            |--------------------------------------------------------------------------
+            */
+
+            if (user.role === "admin") {
+
+                req.flash(
+                    "error_msg",
+                    "Admin account cannot be deleted from this page."
+                );
+
+                return res.redirect(
+                    "/admin/users"
+                );
+            }
+
+            await User.findByIdAndDelete(
+                req.params.id
+            );
+
+            req.flash(
+                "success_msg",
+                "User deleted successfully."
+            );
+
+            return res.redirect(
+                "/admin/users"
+            );
+
+        } catch (error) {
+
+            console.error(
+                "❌ Delete User Error:",
+                error
+            );
+
+            return next(error);
+
+        }
+
+    }
+);
 module.exports = router;
