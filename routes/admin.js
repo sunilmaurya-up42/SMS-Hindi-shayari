@@ -872,4 +872,336 @@ router.get(
 
     }
 );
+/*
+|--------------------------------------------------------------------------
+| ADMIN USER EDIT PAGE
+|--------------------------------------------------------------------------
+*/
+
+router.get(
+    "/users/:id/edit",
+    auth,
+    admin(),
+    async (req, res, next) => {
+
+        try {
+
+            const User =
+                require("../models/User");
+
+            const user =
+                await User.findById(
+                    req.params.id
+                )
+                .select("-password")
+                .lean();
+
+            if (!user) {
+
+                req.flash(
+                    "error_msg",
+                    "User not found."
+                );
+
+                return res.redirect(
+                    "/admin/users"
+                );
+
+            }
+
+            return res.render(
+                "admin/user-edit",
+                {
+                    title: "Edit User",
+                    activePage: "users",
+                    user
+                }
+            );
+
+        } catch (error) {
+
+            console.error(
+                "❌ Edit User Page Error:",
+                error
+            );
+
+            next(error);
+
+        }
+
+    }
+);
+
+
+/*
+|--------------------------------------------------------------------------
+| UPDATE USER
+|--------------------------------------------------------------------------
+*/
+
+router.post(
+    "/users/:id/edit",
+    auth,
+    admin(),
+    async (req, res, next) => {
+
+        try {
+
+            const User =
+                require("../models/User");
+
+            const user =
+                await User.findById(
+                    req.params.id
+                );
+
+            if (!user) {
+
+                req.flash(
+                    "error_msg",
+                    "User not found."
+                );
+
+                return res.redirect(
+                    "/admin/users"
+                );
+
+            }
+
+            const name =
+                (req.body.name || "").trim();
+
+            const email =
+                (req.body.email || "")
+                    .trim()
+                    .toLowerCase();
+
+            const role =
+                req.body.role || "user";
+
+            if (!name || !email) {
+
+                req.flash(
+                    "error_msg",
+                    "Name and email are required."
+                );
+
+                return res.redirect(
+                    `/admin/users/${req.params.id}/edit`
+                );
+
+            }
+
+            if (!["user", "admin"].includes(role)) {
+
+                req.flash(
+                    "error_msg",
+                    "Invalid user role."
+                );
+
+                return res.redirect(
+                    `/admin/users/${req.params.id}/edit`
+                );
+
+            }
+
+            const duplicate =
+                await User.findOne({
+                    email,
+                    _id: {
+                        $ne: req.params.id
+                    }
+                });
+
+            if (duplicate) {
+
+                req.flash(
+                    "error_msg",
+                    "Another user already uses this email."
+                );
+
+                return res.redirect(
+                    `/admin/users/${req.params.id}/edit`
+                );
+
+            }
+
+            user.name = name;
+            user.email = email;
+            user.role = role;
+
+            await user.save();
+
+            req.flash(
+                "success_msg",
+                "User updated successfully."
+            );
+
+            return res.redirect(
+                "/admin/users"
+            );
+
+        } catch (error) {
+
+            console.error(
+                "❌ Update User Error:",
+                error
+            );
+
+            next(error);
+
+        }
+
+    }
+);
+
+
+/*
+|--------------------------------------------------------------------------
+| USER ACTIVE / INACTIVE
+|--------------------------------------------------------------------------
+*/
+
+router.post(
+    "/users/:id/toggle",
+    auth,
+    admin(),
+    async (req, res, next) => {
+
+        try {
+
+            const User =
+                require("../models/User");
+
+            const user =
+                await User.findById(
+                    req.params.id
+                );
+
+            if (!user) {
+
+                req.flash(
+                    "error_msg",
+                    "User not found."
+                );
+
+                return res.redirect(
+                    "/admin/users"
+                );
+
+            }
+
+            user.isActive =
+                !user.isActive;
+
+            await user.save();
+
+            req.flash(
+                "success_msg",
+                user.isActive
+                    ? "User activated successfully."
+                    : "User deactivated successfully."
+            );
+
+            return res.redirect(
+                "/admin/users"
+            );
+
+        } catch (error) {
+
+            console.error(
+                "❌ Toggle User Error:",
+                error
+            );
+
+            next(error);
+
+        }
+
+    }
+);
+
+
+/*
+|--------------------------------------------------------------------------
+| DELETE USER
+|--------------------------------------------------------------------------
+*/
+
+router.post(
+    "/users/:id/delete",
+    auth,
+    admin(),
+    async (req, res, next) => {
+
+        try {
+
+            const User =
+                require("../models/User");
+
+            const user =
+                await User.findById(
+                    req.params.id
+                );
+
+            if (!user) {
+
+                req.flash(
+                    "error_msg",
+                    "User not found."
+                );
+
+                return res.redirect(
+                    "/admin/users"
+                );
+
+            }
+
+            /*
+             * Prevent deleting yourself
+             */
+
+            if (
+                req.user &&
+                req.user._id.toString() ===
+                user._id.toString()
+            ) {
+
+                req.flash(
+                    "error_msg",
+                    "You cannot delete your own account."
+                );
+
+                return res.redirect(
+                    "/admin/users"
+                );
+
+            }
+
+            await User.findByIdAndDelete(
+                req.params.id
+            );
+
+            req.flash(
+                "success_msg",
+                "User deleted successfully."
+            );
+
+            return res.redirect(
+                "/admin/users"
+            );
+
+        } catch (error) {
+
+            console.error(
+                "❌ Delete User Error:",
+                error
+            );
+
+            next(error);
+
+        }
+
+    }
+);
 module.exports = router;
