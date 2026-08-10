@@ -288,6 +288,8 @@ router.get(
 
         try {
 
+            const Category = require("../models/Category");
+
             const categories = await Category.find({})
                 .sort({
                     sortOrder: 1,
