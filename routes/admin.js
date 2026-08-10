@@ -221,5 +221,56 @@ router.post(
     settingsController.restore
 );
 
+/*
+|--------------------------------------------------------------------------
+| ADD SHAYARI PAGE
+|--------------------------------------------------------------------------
+| GET /admin/shayari/new
+|--------------------------------------------------------------------------
+*/
 
+router.get(
+    "/shayari/new",
+    auth,
+    admin(),
+    async (req, res, next) => {
+
+        try {
+
+            const Category =
+                require("../models/Category");
+
+            const categories =
+                await Category.find({
+                    isActive: true
+                })
+                .sort({
+                    sortOrder: 1,
+                    name: 1
+                })
+                .lean();
+
+            return res.render(
+                "admin/shayari-new",
+                {
+                    title: "Add Shayari - Admin",
+                    activePage: "shayari",
+                    activeMenu: "shayari",
+                    user: req.user,
+                    categories,
+                    layout: "layouts/admin"
+                }
+            );
+
+        } catch (error) {
+
+            console.error(
+                "❌ Add Shayari Page Error:",
+                error
+            );
+
+            return next(error);
+        }
+    }
+);
 module.exports = router;
