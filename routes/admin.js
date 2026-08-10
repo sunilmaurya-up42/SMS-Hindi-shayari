@@ -12,6 +12,7 @@ const analyticsController =
 
 const settingsController =
     require("../controllers/settings/settingsController");
+const Category = require("../models/Category");
 
 
 /*
@@ -271,6 +272,48 @@ router.get(
 
             return next(error);
         }
+    }
+);
+/*
+|--------------------------------------------------------------------------
+| ADMIN CATEGORIES
+|--------------------------------------------------------------------------
+*/
+
+router.get(
+    "/categories",
+    auth,
+    admin(),
+    async (req, res, next) => {
+
+        try {
+
+            const categories = await Category.find({})
+                .sort({
+                    sortOrder: 1,
+                    name: 1
+                })
+                .lean();
+
+            return res.render(
+                "admin/categories",
+                {
+                    title: "Categories",
+                    categories
+                }
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Admin Categories Error:",
+                error
+            );
+
+            next(error);
+
+        }
+
     }
 );
 module.exports = router;
