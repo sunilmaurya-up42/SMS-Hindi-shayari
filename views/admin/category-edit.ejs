@@ -1,0 +1,177 @@
+<section class="py-4">
+
+    <div class="container">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+            <div>
+                <h2 class="fw-bold">Edit Category</h2>
+
+                <p class="text-muted mb-0">
+                    Update category details
+                </p>
+            </div>
+
+            <a
+                href="/admin/categories"
+                class="btn btn-primary">
+
+                ← Categories
+
+            </a>
+
+        </div>
+
+
+        <div class="card shadow-sm">
+
+            <div class="card-header">
+
+                <strong>
+                    Edit Category
+                </strong>
+
+            </div>
+
+            <div class="card-body">
+
+                <form
+                    method="POST"
+                    action="/admin/categories/<%= category._id %>/edit">
+
+
+                    <input
+                        type="hidden"
+                        name="_csrf"
+                        value="<%= csrfToken %>">
+
+
+                    <!-- Name -->
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Category Name
+                        </label>
+
+                        <input
+                            type="text"
+                            name="name"
+                            class="form-control"
+                            value="<%= category.name || '' %>"
+                            required>
+
+                    </div>
+
+
+                    <!-- Slug -->
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Slug
+                        </label>
+
+                        <input
+                            type="text"
+                            name="slug"
+                            class="form-control"
+                            value="<%= category.slug || '' %>"
+                            required>
+
+                        <small class="text-muted">
+                            Example: love-shayari
+                        </small>
+
+                    </div>
+
+
+                    <!-- Description -->
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Description
+                        </label>
+
+                        <textarea
+                            name="description"
+                            class="form-control"
+                            rows="4"><%= category.description || '' %></textarea>
+
+                    </div>
+
+
+                    <!-- Sort Order -->
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Sort Order
+                        </label>
+
+                        <input
+                            type="number"
+                            name="sortOrder"
+                            class="form-control"
+                            value="<%= category.sortOrder || 0 %>"
+                            min="0">
+
+                    </div>
+
+
+                    <!-- Status -->
+
+                    <div class="form-check mb-4">
+
+                        <input
+                            type="checkbox"
+                            class="form-check-input"
+                            id="isActive"
+                            name="isActive"
+                            value="true"
+                            <%= category.isActive !== false ? 'checked' : '' %>>
+
+                        <label
+                            class="form-check-label"
+                            for="isActive">
+
+                            Active Category
+
+                        </label>
+
+                    </div>
+
+
+                    <div class="d-flex gap-2">
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary">
+
+                            <i class="fa-solid fa-save me-1"></i>
+
+                            Update Category
+
+                        </button>
+
+
+                        <a
+                            href="/admin/categories"
+                            class="btn btn-secondary">
+
+                            Cancel
+
+                        </a>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
