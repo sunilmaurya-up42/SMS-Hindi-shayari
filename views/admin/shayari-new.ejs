@@ -24,8 +24,13 @@
             <div class="card-body">
 
                 <form
-                    method="POST"
-                    action="/admin/shayari">
+    method="POST"
+    action="/admin/shayari">
+
+    <input
+        type="hidden"
+        name="_csrf"
+        value="<%= csrfToken %>">
 
                     <div class="mb-3">
 
