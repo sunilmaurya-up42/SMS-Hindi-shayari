@@ -92,8 +92,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(flash());
-app.use(csrf({ cookie: true }));
-
+app.use(csrfProtection);
 /* ===========================
    Security
 =========================== */
