@@ -334,4 +334,166 @@ router.get(
 
     }
 );
+/*
+|--------------------------------------------------------------------------
+| CREATE CATEGORY
+|--------------------------------------------------------------------------
+*/
+
+router.post(
+    "/categories",
+    auth,
+    admin(),
+    async (req, res, next) => {
+
+        try {
+
+            const Category =
+                require("../models/Category");
+
+            let {
+                name,
+                slug,
+                description,
+                sortOrder,
+                isActive
+            } = req.body;
+
+            name = (name || "").trim();
+            slug = (slug || "").trim().toLowerCase();
+
+            /*
+            |--------------------------------------------------------------------------
+            | Validation
+            |--------------------------------------------------------------------------
+            */
+
+            if (!name) {
+
+                req.flash(
+                    "error_msg",
+                    "Category name is required."
+                );
+
+                return res.redirect(
+                    "/admin/categories/new"
+                );
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Generate slug if empty
+            |--------------------------------------------------------------------------
+            */
+
+            if (!slug) {
+
+                slug = name
+                    .toLowerCase()
+                    .trim()
+                    .replace(/[^a-z0-9\s-]/g, "")
+                    .replace(/\s+/g, "-")
+                    .replace(/-+/g, "-");
+
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Check duplicate name
+            |--------------------------------------------------------------------------
+            */
+
+            const nameExists =
+                await Category.findOne({
+                    name: name
+                });
+
+            if (nameExists) {
+
+                req.flash(
+                    "error_msg",
+                    "This category already exists."
+                );
+
+                return res.redirect(
+                    "/admin/categories/new"
+                );
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Check duplicate slug
+            |--------------------------------------------------------------------------
+            */
+
+            const slugExists =
+                await Category.findOne({
+                    slug: slug
+                });
+
+            if (slugExists) {
+
+                req.flash(
+                    "error_msg",
+                    "This category slug already exists."
+                );
+
+                return res.redirect(
+                    "/admin/categories/new"
+                );
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Create Category
+            |--------------------------------------------------------------------------
+            */
+
+            await Category.create({
+
+                name: name,
+
+                slug: slug,
+
+                description:
+                    (description || "").trim(),
+
+                sortOrder:
+                    Number(sortOrder) || 0,
+
+                isActive:
+                    isActive === "true",
+
+                totalShayari: 0
+
+            });
+
+            /*
+            |--------------------------------------------------------------------------
+            | Success
+            |--------------------------------------------------------------------------
+            */
+
+            req.flash(
+                "success_msg",
+                "Category created successfully."
+            );
+
+            return res.redirect(
+                "/admin/categories"
+            );
+
+        } catch (error) {
+
+            console.error(
+                "❌ Create Category Error:",
+                error
+            );
+
+            return next(error);
+
+        }
+
+    }
+);
 module.exports = router;
