@@ -1,0 +1,189 @@
+<section class="py-4">
+
+    <div class="container-fluid">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+
+            <div>
+
+                <h2 class="fw-bold">
+                    Add Category
+                </h2>
+
+                <p class="text-muted mb-0">
+                    Create a new Shayari category
+                </p>
+
+            </div>
+
+            <a
+                href="/admin/categories"
+                class="btn btn-primary">
+
+                ← Categories
+
+            </a>
+
+        </div>
+
+
+        <div class="row">
+
+            <div class="col-lg-8">
+
+                <div class="card shadow-sm">
+
+                    <div class="card-header">
+
+                        <strong>
+                            Category Information
+                        </strong>
+
+                    </div>
+
+                    <div class="card-body">
+
+                        <form
+                            method="POST"
+                            action="/admin/categories">
+
+                            <input
+                                type="hidden"
+                                name="_csrf"
+                                value="<%= csrfToken %>">
+
+
+                            <div class="mb-3">
+
+                                <label
+                                    class="form-label">
+
+                                    Category Name
+
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="name"
+                                    class="form-control"
+                                    placeholder="Example: Love Shayari"
+                                    required>
+
+                            </div>
+
+
+                            <div class="mb-3">
+
+                                <label
+                                    class="form-label">
+
+                                    Slug
+
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="slug"
+                                    class="form-control"
+                                    placeholder="love-shayari">
+
+                                <div class="form-text">
+
+                                    Example:
+                                    love-shayari
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="mb-3">
+
+                                <label
+                                    class="form-label">
+
+                                    Description
+
+                                </label>
+
+                                <textarea
+                                    name="description"
+                                    class="form-control"
+                                    rows="4"
+                                    placeholder="Category description"></textarea>
+
+                            </div>
+
+
+                            <div class="mb-3">
+
+                                <label
+                                    class="form-label">
+
+                                    Sort Order
+
+                                </label>
+
+                                <input
+                                    type="number"
+                                    name="sortOrder"
+                                    class="form-control"
+                                    value="0"
+                                    min="0">
+
+                            </div>
+
+
+                            <div class="form-check mb-4">
+
+                                <input
+                                    type="checkbox"
+                                    name="isActive"
+                                    value="true"
+                                    class="form-check-input"
+                                    id="isActive"
+                                    checked>
+
+                                <label
+                                    class="form-check-label"
+                                    for="isActive">
+
+                                    Active Category
+
+                                </label>
+
+                            </div>
+
+
+                            <button
+                                type="submit"
+                                class="btn btn-success">
+
+                                <i class="fa-solid fa-plus me-1"></i>
+
+                                Create Category
+
+                            </button>
+
+
+                            <a
+                                href="/admin/categories"
+                                class="btn btn-secondary ms-2">
+
+                                Cancel
+
+                            </a>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
