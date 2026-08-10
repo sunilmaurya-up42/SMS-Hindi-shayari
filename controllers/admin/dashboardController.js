@@ -274,9 +274,15 @@ exports.dashboard = async (req, res, next) => {
         );
 
         return res.render(
-            "admin/dashboard",
-            dashboardData
-        );
+    "admin/dashboard",
+    {
+        ...dashboardData,
+
+        layout: "layouts/admin",
+
+        activeMenu: "dashboard"
+    }
+);
 
     } catch (error) {
 
