@@ -276,7 +276,7 @@ router.get(
 );
 /*
 |--------------------------------------------------------------------------
-| ADMIN CATEGORIES
+| CATEGORY ADMIN
 |--------------------------------------------------------------------------
 */
 
@@ -288,33 +288,49 @@ router.get(
 
         try {
 
-            const Category = require("../models/Category");
+            const Category =
+                require("../models/Category");
 
-            const categories = await Category.find({})
-                .sort({
-                    sortOrder: 1,
-                    name: 1
-                })
-                .lean();
+            const categories =
+                await Category.find({})
+                    .sort({
+                        sortOrder: 1,
+                        name: 1
+                    })
+                    .lean();
 
             return res.render(
                 "admin/categories",
                 {
                     title: "Categories",
+                    activePage: "categories",
                     categories
                 }
             );
 
         } catch (error) {
 
-            console.error(
-                "Admin Categories Error:",
-                error
-            );
-
             next(error);
 
         }
+
+    }
+);
+
+
+router.get(
+    "/categories/new",
+    auth,
+    admin(),
+    (req, res) => {
+
+        return res.render(
+            "admin/category-new",
+            {
+                title: "Add Category",
+                activePage: "categories"
+            }
+        );
 
     }
 );
