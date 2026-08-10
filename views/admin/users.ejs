@@ -5,15 +5,23 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
 
             <div>
-                <h2 class="fw-bold">Users</h2>
+
+                <h2 class="fw-bold">
+                    Users
+                </h2>
+
                 <p class="text-muted mb-0">
-                    Registered website users
+                    Manage website users
                 </p>
+
             </div>
 
-            <a href="/admin/dashboard"
-               class="btn btn-primary">
+            <a
+                href="/admin/dashboard"
+                class="btn btn-primary">
+
                 ← Dashboard
+
             </a>
 
         </div>
@@ -22,36 +30,54 @@
         <div class="card shadow-sm">
 
             <div class="card-header">
-                <strong>Users List</strong>
+
+                <strong>
+                    All Users
+                </strong>
+
             </div>
+
 
             <div class="card-body p-0">
 
-                <% if (!users.length) { %>
+                <% if (!users || users.length === 0) { %>
 
-                    <div class="p-4 text-muted">
+                    <div class="p-4 text-center text-muted">
+
                         No users found.
+
                     </div>
 
                 <% } else { %>
 
                     <div class="table-responsive">
 
-                        <table class="table table-hover mb-0">
+                        <table class="table table-hover align-middle mb-0">
 
                             <thead>
+
                                 <tr>
+
                                     <th>#</th>
+
                                     <th>Name</th>
+
                                     <th>Email</th>
+
                                     <th>Role</th>
+
                                     <th>Status</th>
+
+                                    <th>Joined</th>
+
                                 </tr>
+
                             </thead>
+
 
                             <tbody>
 
-                                <% users.forEach((item, index) => { %>
+                                <% users.forEach((user, index) => { %>
 
                                     <tr>
 
@@ -60,20 +86,40 @@
                                         </td>
 
                                         <td>
-                                            <%= item.name || "-" %>
-                                        </td>
 
-                                        <td>
-                                            <%= item.email || "-" %>
-                                        </td>
+                                            <strong>
+                                                <%= user.name || "-" %>
+                                            </strong>
 
-                                        <td>
-                                            <%= item.role || "user" %>
                                         </td>
 
                                         <td>
 
-                                            <% if (item.isActive !== false) { %>
+                                            <%= user.email || "-" %>
+
+                                        </td>
+
+                                        <td>
+
+                                            <% if (user.role === "admin") { %>
+
+                                                <span class="badge bg-danger">
+                                                    Admin
+                                                </span>
+
+                                            <% } else { %>
+
+                                                <span class="badge bg-primary">
+                                                    User
+                                                </span>
+
+                                            <% } %>
+
+                                        </td>
+
+                                        <td>
+
+                                            <% if (user.isActive !== false) { %>
 
                                                 <span class="badge bg-success">
                                                     Active
@@ -81,11 +127,19 @@
 
                                             <% } else { %>
 
-                                                <span class="badge bg-danger">
+                                                <span class="badge bg-secondary">
                                                     Inactive
                                                 </span>
 
                                             <% } %>
+
+                                        </td>
+
+                                        <td>
+
+                                            <%= user.createdAt
+                                                ? new Date(user.createdAt).toLocaleDateString("en-IN")
+                                                : "-" %>
 
                                         </td>
 
