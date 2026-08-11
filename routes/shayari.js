@@ -63,7 +63,10 @@ router.post(
     "/share/:id",
     shayariController.share
 );
-
+router.get(
+    "/download/:id",
+    shayariController.downloadFile
+);
 router.post(
     "/download/:id",
     shayariController.download
