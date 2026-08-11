@@ -7,14 +7,6 @@ const githubService = require("../../services/github/githubService");
 const sitemapService = require("../../services/seo/sitemapService");
 const analyticsService = require("../../services/analytics/analyticsService");
 
-
-/**
- * Render public Shayari detail page
- */
-exports.showPage = async (req, res, next) => {
-/**
- * Render public Shayari detail page
- */
 exports.showPage = async (req, res, next) => {
 
     try {
