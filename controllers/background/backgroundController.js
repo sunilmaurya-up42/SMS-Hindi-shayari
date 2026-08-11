@@ -1,5 +1,10 @@
-const Background = require("../../models/Background");
-const githubService = require("../../services/github/githubService");
+const fs = require("fs");
+
+const Background =
+    require("../../models/Background");
+
+const githubService =
+    require("../../services/github/githubService");
 
 
 /*
@@ -10,17 +15,39 @@ const githubService = require("../../services/github/githubService");
 
 exports.upload = async (req, res) => {
 
+    let uploadedFile = null;
+
     try {
+
+        /*
+        |--------------------------------------------------------------------------
+        | CHECK FILE
+        |--------------------------------------------------------------------------
+        */
 
         if (!req.file) {
 
             return res.status(400).json({
+
                 success: false,
-                message: "Background image is required."
+
+                message:
+                    "Background image is required."
+
             });
 
         }
 
+
+        uploadedFile =
+            req.file;
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | UPLOAD TO GITHUB
+        |--------------------------------------------------------------------------
+        */
 
         const github =
             await githubService.uploadBackground(
@@ -28,42 +55,102 @@ exports.upload = async (req, res) => {
             );
 
 
+        /*
+        |--------------------------------------------------------------------------
+        | CREATE MONGODB RECORD
+        |--------------------------------------------------------------------------
+        */
+
         const background =
             await Background.create({
 
                 title:
-                    (req.body.title || "Background")
-                        .trim(),
+                    (req.body.title ||
+                        req.file.originalname ||
+                        "Background"
+                    ).trim(),
+
 
                 githubFileName:
+                    github.githubFileName ||
                     github.fileName,
+
+
+                githubPath:
+                    github.githubPath ||
+                    github.path,
+
 
                 githubUrl:
                     github.githubUrl,
 
+
                 githubDownloadUrl:
-                    github.githubDownloadUrl,
+                    github.githubDownloadUrl ||
+                    github.downloadUrl,
+
 
                 sha:
-                    github.sha,
+                    github.sha || "",
+
 
                 width:
                     Number(req.body.width) || 0,
 
+
                 height:
                     Number(req.body.height) || 0,
+
 
                 fileSize:
                     Number(req.file.size) || 0,
 
+
                 mimeType:
-                    req.file.mimetype || "image/jpeg",
+                    req.file.mimetype ||
+                    "image/jpeg",
+
 
                 isActive:
                     true
 
             });
 
+
+        /*
+        |--------------------------------------------------------------------------
+        | REMOVE TEMPORARY LOCAL FILE
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            req.file.path &&
+            fs.existsSync(req.file.path)
+        ) {
+
+            try {
+
+                fs.unlinkSync(
+                    req.file.path
+                );
+
+            } catch (fileError) {
+
+                console.warn(
+                    "⚠️ Temporary background file could not be removed:",
+                    fileError.message
+                );
+
+            }
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | SUCCESS
+        |--------------------------------------------------------------------------
+        */
 
         return res.status(201).json({
 
@@ -72,7 +159,8 @@ exports.upload = async (req, res) => {
             message:
                 "Background uploaded to GitHub successfully.",
 
-            data: background
+            data:
+                background
 
         });
 
@@ -83,6 +171,43 @@ exports.upload = async (req, res) => {
             "❌ Background Upload Error:",
             error
         );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | CLEAN TEMP FILE ON ERROR
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            uploadedFile &&
+            uploadedFile.path &&
+            fs.existsSync(uploadedFile.path)
+        ) {
+
+            try {
+
+                fs.unlinkSync(
+                    uploadedFile.path
+                );
+
+            } catch (fileError) {
+
+                console.warn(
+                    "⚠️ Temporary file cleanup failed:",
+                    fileError.message
+                );
+
+            }
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | ERROR RESPONSE
+        |--------------------------------------------------------------------------
+        */
 
         return res.status(500).json({
 
@@ -110,10 +235,21 @@ exports.getAll = async (req, res) => {
     try {
 
         const page =
-            Number(req.query.page) || 1;
+            Math.max(
+                Number(req.query.page) || 1,
+                1
+            );
+
 
         const limit =
-            Number(req.query.limit) || 20;
+            Math.min(
+                Math.max(
+                    Number(req.query.limit) || 20,
+                    1
+                ),
+                100
+            );
+
 
         const skip =
             (page - 1) * limit;
@@ -124,7 +260,7 @@ exports.getAll = async (req, res) => {
 
 
         const backgrounds =
-            await Background.find()
+            await Background.find({})
                 .sort({
                     createdAt: -1
                 })
@@ -144,7 +280,9 @@ exports.getAll = async (req, res) => {
             total,
 
             totalPages:
-                Math.ceil(total / limit),
+                Math.ceil(
+                    total / limit
+                ),
 
             data:
                 backgrounds
@@ -158,6 +296,7 @@ exports.getAll = async (req, res) => {
             "❌ Get Backgrounds Error:",
             error
         );
+
 
         return res.status(500).json({
 
@@ -183,7 +322,7 @@ exports.random = async (req, res) => {
 
     try {
 
-        const background =
+        const backgrounds =
             await Background.aggregate([
 
                 {
@@ -206,7 +345,7 @@ exports.random = async (req, res) => {
             success: true,
 
             data:
-                background[0] || null
+                backgrounds[0] || null
 
         });
 
@@ -217,6 +356,7 @@ exports.random = async (req, res) => {
             "❌ Random Background Error:",
             error
         );
+
 
         return res.status(500).json({
 
@@ -279,6 +419,7 @@ exports.preview = async (req, res) => {
             error
         );
 
+
         return res.status(500).json({
 
             success: false,
@@ -321,6 +462,12 @@ exports.categories = async (req, res) => {
 
     } catch (error) {
 
+        console.error(
+            "❌ Background Categories Error:",
+            error
+        );
+
+
         return res.status(500).json({
 
             success: false,
@@ -346,17 +493,8 @@ exports.update = async (req, res) => {
     try {
 
         const background =
-            await Background.findByIdAndUpdate(
-
-                req.params.id,
-
-                req.body,
-
-                {
-                    new: true,
-                    runValidators: true
-                }
-
+            await Background.findById(
+                req.params.id
             );
 
 
@@ -374,12 +512,80 @@ exports.update = async (req, res) => {
         }
 
 
+        if (
+            typeof req.body.title === "string"
+        ) {
+
+            const title =
+                req.body.title.trim();
+
+
+            if (title) {
+
+                background.title =
+                    title;
+
+            }
+
+        }
+
+
+        if (
+            typeof req.body.width !==
+            "undefined"
+        ) {
+
+            background.width =
+                Number(req.body.width) || 0;
+
+        }
+
+
+        if (
+            typeof req.body.height !==
+            "undefined"
+        ) {
+
+            background.height =
+                Number(req.body.height) || 0;
+
+        }
+
+
+        if (
+            typeof req.body.language ===
+            "string"
+        ) {
+
+            background.language =
+                req.body.language.trim();
+
+        }
+
+
+        if (
+            typeof req.body.tags ===
+            "string"
+        ) {
+
+            background.tags =
+                req.body.tags
+                    .split(",")
+                    .map(tag => tag.trim())
+                    .filter(Boolean);
+
+        }
+
+
+        await background.save();
+
+
         return res.json({
 
             success: true,
 
             message:
-                "Background updated.",
+                "Background updated successfully.",
 
             data:
                 background
@@ -393,6 +599,7 @@ exports.update = async (req, res) => {
             "❌ Update Background Error:",
             error
         );
+
 
         return res.status(500).json({
 
@@ -410,7 +617,7 @@ exports.update = async (req, res) => {
 
 /*
 |--------------------------------------------------------------------------
-| TOGGLE
+| TOGGLE ACTIVE / INACTIVE
 |--------------------------------------------------------------------------
 */
 
@@ -449,6 +656,11 @@ exports.toggle = async (req, res) => {
 
             success: true,
 
+            message:
+                background.isActive
+                    ? "Background activated."
+                    : "Background deactivated.",
+
             isActive:
                 background.isActive
 
@@ -456,6 +668,12 @@ exports.toggle = async (req, res) => {
 
 
     } catch (error) {
+
+        console.error(
+            "❌ Toggle Background Error:",
+            error
+        );
+
 
         return res.status(500).json({
 
@@ -473,7 +691,7 @@ exports.toggle = async (req, res) => {
 
 /*
 |--------------------------------------------------------------------------
-| DELETE
+| DELETE BACKGROUND
 |--------------------------------------------------------------------------
 */
 
@@ -503,11 +721,13 @@ exports.remove = async (req, res) => {
 
         /*
         |--------------------------------------------------------------------------
-        | Delete From GitHub
+        | DELETE FROM GITHUB
         |--------------------------------------------------------------------------
         */
 
-        if (background.githubPath) {
+        if (
+            background.githubPath
+        ) {
 
             await githubService.deleteBackground(
 
@@ -522,7 +742,7 @@ exports.remove = async (req, res) => {
 
         /*
         |--------------------------------------------------------------------------
-        | Delete MongoDB Record
+        | DELETE FROM MONGODB
         |--------------------------------------------------------------------------
         */
 
@@ -545,6 +765,7 @@ exports.remove = async (req, res) => {
             "❌ Delete Background Error:",
             error
         );
+
 
         return res.status(500).json({
 
@@ -577,13 +798,17 @@ exports.analytics = async (req, res) => {
 
         const active =
             await Background.countDocuments({
+
                 isActive: true
+
             });
 
 
         const inactive =
             await Background.countDocuments({
+
                 isActive: false
+
             });
 
 
@@ -601,6 +826,12 @@ exports.analytics = async (req, res) => {
 
 
     } catch (error) {
+
+        console.error(
+            "❌ Background Analytics Error:",
+            error
+        );
+
 
         return res.status(500).json({
 
@@ -622,8 +853,14 @@ exports.analytics = async (req, res) => {
 |--------------------------------------------------------------------------
 */
 
-exports.githubUpload = async (req, res) => {
+exports.githubUpload = async (
+    req,
+    res
+) => {
 
-    return exports.upload(req, res);
+    return exports.upload(
+        req,
+        res
+    );
 
 };
