@@ -27,6 +27,11 @@ const backgroundSchema = new mongoose.Schema(
       required: true,
       trim: true
     },
+    githubPath: {
+    type: String,
+    required: true,
+    trim: true
+},
 
     sha: {
   type: String,
