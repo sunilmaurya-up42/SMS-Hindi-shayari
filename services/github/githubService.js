@@ -13,7 +13,7 @@ const BRANCH = process.env.GITHUB_BRANCH || "main";
 
 /*
 |--------------------------------------------------------------------------
-| GitHub Configuration Check
+| CHECK GITHUB CONFIG
 |--------------------------------------------------------------------------
 */
 
@@ -36,7 +36,7 @@ function checkConfig() {
 
 /*
 |--------------------------------------------------------------------------
-| Upload File To GitHub
+| UPLOAD FILE
 |--------------------------------------------------------------------------
 */
 
@@ -57,18 +57,34 @@ exports.uploadFile = async (
         );
     }
 
+
     const buffer =
         fs.readFileSync(localFile);
 
 
+    const originalName =
+        path.basename(localFile);
+
+
+    const safeName =
+        originalName
+            .replace(/\s+/g, "-")
+            .replace(/[^a-zA-Z0-9._-]/g, "");
+
+
     const fileName =
-        `${Date.now()}-${path.basename(localFile)}`
-            .replace(/\s+/g, "-");
+        `${Date.now()}-${Math.round(Math.random() * 1e9)}-${safeName}`;
 
 
     const githubPath =
         `${folder}/${fileName}`;
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | UPLOAD TO GITHUB
+    |--------------------------------------------------------------------------
+    */
 
     const response =
         await octokit.repos.createOrUpdateFileContents({
@@ -90,6 +106,20 @@ exports.uploadFile = async (
         });
 
 
+    /*
+    |--------------------------------------------------------------------------
+    | URLS
+    |--------------------------------------------------------------------------
+    */
+
+    const githubUrl =
+        `https://github.com/${OWNER}/${REPO}/blob/${BRANCH}/${githubPath}`;
+
+
+    const githubDownloadUrl =
+        `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${githubPath}`;
+
+
     return {
 
         success: true,
@@ -100,17 +130,12 @@ exports.uploadFile = async (
 
         path: githubPath,
 
-        url:
-            `https://github.com/${OWNER}/${REPO}/blob/${BRANCH}/${githubPath}`,
+        githubUrl,
 
-        githubUrl:
-            `https://github.com/${OWNER}/${REPO}/blob/${BRANCH}/${githubPath}`,
+        githubDownloadUrl,
 
-        downloadUrl:
-            `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${githubPath}`,
-
-        githubDownloadUrl:
-            `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${githubPath}`,
+        // backward compatibility
+        downloadUrl: githubDownloadUrl,
 
         sha:
             response.data.content.sha
@@ -122,7 +147,7 @@ exports.uploadFile = async (
 
 /*
 |--------------------------------------------------------------------------
-| Upload Background To GitHub
+| UPLOAD BACKGROUND
 |--------------------------------------------------------------------------
 */
 
@@ -137,14 +162,12 @@ exports.uploadBackground = async (
     }
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | Upload Into backgrounds Folder
-    |--------------------------------------------------------------------------
-    */
+    const localFile =
+        file.path || file;
+
 
     return await exports.uploadFile(
-        file.path,
+        localFile,
         "backgrounds"
     );
 
@@ -153,7 +176,7 @@ exports.uploadBackground = async (
 
 /*
 |--------------------------------------------------------------------------
-| Delete File From GitHub
+| DELETE FILE
 |--------------------------------------------------------------------------
 */
 
@@ -170,13 +193,14 @@ exports.deleteFile = async (
         );
     }
 
-    if (!sha) {
 
-        /*
-        |--------------------------------------------------------------------------
-        | Get SHA Automatically
-        |--------------------------------------------------------------------------
-        */
+    /*
+    |--------------------------------------------------------------------------
+    | Get SHA If Missing
+    |--------------------------------------------------------------------------
+    */
+
+    if (!sha) {
 
         const file =
             await exports.getFile(
@@ -214,7 +238,7 @@ exports.deleteFile = async (
 
 /*
 |--------------------------------------------------------------------------
-| Delete Background
+| DELETE BACKGROUND
 |--------------------------------------------------------------------------
 */
 
@@ -227,6 +251,7 @@ exports.deleteBackground = async (
         return false;
     }
 
+
     return await exports.deleteFile(
         githubPath,
         sha
@@ -237,7 +262,7 @@ exports.deleteBackground = async (
 
 /*
 |--------------------------------------------------------------------------
-| Update File
+| UPDATE FILE
 |--------------------------------------------------------------------------
 */
 
@@ -249,17 +274,13 @@ exports.updateFile = async (
 
     checkConfig();
 
+
     if (!localFile) {
         throw new Error(
             "Local file is required."
         );
     }
 
-    if (!githubPath) {
-        throw new Error(
-            "GitHub file path is required."
-        );
-    }
 
     if (!fs.existsSync(localFile)) {
         throw new Error(
@@ -268,39 +289,54 @@ exports.updateFile = async (
     }
 
 
+    if (!githubPath) {
+        throw new Error(
+            "GitHub file path is required."
+        );
+    }
+
+
     const buffer =
         fs.readFileSync(localFile);
 
 
-    await octokit.repos.createOrUpdateFileContents({
+    const response =
+        await octokit.repos.createOrUpdateFileContents({
 
-        owner: OWNER,
+            owner: OWNER,
 
-        repo: REPO,
+            repo: REPO,
 
-        path: githubPath,
+            path: githubPath,
 
-        message:
-            `Update ${githubPath}`,
+            message:
+                `Update ${githubPath}`,
 
-        content:
-            buffer.toString("base64"),
+            content:
+                buffer.toString("base64"),
 
-        sha,
+            sha,
 
-        branch: BRANCH
+            branch: BRANCH
 
-    });
+        });
 
 
-    return true;
+    return {
+
+        success: true,
+
+        sha:
+            response.data.content.sha
+
+    };
 
 };
 
 
 /*
 |--------------------------------------------------------------------------
-| Get File Info
+| GET FILE
 |--------------------------------------------------------------------------
 */
 
@@ -310,6 +346,7 @@ exports.getFile = async (
 
     checkConfig();
 
+
     if (!githubPath) {
         throw new Error(
             "GitHub file path is required."
@@ -317,7 +354,7 @@ exports.getFile = async (
     }
 
 
-    const file =
+    const response =
         await octokit.repos.getContent({
 
             owner: OWNER,
@@ -331,38 +368,60 @@ exports.getFile = async (
         });
 
 
-    return file.data;
+    return response.data;
 
 };
 
 
 /*
 |--------------------------------------------------------------------------
-| List Files
+| LIST FILES
 |--------------------------------------------------------------------------
 */
 
 exports.listFiles = async (
-    folder = "uploads"
+    folder = "backgrounds"
 ) => {
 
     checkConfig();
 
 
-    const files =
-        await octokit.repos.getContent({
+    try {
 
-            owner: OWNER,
+        const response =
+            await octokit.repos.getContent({
 
-            repo: REPO,
+                owner: OWNER,
 
-            path: folder,
+                repo: REPO,
 
-            ref: BRANCH
+                path: folder,
 
-        });
+                ref: BRANCH
+
+            });
 
 
-    return files.data;
+        return Array.isArray(response.data)
+            ? response.data
+            : [response.data];
+
+
+    } catch (error) {
+
+        /*
+        |--------------------------------------------------------------------------
+        | Folder Does Not Exist Yet
+        |--------------------------------------------------------------------------
+        */
+
+        if (error.status === 404) {
+            return [];
+        }
+
+
+        throw error;
+
+    }
 
 };
