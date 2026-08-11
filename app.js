@@ -39,7 +39,7 @@ const reportRoutes = require("./routes/report");
 const settingsRoutes = require("./routes/settings");
 const contactAdminRoutes = require("./routes/contactAdmin");
 const mongoSanitize = require("./middleware/mongoSanitize");
-
+const backgroundRoutes = require("./routes/background");
 require("./config/passport");
 
 const app = express();
@@ -191,6 +191,7 @@ app.use("/auth", authRoutes);
 app.use("/shayari", shayariRoutes);
 app.use("/category", categoryRoutes);
 app.use("/admin", adminRoutes);
+app.use("/background", backgroundRoutes);
 app.use("/api/report", reportApiRoutes);
 app.use("/", pageRoutes);
 app.use("/search", searchRoutes);
