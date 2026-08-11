@@ -263,3 +263,384 @@ exports.optimize = async (
     return output;
 
 };
+/*
+|--------------------------------------------------------------------------
+| Generate Shayari Image
+|--------------------------------------------------------------------------
+| GitHub Background + Shayari + Watermark
+|--------------------------------------------------------------------------
+*/
+
+const {
+    createCanvas,
+    loadImage
+} = require("canvas");
+
+
+exports.generateShayariImage =
+async ({
+    backgroundUrl,
+    title,
+    content,
+    watermark = "SMS Hindi Shayari"
+}) => {
+
+    /*
+    |--------------------------------------------------------------------------
+    | Download GitHub Background
+    |--------------------------------------------------------------------------
+    */
+
+    const response =
+        await fetch(
+            backgroundUrl
+        );
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            `Background download failed: ${response.status}`
+        );
+
+    }
+
+
+    const arrayBuffer =
+        await response.arrayBuffer();
+
+
+    const backgroundImage =
+        await loadImage(
+            Buffer.from(arrayBuffer)
+        );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Canvas
+    |--------------------------------------------------------------------------
+    */
+
+    const width =
+        backgroundImage.width;
+
+    const height =
+        backgroundImage.height;
+
+
+    const canvas =
+        createCanvas(
+            width,
+            height
+        );
+
+
+    const ctx =
+        canvas.getContext("2d");
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Draw Background
+    |--------------------------------------------------------------------------
+    */
+
+    ctx.drawImage(
+        backgroundImage,
+        0,
+        0,
+        width,
+        height
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Dark Transparent Overlay
+    |--------------------------------------------------------------------------
+    */
+
+    ctx.fillStyle =
+        "rgba(0,0,0,0.28)";
+
+
+    ctx.fillRect(
+        0,
+        0,
+        width,
+        height
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Shayari Box
+    |--------------------------------------------------------------------------
+    */
+
+    const boxWidth =
+        width * 0.86;
+
+
+    const boxX =
+        (width - boxWidth) / 2;
+
+
+    const boxY =
+        height * 0.20;
+
+
+    const boxHeight =
+        height * 0.55;
+
+
+    ctx.fillStyle =
+        "rgba(0,0,0,0.48)";
+
+
+    ctx.fillRect(
+        boxX,
+        boxY,
+        boxWidth,
+        boxHeight
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Title
+    |--------------------------------------------------------------------------
+    */
+
+    ctx.textAlign =
+        "center";
+
+    ctx.textBaseline =
+        "top";
+
+
+    ctx.fillStyle =
+        "#ffffff";
+
+
+    ctx.font =
+        `bold ${Math.max(
+            34,
+            Math.floor(width * 0.055)
+        )}px sans-serif`;
+
+
+    ctx.fillText(
+        title,
+        width / 2,
+        boxY + 35
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Shayari Content
+    |--------------------------------------------------------------------------
+    */
+
+    const fontSize =
+        Math.max(
+            25,
+            Math.floor(width * 0.038)
+        );
+
+
+    ctx.font =
+        `${fontSize}px sans-serif`;
+
+
+    ctx.fillStyle =
+        "#ffffff";
+
+
+    const maxTextWidth =
+        boxWidth - 70;
+
+
+    const lineHeight =
+        fontSize * 1.55;
+
+
+    const lines =
+        [];
+
+
+    const paragraphs =
+        String(content || "")
+            .split(/\r?\n/);
+
+
+    for (
+        const paragraph
+        of paragraphs
+    ) {
+
+        const words =
+            paragraph
+                .trim()
+                .split(/\s+/);
+
+
+        let line = "";
+
+
+        for (
+            const word
+            of words
+        ) {
+
+            const test =
+                line
+                    ? `${line} ${word}`
+                    : word;
+
+
+            if (
+                ctx.measureText(test).width
+                >
+                maxTextWidth
+            ) {
+
+                if (line) {
+
+                    lines.push(line);
+
+                }
+
+                line =
+                    word;
+
+            } else {
+
+                line =
+                    test;
+
+            }
+
+        }
+
+
+        if (line) {
+
+            lines.push(line);
+
+        }
+
+    }
+
+
+    const totalHeight =
+        lines.length *
+        lineHeight;
+
+
+    let textY =
+        boxY +
+        (
+            boxHeight -
+            totalHeight
+        ) / 2;
+
+
+    for (
+        const line
+        of lines
+    ) {
+
+        /*
+        | Text shadow
+        */
+
+        ctx.shadowColor =
+            "rgba(0,0,0,0.8)";
+
+        ctx.shadowBlur =
+            4;
+
+        ctx.shadowOffsetX =
+            2;
+
+        ctx.shadowOffsetY =
+            2;
+
+
+        ctx.fillText(
+            line,
+            width / 2,
+            textY
+        );
+
+
+        textY +=
+            lineHeight;
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Reset Shadow
+    |--------------------------------------------------------------------------
+    */
+
+    ctx.shadowColor =
+        "transparent";
+
+    ctx.shadowBlur =
+        0;
+
+    ctx.shadowOffsetX =
+        0;
+
+    ctx.shadowOffsetY =
+        0;
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Website Watermark
+    |--------------------------------------------------------------------------
+    */
+
+    ctx.textAlign =
+        "right";
+
+    ctx.textBaseline =
+        "bottom";
+
+
+    ctx.font =
+        `bold ${Math.max(
+            18,
+            Math.floor(width * 0.025)
+        )}px sans-serif`;
+
+
+    ctx.fillStyle =
+        "rgba(255,255,255,0.85)";
+
+
+    ctx.fillText(
+        watermark,
+        width - 30,
+        height - 25
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Return PNG
+    |--------------------------------------------------------------------------
+    */
+
+    return canvas.toBuffer(
+        "image/png"
+    );
+
+};
