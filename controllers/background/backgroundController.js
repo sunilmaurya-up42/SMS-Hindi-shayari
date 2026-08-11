@@ -1,333 +1,26 @@
 const Background = require("../../models/Background");
 const githubService = require("../../services/github/githubService");
 
-/**
- * Upload Background
- */
+
+/*
+|--------------------------------------------------------------------------
+| UPLOAD BACKGROUND
+|--------------------------------------------------------------------------
+*/
+
 exports.upload = async (req, res) => {
 
     try {
 
         if (!req.file) {
+
             return res.status(400).json({
                 success: false,
                 message: "Background image is required."
             });
-        }
-
-        const github = await githubService.uploadBackground(req.file);
-
-        const background = await Background.create({
-
-            title: req.body.title,
-
-            category: req.body.category || "general",
-
-            githubUrl: github.url,
-
-            githubPath: github.path,
-
-            width: req.body.width,
-
-            height: req.body.height,
-
-            isActive: true
-
-        });
-
-        return res.status(201).json({
-
-            success: true,
-
-            message: "Background uploaded successfully.",
-
-            data: background
-
-        });
-
-    } catch (error) {
-
-        console.error(error);
-
-        return res.status(500).json({
-
-            success: false,
-
-            message: "Upload failed."
-
-        });
-
-    }
-
-};
-
-/**
- * Get All Backgrounds
- */
-exports.getAll = async (req, res) => {
-
-    const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 20;
-    const skip = (page - 1) * limit;
-
-    const total = await Background.countDocuments();
-
-    const backgrounds = await Background.find()
-        .sort({
-            createdAt: -1
-        })
-        .skip(skip)
-        .limit(limit);
-
-    res.json({
-
-        success: true,
-
-        page,
-
-        total,
-
-        data: backgrounds
-
-    });
-
-};
-
-/**
- * Get Random Background
- */
-exports.random = async (req, res) => {
-
-    const background = await Background.aggregate([
-        {
-            $match: {
-                isActive: true
-            }
-        },
-        {
-            $sample: {
-                size: 1
-            }
-        }
-    ]);
-
-    res.json({
-
-        success: true,
-
-        data: background[0]
-
-    });
-
-};
-
-/**
- * Update Background
- */
-exports.update = async (req, res) => {
-
-    const background = await Background.findByIdAndUpdate(
-
-        req.params.id,
-
-        req.body,
-
-        {
-            new: true,
-            runValidators: true
-        }
-
-    );
-
-    if (!background) {
-
-        return res.status(404).json({
-
-            success: false,
-
-            message: "Background not found."
-
-        });
-
-    }
-
-    res.json({
-
-        success: true,
-
-        message: "Background updated.",
-
-        data: background
-
-    });
-
-};
-
-/**
- * Enable / Disable Background
- */
-exports.toggle = async (req, res) => {
-
-    const background = await Background.findById(req.params.id);
-
-    if (!background) {
-
-        return res.status(404).json({
-
-            success: false
-
-        });
-
-    }
-
-    background.isActive = !background.isActive;
-
-    await background.save();
-
-    res.json({
-
-        success: true,
-
-        isActive: background.isActive
-
-    });
-
-};
-
-/**
- * Delete Background
- */
-exports.remove = async (req, res) => {
-
-    const background = await Background.findById(req.params.id);
-
-    if (!background) {
-
-        return res.status(404).json({
-
-            success: false
-
-        });
-
-    }
-
-    await githubService.deleteBackground(background.githubPath);
-
-    await background.deleteOne();
-
-    res.json({
-
-        success: true,
-
-        message: "Background deleted successfully."
-
-    });
-
-};
-
-/**
- * Background Analytics
- */
-exports.analytics = async (req, res) => {
-
-    const total = await Background.countDocuments();
-
-    const active = await Background.countDocuments({
-        isActive: true
-    });
-
-    const inactive = await Background.countDocuments({
-        isActive: false
-    });
-
-    res.json({
-
-        success: true,
-
-        total,
-
-        active,
-
-        inactive
-
-    });
-
-};
-exports.preview = async (req, res) => {
-    try {
-        const background = await Background.findById(req.params.id);
-
-        if (!background) {
-            return res.status(404).json({
-                success: false,
-                message: "Background not found."
-            });
-        }
-
-        res.json({
-            success: true,
-            data: background
-        });
-    } catch (err) {
-        res.status(500).json({
-            success: false,
-            message: "Internal Server Error"
-        });
-    }
-};
-
-exports.categories = async (req, res) => {
-    try {
-        const categories = await Background.distinct("category");
-
-        res.json({
-            success: true,
-            data: categories
-        });
-    } catch (err) {
-        res.status(500).json({
-            success: false,
-            message: "Internal Server Error"
-        });
-    }
-};
-
-exports.githubUpload = async (req, res, next) => {
-
-    try {
-
-        const Background =
-            require("../../models/Background");
-
-        const githubService =
-            require("../../services/github/githubService");
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Check Uploaded File
-        |--------------------------------------------------------------------------
-        */
-
-        if (!req.file) {
-
-            req.flash(
-                "error_msg",
-                "Please select a background image."
-            );
-
-            return res.redirect(
-                "/admin/backgrounds"
-            );
 
         }
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | Upload To GitHub
-        |--------------------------------------------------------------------------
-        */
 
         const github =
             await githubService.uploadBackground(
@@ -335,21 +28,11 @@ exports.githubUpload = async (req, res, next) => {
             );
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | Save Background
-        |--------------------------------------------------------------------------
-        */
-
         const background =
             await Background.create({
 
                 title:
                     (req.body.title || "Background")
-                        .trim(),
-
-                category:
-                    (req.body.category || "general")
                         .trim(),
 
                 githubFileName:
@@ -370,48 +53,577 @@ exports.githubUpload = async (req, res, next) => {
                 height:
                     Number(req.body.height) || 0,
 
+                fileSize:
+                    Number(req.file.size) || 0,
+
+                mimeType:
+                    req.file.mimetype || "image/jpeg",
+
                 isActive:
                     true
 
             });
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | Success
-        |--------------------------------------------------------------------------
-        */
+        return res.status(201).json({
 
-        req.flash(
-            "success_msg",
-            "Background uploaded to GitHub successfully."
-        );
+            success: true,
 
+            message:
+                "Background uploaded to GitHub successfully.",
 
-        return res.redirect(
-            "/admin/backgrounds"
-        );
+            data: background
+
+        });
 
 
     } catch (error) {
 
         console.error(
-            "❌ GitHub Background Upload Error:",
+            "❌ Background Upload Error:",
             error
         );
 
+        return res.status(500).json({
 
-        req.flash(
-            "error_msg",
-            error.message ||
-            "Background upload failed."
-        );
+            success: false,
 
+            message:
+                error.message ||
+                "Upload failed."
 
-        return res.redirect(
-            "/admin/backgrounds"
-        );
+        });
 
     }
+
+};
+
+
+/*
+|--------------------------------------------------------------------------
+| GET ALL BACKGROUNDS
+|--------------------------------------------------------------------------
+*/
+
+exports.getAll = async (req, res) => {
+
+    try {
+
+        const page =
+            Number(req.query.page) || 1;
+
+        const limit =
+            Number(req.query.limit) || 20;
+
+        const skip =
+            (page - 1) * limit;
+
+
+        const total =
+            await Background.countDocuments();
+
+
+        const backgrounds =
+            await Background.find()
+                .sort({
+                    createdAt: -1
+                })
+                .skip(skip)
+                .limit(limit)
+                .lean();
+
+
+        return res.json({
+
+            success: true,
+
+            page,
+
+            limit,
+
+            total,
+
+            totalPages:
+                Math.ceil(total / limit),
+
+            data:
+                backgrounds
+
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "❌ Get Backgrounds Error:",
+            error
+        );
+
+        return res.status(500).json({
+
+            success: false,
+
+            message:
+                "Internal Server Error."
+
+        });
+
+    }
+
+};
+
+
+/*
+|--------------------------------------------------------------------------
+| RANDOM BACKGROUND
+|--------------------------------------------------------------------------
+*/
+
+exports.random = async (req, res) => {
+
+    try {
+
+        const background =
+            await Background.aggregate([
+
+                {
+                    $match: {
+                        isActive: true
+                    }
+                },
+
+                {
+                    $sample: {
+                        size: 1
+                    }
+                }
+
+            ]);
+
+
+        return res.json({
+
+            success: true,
+
+            data:
+                background[0] || null
+
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "❌ Random Background Error:",
+            error
+        );
+
+        return res.status(500).json({
+
+            success: false,
+
+            message:
+                "Internal Server Error."
+
+        });
+
+    }
+
+};
+
+
+/*
+|--------------------------------------------------------------------------
+| PREVIEW
+|--------------------------------------------------------------------------
+*/
+
+exports.preview = async (req, res) => {
+
+    try {
+
+        const background =
+            await Background.findById(
+                req.params.id
+            ).lean();
+
+
+        if (!background) {
+
+            return res.status(404).json({
+
+                success: false,
+
+                message:
+                    "Background not found."
+
+            });
+
+        }
+
+
+        return res.json({
+
+            success: true,
+
+            data:
+                background
+
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "❌ Preview Background Error:",
+            error
+        );
+
+        return res.status(500).json({
+
+            success: false,
+
+            message:
+                "Internal Server Error."
+
+        });
+
+    }
+
+};
+
+
+/*
+|--------------------------------------------------------------------------
+| CATEGORIES
+|--------------------------------------------------------------------------
+*/
+
+exports.categories = async (req, res) => {
+
+    try {
+
+        const categories =
+            await Background.distinct(
+                "category"
+            );
+
+
+        return res.json({
+
+            success: true,
+
+            data:
+                categories
+
+        });
+
+
+    } catch (error) {
+
+        return res.status(500).json({
+
+            success: false,
+
+            message:
+                "Internal Server Error."
+
+        });
+
+    }
+
+};
+
+
+/*
+|--------------------------------------------------------------------------
+| UPDATE
+|--------------------------------------------------------------------------
+*/
+
+exports.update = async (req, res) => {
+
+    try {
+
+        const background =
+            await Background.findByIdAndUpdate(
+
+                req.params.id,
+
+                req.body,
+
+                {
+                    new: true,
+                    runValidators: true
+                }
+
+            );
+
+
+        if (!background) {
+
+            return res.status(404).json({
+
+                success: false,
+
+                message:
+                    "Background not found."
+
+            });
+
+        }
+
+
+        return res.json({
+
+            success: true,
+
+            message:
+                "Background updated.",
+
+            data:
+                background
+
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "❌ Update Background Error:",
+            error
+        );
+
+        return res.status(500).json({
+
+            success: false,
+
+            message:
+                "Internal Server Error."
+
+        });
+
+    }
+
+};
+
+
+/*
+|--------------------------------------------------------------------------
+| TOGGLE
+|--------------------------------------------------------------------------
+*/
+
+exports.toggle = async (req, res) => {
+
+    try {
+
+        const background =
+            await Background.findById(
+                req.params.id
+            );
+
+
+        if (!background) {
+
+            return res.status(404).json({
+
+                success: false,
+
+                message:
+                    "Background not found."
+
+            });
+
+        }
+
+
+        background.isActive =
+            !background.isActive;
+
+
+        await background.save();
+
+
+        return res.json({
+
+            success: true,
+
+            isActive:
+                background.isActive
+
+        });
+
+
+    } catch (error) {
+
+        return res.status(500).json({
+
+            success: false,
+
+            message:
+                "Internal Server Error."
+
+        });
+
+    }
+
+};
+
+
+/*
+|--------------------------------------------------------------------------
+| DELETE
+|--------------------------------------------------------------------------
+*/
+
+exports.remove = async (req, res) => {
+
+    try {
+
+        const background =
+            await Background.findById(
+                req.params.id
+            );
+
+
+        if (!background) {
+
+            return res.status(404).json({
+
+                success: false,
+
+                message:
+                    "Background not found."
+
+            });
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Delete From GitHub
+        |--------------------------------------------------------------------------
+        */
+
+        if (background.githubPath) {
+
+            await githubService.deleteBackground(
+
+                background.githubPath,
+
+                background.sha
+
+            );
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Delete MongoDB Record
+        |--------------------------------------------------------------------------
+        */
+
+        await background.deleteOne();
+
+
+        return res.json({
+
+            success: true,
+
+            message:
+                "Background deleted successfully."
+
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "❌ Delete Background Error:",
+            error
+        );
+
+        return res.status(500).json({
+
+            success: false,
+
+            message:
+                error.message ||
+                "Delete failed."
+
+        });
+
+    }
+
+};
+
+
+/*
+|--------------------------------------------------------------------------
+| ANALYTICS
+|--------------------------------------------------------------------------
+*/
+
+exports.analytics = async (req, res) => {
+
+    try {
+
+        const total =
+            await Background.countDocuments();
+
+
+        const active =
+            await Background.countDocuments({
+                isActive: true
+            });
+
+
+        const inactive =
+            await Background.countDocuments({
+                isActive: false
+            });
+
+
+        return res.json({
+
+            success: true,
+
+            total,
+
+            active,
+
+            inactive
+
+        });
+
+
+    } catch (error) {
+
+        return res.status(500).json({
+
+            success: false,
+
+            message:
+                "Internal Server Error."
+
+        });
+
+    }
+
+};
+
+
+/*
+|--------------------------------------------------------------------------
+| GITHUB UPLOAD
+|--------------------------------------------------------------------------
+*/
+
+exports.githubUpload = async (req, res) => {
+
+    return exports.upload(req, res);
 
 };
