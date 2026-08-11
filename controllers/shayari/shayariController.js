@@ -1275,3 +1275,109 @@ exports.redirect = async (req, res) => {
     res.redirect(`/shayari/${shayari.slug}`);
 
 };
+/**
+ * Download Shayari as TXT file
+ */
+exports.downloadFile = async (req, res, next) => {
+
+    try {
+
+        const shayari =
+            await Shayari.findById(req.params.id)
+                .populate("category")
+                .lean();
+
+        if (!shayari) {
+
+            return res.status(404).send(
+                "Shayari not found."
+            );
+
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Increase Download Counter
+        |--------------------------------------------------------------------------
+        */
+
+        await Shayari.updateOne(
+            {
+                _id: shayari._id
+            },
+            {
+                $inc: {
+                    downloads: 1
+                }
+            }
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | Safe File Name
+        |--------------------------------------------------------------------------
+        */
+
+        let fileName =
+            shayari.slug ||
+            `shayari-${shayari._id}`;
+
+        fileName =
+            fileName
+                .replace(/[^a-zA-Z0-9-_]/g, "-")
+                .replace(/-+/g, "-")
+                .replace(/^-|-$/g, "");
+
+        if (!fileName) {
+            fileName = `shayari-${shayari._id}`;
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | File Content
+        |--------------------------------------------------------------------------
+        */
+
+        const text =
+`${shayari.title}
+
+${shayari.content}
+
+${shayari.category?.name
+    ? `Category: ${shayari.category.name}`
+    : ""}
+
+SMS Hindi Shayari
+https://sms-hindi-shayari.onrender.com
+`;
+
+        /*
+        |--------------------------------------------------------------------------
+        | Download
+        |--------------------------------------------------------------------------
+        */
+
+        res.setHeader(
+            "Content-Type",
+            "text/plain; charset=utf-8"
+        );
+
+        res.setHeader(
+            "Content-Disposition",
+            `attachment; filename="${fileName}.txt"`
+        );
+
+        return res.send(text);
+
+    } catch (error) {
+
+        console.error(
+            "❌ Shayari Download Error:",
+            error
+        );
+
+        return next(error);
+
+    }
+
+};
