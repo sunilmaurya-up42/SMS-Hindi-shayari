@@ -262,6 +262,28 @@
 <script>
 
 (function () {
+   
+const csrfToken =
+    form.querySelector(
+        'input[name="_csrf"]'
+    )?.value;
+
+
+const response =
+    await fetch(
+        "/background/upload",
+        {
+            method: "POST",
+
+            headers: {
+                "X-CSRF-Token": csrfToken
+            },
+
+            body: formData,
+
+            credentials: "same-origin"
+        }
+    );
 
     const form =
         document.getElementById(
