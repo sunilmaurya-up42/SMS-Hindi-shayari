@@ -6,9 +6,20 @@ const octokit = new Octokit({
     auth: process.env.GITHUB_TOKEN
 });
 
-const OWNER = process.env.GITHUB_OWNER;
-const REPO = process.env.GITHUB_REPO;
-const BRANCH = process.env.GITHUB_BRANCH || "main";
+const OWNER =
+    process.env.GITHUB_OWNER ||
+    process.env.GITHUB_USERNAME;
+
+const REPO =
+    process.env.GITHUB_REPO ||
+    process.env.GITHUB_REPOSITORY;
+
+const BRANCH =
+    process.env.GITHUB_BRANCH || "main";
+
+const BACKGROUND_FOLDER =
+    (process.env.GITHUB_BACKGROUND_FOLDER || "backgrounds")
+        .replace(/^\/+|\/+$/g, "");
 
 
 /*
@@ -24,11 +35,15 @@ function checkConfig() {
     }
 
     if (!OWNER) {
-        throw new Error("GITHUB_OWNER is missing.");
+        throw new Error(
+            "GITHUB_OWNER or GITHUB_USERNAME is missing."
+        );
     }
 
     if (!REPO) {
-        throw new Error("GITHUB_REPO is missing.");
+        throw new Error(
+            "GITHUB_REPO or GITHUB_REPOSITORY is missing."
+        );
     }
 
 }
@@ -57,24 +72,19 @@ exports.uploadFile = async (
         );
     }
 
-
     const buffer =
         fs.readFileSync(localFile);
 
-
     const originalName =
         path.basename(localFile);
-
 
     const safeName =
         originalName
             .replace(/\s+/g, "-")
             .replace(/[^a-zA-Z0-9._-]/g, "");
 
-
     const fileName =
         `${Date.now()}-${Math.round(Math.random() * 1e9)}-${safeName}`;
-
 
     const githubPath =
         `${folder}/${fileName}`;
@@ -115,7 +125,6 @@ exports.uploadFile = async (
     const githubUrl =
         `https://github.com/${OWNER}/${REPO}/blob/${BRANCH}/${githubPath}`;
 
-
     const githubDownloadUrl =
         `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${githubPath}`;
 
@@ -126,6 +135,8 @@ exports.uploadFile = async (
 
         fileName,
 
+        githubFileName: fileName,
+
         githubPath,
 
         path: githubPath,
@@ -134,7 +145,7 @@ exports.uploadFile = async (
 
         githubDownloadUrl,
 
-        // backward compatibility
+        // Backward compatibility
         downloadUrl: githubDownloadUrl,
 
         sha:
@@ -161,14 +172,12 @@ exports.uploadBackground = async (
         );
     }
 
-
     const localFile =
         file.path || file;
 
-
     return await exports.uploadFile(
         localFile,
-        "backgrounds"
+        BACKGROUND_FOLDER
     );
 
 };
@@ -193,13 +202,6 @@ exports.deleteFile = async (
         );
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Get SHA If Missing
-    |--------------------------------------------------------------------------
-    */
-
     if (!sha) {
 
         const file =
@@ -209,9 +211,7 @@ exports.deleteFile = async (
 
         sha =
             file.sha;
-
     }
-
 
     await octokit.repos.deleteFile({
 
@@ -229,7 +229,6 @@ exports.deleteFile = async (
         branch: BRANCH
 
     });
-
 
     return true;
 
@@ -250,7 +249,6 @@ exports.deleteBackground = async (
     if (!githubPath) {
         return false;
     }
-
 
     return await exports.deleteFile(
         githubPath,
@@ -274,13 +272,11 @@ exports.updateFile = async (
 
     checkConfig();
 
-
     if (!localFile) {
         throw new Error(
             "Local file is required."
         );
     }
-
 
     if (!fs.existsSync(localFile)) {
         throw new Error(
@@ -288,17 +284,14 @@ exports.updateFile = async (
         );
     }
 
-
     if (!githubPath) {
         throw new Error(
             "GitHub file path is required."
         );
     }
 
-
     const buffer =
         fs.readFileSync(localFile);
-
 
     const response =
         await octokit.repos.createOrUpdateFileContents({
@@ -320,7 +313,6 @@ exports.updateFile = async (
             branch: BRANCH
 
         });
-
 
     return {
 
@@ -346,13 +338,11 @@ exports.getFile = async (
 
     checkConfig();
 
-
     if (!githubPath) {
         throw new Error(
             "GitHub file path is required."
         );
     }
-
 
     const response =
         await octokit.repos.getContent({
@@ -367,7 +357,6 @@ exports.getFile = async (
 
         });
 
-
     return response.data;
 
 };
@@ -380,11 +369,10 @@ exports.getFile = async (
 */
 
 exports.listFiles = async (
-    folder = "backgrounds"
+    folder = BACKGROUND_FOLDER
 ) => {
 
     checkConfig();
-
 
     try {
 
@@ -401,24 +389,15 @@ exports.listFiles = async (
 
             });
 
-
         return Array.isArray(response.data)
             ? response.data
             : [response.data];
 
-
     } catch (error) {
-
-        /*
-        |--------------------------------------------------------------------------
-        | Folder Does Not Exist Yet
-        |--------------------------------------------------------------------------
-        */
 
         if (error.status === 404) {
             return [];
         }
-
 
         throw error;
 
