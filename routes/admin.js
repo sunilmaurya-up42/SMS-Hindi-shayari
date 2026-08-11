@@ -1549,4 +1549,77 @@ router.post(
 
     }
 );
+/*
+|--------------------------------------------------------------------------
+| EDIT SHAYARI PAGE
+|--------------------------------------------------------------------------
+*/
+
+router.get(
+    "/shayari/:id/edit",
+    auth,
+    admin(),
+    async (req, res, next) => {
+
+        try {
+
+            const Shayari =
+                require("../models/Shayari");
+
+            const Category =
+                require("../models/Category");
+
+            const shayari =
+                await Shayari.findById(
+                    req.params.id
+                ).lean();
+
+            if (!shayari) {
+
+                req.flash(
+                    "error_msg",
+                    "Shayari not found."
+                );
+
+                return res.redirect(
+                    "/admin/shayari"
+                );
+
+            }
+
+            const categories =
+                await Category.find({
+                    isActive: true
+                })
+                .sort({
+                    sortOrder: 1,
+                    name: 1
+                })
+                .lean();
+
+            return res.render(
+                "admin/shayari-edit",
+                {
+                    title: "Edit Shayari - Admin",
+                    activePage: "shayari",
+                    activeMenu: "shayari",
+                    shayari,
+                    categories,
+                    layout: "layouts/admin"
+                }
+            );
+
+        } catch (error) {
+
+            console.error(
+                "❌ Edit Shayari Page Error:",
+                error
+            );
+
+            return next(error);
+
+        }
+
+    }
+);
 module.exports = router;
