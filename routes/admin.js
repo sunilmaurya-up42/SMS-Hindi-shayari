@@ -296,6 +296,9 @@ router.post(
             const Category =
                 require("../models/Category");
 
+            const slugify =
+                require("slugify");
+
             const title =
                 (req.body.title || "").trim();
 
@@ -370,6 +373,54 @@ router.post(
 
             /*
             |--------------------------------------------------------------------------
+            | Generate Slug
+            |--------------------------------------------------------------------------
+            */
+
+            let baseSlug =
+                slugify(title, {
+                    lower: true,
+                    strict: true,
+                    trim: true
+                });
+
+            /*
+            |--------------------------------------------------------------------------
+            | Fallback Slug
+            |--------------------------------------------------------------------------
+            */
+
+            if (!baseSlug) {
+
+                baseSlug =
+                    `shayari-${Date.now()}`;
+
+            }
+
+            let slug = baseSlug;
+            let counter = 1;
+
+            /*
+            |--------------------------------------------------------------------------
+            | Make Slug Unique
+            |--------------------------------------------------------------------------
+            */
+
+            while (
+                await Shayari.exists({
+                    slug: slug
+                })
+            ) {
+
+                slug =
+                    `${baseSlug}-${counter}`;
+
+                counter++;
+
+            }
+
+            /*
+            |--------------------------------------------------------------------------
             | Create Shayari
             |--------------------------------------------------------------------------
             */
@@ -378,17 +429,22 @@ router.post(
 
                 title: title,
 
+                slug: slug,
+
                 content: content,
 
                 category: category._id,
 
                 language: "hi",
 
-                published: true,
+                published:
+                    req.body.published !== "false",
 
-                featured: false,
+                featured:
+                    req.body.featured === "true",
 
-                trending: false,
+                trending:
+                    req.body.trending === "true",
 
                 tags: []
 
@@ -409,16 +465,16 @@ router.post(
                 }
             );
 
+            /*
+            |--------------------------------------------------------------------------
+            | Success
+            |--------------------------------------------------------------------------
+            */
+
             req.flash(
                 "success_msg",
                 "Shayari created successfully."
             );
-
-            /*
-            |--------------------------------------------------------------------------
-            | Redirect
-            |--------------------------------------------------------------------------
-            */
 
             return res.redirect(
                 "/admin/shayari/new"
