@@ -1622,4 +1622,187 @@ router.get(
 
     }
 );
+/*
+|--------------------------------------------------------------------------
+| UPDATE SHAYARI
+|--------------------------------------------------------------------------
+| POST /admin/shayari/:id/edit
+|--------------------------------------------------------------------------
+*/
+
+router.post(
+    "/shayari/:id/edit",
+    auth,
+    admin(),
+    async (req, res, next) => {
+
+        try {
+
+            const Shayari =
+                require("../models/Shayari");
+
+            const Category =
+                require("../models/Category");
+
+            const shayari =
+                await Shayari.findById(
+                    req.params.id
+                );
+
+            if (!shayari) {
+
+                req.flash(
+                    "error_msg",
+                    "Shayari not found."
+                );
+
+                return res.redirect(
+                    "/admin/dashboard"
+                );
+            }
+
+            const title =
+                (req.body.title || "").trim();
+
+            const content =
+                (req.body.content || "").trim();
+
+            const categoryId =
+                (req.body.category || "").trim();
+
+            if (!title) {
+
+                req.flash(
+                    "error_msg",
+                    "Shayari title is required."
+                );
+
+                return res.redirect(
+                    `/admin/shayari/${req.params.id}/edit`
+                );
+            }
+
+            if (!content) {
+
+                req.flash(
+                    "error_msg",
+                    "Shayari content is required."
+                );
+
+                return res.redirect(
+                    `/admin/shayari/${req.params.id}/edit`
+                );
+            }
+
+            if (!categoryId) {
+
+                req.flash(
+                    "error_msg",
+                    "Please select a category."
+                );
+
+                return res.redirect(
+                    `/admin/shayari/${req.params.id}/edit`
+                );
+            }
+
+            const category =
+                await Category.findById(categoryId);
+
+            if (!category) {
+
+                req.flash(
+                    "error_msg",
+                    "Selected category not found."
+                );
+
+                return res.redirect(
+                    `/admin/shayari/${req.params.id}/edit`
+                );
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Update Category Count
+            |--------------------------------------------------------------------------
+            */
+
+            const oldCategoryId =
+                String(shayari.category);
+
+            const newCategoryId =
+                String(category._id);
+
+            if (
+                oldCategoryId !== newCategoryId
+            ) {
+
+                await Category.findByIdAndUpdate(
+                    shayari.category,
+                    {
+                        $inc: {
+                            totalShayari: -1
+                        }
+                    }
+                );
+
+                await Category.findByIdAndUpdate(
+                    category._id,
+                    {
+                        $inc: {
+                            totalShayari: 1
+                        }
+                    }
+                );
+
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Update Shayari
+            |--------------------------------------------------------------------------
+            */
+
+            shayari.title =
+                title;
+
+            shayari.content =
+                content;
+
+            shayari.category =
+                category._id;
+
+            shayari.published =
+                req.body.published === "true";
+
+            shayari.featured =
+                req.body.featured === "true";
+
+            shayari.trending =
+                req.body.trending === "true";
+
+            await shayari.save();
+
+            req.flash(
+                "success_msg",
+                "Shayari updated successfully."
+            );
+
+            return res.redirect(
+                "/admin/dashboard"
+            );
+
+        } catch (error) {
+
+            console.error(
+                "❌ Update Shayari Error:",
+                error
+            );
+
+            return next(error);
+
+        }
+
+    }
+);
 module.exports = router;
