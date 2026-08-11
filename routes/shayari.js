@@ -42,6 +42,11 @@ router.get("/v1/:slug", shayariController.getOne);
 // Get all
 router.get("/", shayariController.getAll);
 
+router.get(
+    "/download-image/:id",
+    shayariController.downloadImage
+);
+
 // Single public page / API
 router.get("/:slug", async (req, res, next) => {
     if (wantsJson(req)) return shayariController.getOne(req, res, next);
@@ -115,12 +120,6 @@ router.post(
     auth,
     admin,
     shayariController.uploadImage
-);
-
-// Download Generated Image
-router.get(
-    "/download-image/:id",
-    shayariController.downloadImage
 );
 
 // Refresh SEO
