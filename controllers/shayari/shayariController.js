@@ -745,45 +745,237 @@ exports.uploadImage = async (req, res) => {
 };
 
 /**
- * Download Image
+ * Download Generated Shayari Image
+ *
+ * GitHub Background
+ *        ↓
+ * Shayari Text Overlay
+ *        ↓
+ * Website Watermark
+ *        ↓
+ * Download PNG
  */
 exports.downloadImage = async (req, res) => {
 
     try {
 
-        const shayari = await Shayari.findById(req.params.id);
+        const shayari =
+            await Shayari.findById(
+                req.params.id
+            )
+            .populate("category")
+            .populate("background")
+            .lean();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Shayari Check
+        |--------------------------------------------------------------------------
+        */
 
         if (!shayari) {
 
-            return res.status(404).json({
-
-                success: false
-
-            });
+            return res.status(404).send(
+                "Shayari not found."
+            );
 
         }
 
-        shayari.downloads++;
 
-        await shayari.save();
+        /*
+        |--------------------------------------------------------------------------
+        | Find Background
+        |--------------------------------------------------------------------------
+        */
 
-        await analyticsService.download(shayari);
+        let background =
+            shayari.background;
 
-        return res.json({
 
-            success: true,
+        if (!background) {
 
-            image: shayari.aiImage
+            const backgrounds =
+                await Background.aggregate([
+                    {
+                        $match: {
+                            isActive: true
+                        }
+                    },
+                    {
+                        $sample: {
+                            size: 1
+                        }
+                    }
+                ]);
 
-        });
+            background =
+                backgrounds[0];
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Background Check
+        |--------------------------------------------------------------------------
+        */
+
+        if (!background) {
+
+            return res.status(404).send(
+                "No background image available."
+            );
+
+        }
+
+
+        const backgroundUrl =
+            background.githubDownloadUrl;
+
+
+        if (!backgroundUrl) {
+
+            console.error(
+                "❌ GitHub background URL missing:",
+                background._id
+            );
+
+            return res.status(500).send(
+                "Background image URL is missing."
+            );
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Generate Image
+        |--------------------------------------------------------------------------
+        */
+
+        const image =
+            await imageService.generateShayariImage({
+
+                backgroundUrl,
+
+                title:
+                    shayari.title,
+
+                content:
+                    shayari.content,
+
+                watermark:
+                    "SMS Hindi Shayari"
+
+            });
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Update Download Counter
+        |--------------------------------------------------------------------------
+        */
+
+        await Shayari.updateOne(
+            {
+                _id: shayari._id
+            },
+            {
+                $inc: {
+                    downloads: 1
+                }
+            }
+        );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Background Usage
+        |--------------------------------------------------------------------------
+        */
+
+        await Background.updateOne(
+            {
+                _id: background._id
+            },
+            {
+                $inc: {
+                    usageCount: 1
+                },
+                $set: {
+                    lastUsedAt: new Date()
+                }
+            }
+        );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | File Name
+        |--------------------------------------------------------------------------
+        */
+
+        let fileName =
+            shayari.slug ||
+            `shayari-${shayari._id}`;
+
+
+        fileName =
+            fileName
+                .replace(
+                    /[^a-zA-Z0-9-_]/g,
+                    "-"
+                )
+                .replace(
+                    /-+/g,
+                    "-"
+                )
+                .replace(
+                    /^-|-$/g,
+                    ""
+                );
+
+
+        if (!fileName) {
+
+            fileName =
+                `shayari-${shayari._id}`;
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Download Image
+        |--------------------------------------------------------------------------
+        */
+
+        res.setHeader(
+            "Content-Type",
+            "image/png"
+        );
+
+        res.setHeader(
+            "Content-Disposition",
+            `attachment; filename="${fileName}.png"`
+        );
+
+        return res.send(
+            image
+        );
+
 
     } catch (error) {
 
-        return res.status(500).json({
+        console.error(
+            "❌ Generated Image Download Error:",
+            error
+        );
 
-            success: false
-
-        });
+        return res.status(500).send(
+            "Image generation failed."
+        );
 
     }
 
