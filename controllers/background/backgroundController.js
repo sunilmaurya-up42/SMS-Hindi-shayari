@@ -292,26 +292,126 @@ exports.categories = async (req, res) => {
     }
 };
 
-exports.githubUpload = async (req, res) => {
+exports.githubUpload = async (req, res, next) => {
+
     try {
+
+        const Background =
+            require("../../models/Background");
+
+        const githubService =
+            require("../../services/github/githubService");
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Check Uploaded File
+        |--------------------------------------------------------------------------
+        */
+
         if (!req.file) {
-            return res.status(400).json({
-                success: false,
-                message: "Background image is required."
-            });
+
+            req.flash(
+                "error_msg",
+                "Please select a background image."
+            );
+
+            return res.redirect(
+                "/admin/backgrounds"
+            );
+
         }
 
-        const github = await githubService.uploadBackground(req.file);
 
-        res.json({
-            success: true,
-            url: github.url,
-            path: github.path
-        });
-    } catch (err) {
-        res.status(500).json({
-            success: false,
-            message: "GitHub upload failed."
-        });
+        /*
+        |--------------------------------------------------------------------------
+        | Upload To GitHub
+        |--------------------------------------------------------------------------
+        */
+
+        const github =
+            await githubService.uploadBackground(
+                req.file
+            );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Save Background
+        |--------------------------------------------------------------------------
+        */
+
+        const background =
+            await Background.create({
+
+                title:
+                    (req.body.title || "Background")
+                        .trim(),
+
+                category:
+                    (req.body.category || "general")
+                        .trim(),
+
+                githubFileName:
+                    github.fileName,
+
+                githubUrl:
+                    github.githubUrl,
+
+                githubDownloadUrl:
+                    github.githubDownloadUrl,
+
+                sha:
+                    github.sha,
+
+                width:
+                    Number(req.body.width) || 0,
+
+                height:
+                    Number(req.body.height) || 0,
+
+                isActive:
+                    true
+
+            });
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Success
+        |--------------------------------------------------------------------------
+        */
+
+        req.flash(
+            "success_msg",
+            "Background uploaded to GitHub successfully."
+        );
+
+
+        return res.redirect(
+            "/admin/backgrounds"
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "❌ GitHub Background Upload Error:",
+            error
+        );
+
+
+        req.flash(
+            "error_msg",
+            error.message ||
+            "Background upload failed."
+        );
+
+
+        return res.redirect(
+            "/admin/backgrounds"
+        );
+
     }
+
 };
