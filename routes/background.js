@@ -1,96 +1,154 @@
 const express = require("express");
 const router = express.Router();
 
-const backgroundController = require("../controllers/background/backgroundController");
+const backgroundController =
+    require("../controllers/background/backgroundController");
 
-const auth = require("../middleware/auth");
-const admin = require("../middleware/admin");
-const upload = require("../middleware/upload");
+const auth =
+    require("../middleware/auth");
+
+const admin =
+    require("../middleware/admin");
+
+const upload =
+    require("../middleware/upload");
+
 
 /*
 |--------------------------------------------------------------------------
-| Public Routes
+| PUBLIC BACKGROUND ROUTES
 |--------------------------------------------------------------------------
 */
 
-// Get All Backgrounds
+/*
+ * GET /background
+ * सभी backgrounds
+ */
 router.get(
     "/",
     backgroundController.getAll
 );
 
-// Get Random Background
+
+/*
+ * GET /background/random
+ * Active background में से random
+ */
 router.get(
     "/random",
     backgroundController.random
 );
 
+
 /*
-|--------------------------------------------------------------------------
-| Admin Routes
-|--------------------------------------------------------------------------
-*/
-
-// Upload Background
-router.post(
-    "/upload",
-    auth,
-    admin,
-    upload.single("background"),
-    backgroundController.upload
-);
-
-// Update Background
-router.put(
-    "/update/:id",
-    auth,
-    admin,
-    backgroundController.update
-);
-
-// Enable / Disable Background
-router.patch(
-    "/toggle/:id",
-    auth,
-    admin,
-    backgroundController.toggle
-);
-
-// Delete Background
-router.delete(
-    "/delete/:id",
-    auth,
-    admin,
-    backgroundController.remove
-);
-
-// Background Analytics
-router.get(
-    "/analytics",
-    auth,
-    admin,
-    backgroundController.analytics
-);
-
-// Preview Background
+ * GET /background/preview/:id
+ */
 router.get(
     "/preview/:id",
     backgroundController.preview
 );
 
-// Background Categories
+
+/*
+ * GET /background/categories
+ */
 router.get(
     "/categories",
     backgroundController.categories
 );
 
-// GitHub Upload API
+
+/*
+|--------------------------------------------------------------------------
+| ADMIN BACKGROUND ROUTES
+|--------------------------------------------------------------------------
+*/
+
+
+/*
+ * POST /background/upload
+ *
+ * Admin:
+ * Local image
+ *       ↓
+ * GitHub backgrounds/
+ *       ↓
+ * MongoDB
+ */
+router.post(
+    "/upload",
+    auth,
+    admin(),
+    upload.single("background"),
+    backgroundController.upload
+);
+
+
+/*
+ * PUT /background/update/:id
+ */
+router.put(
+    "/update/:id",
+    auth,
+    admin(),
+    backgroundController.update
+);
+
+
+/*
+ * PATCH /background/toggle/:id
+ */
+router.patch(
+    "/toggle/:id",
+    auth,
+    admin(),
+    backgroundController.toggle
+);
+
+
+/*
+ * DELETE /background/delete/:id
+ *
+ * GitHub से image delete
+ * फिर MongoDB से record delete
+ */
+router.delete(
+    "/delete/:id",
+    auth,
+    admin(),
+    backgroundController.remove
+);
+
+
+/*
+ * GET /background/analytics
+ */
+router.get(
+    "/analytics",
+    auth,
+    admin(),
+    backgroundController.analytics
+);
+
+
+/*
+|--------------------------------------------------------------------------
+| GITHUB UPLOAD
+|--------------------------------------------------------------------------
+|
+| पुराने duplicate endpoint को भी रखा गया है ताकि
+| अगर project की किसी दूसरी जगह से /github-upload call हो
+| तो वह टूटे नहीं।
+|
+*/
+
 router.post(
     "/github-upload",
     auth,
-    admin,
+    admin(),
     upload.single("background"),
     backgroundController.githubUpload
 );
+
 
 module.exports = router;
