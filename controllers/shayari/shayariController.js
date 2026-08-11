@@ -12,34 +12,174 @@ const analyticsService = require("../../services/analytics/analyticsService");
  * Render public Shayari detail page
  */
 exports.showPage = async (req, res, next) => {
+/**
+ * Render public Shayari detail page
+ */
+exports.showPage = async (req, res, next) => {
+
     try {
-        const shayari = await Shayari.findOne({
-            slug: req.params.slug,
-            published: true
-        }).populate("category").populate("background").lean();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Find Shayari
+        |--------------------------------------------------------------------------
+        */
+
+        const shayari =
+            await Shayari.findOne({
+                slug: req.params.slug,
+                published: true
+            })
+            .populate("category")
+            .populate("background")
+            .lean();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Shayari Not Found
+        |--------------------------------------------------------------------------
+        */
 
         if (!shayari) {
-            return res.status(404).render("errors/404", {
-                title: "Shayari Not Found",
-                popularCategories: [],
-                categories: [],
-                latestShayari: [],
-                popularShayari: []
-            });
+
+            return res.status(404).render(
+                "errors/404",
+                {
+                    title: "Shayari Not Found",
+                    popularCategories: [],
+                    categories: [],
+                    latestShayari: [],
+                    popularShayari: []
+                }
+            );
+
         }
 
-        await Shayari.updateOne({ _id: shayari._id }, { $inc: { views: 1 } });
-        shayari.views = (shayari.views || 0) + 1;
 
-        return res.render("shayari/details", {
-            title: shayari.seoTitle || shayari.title,
-            activePage: "home",
-            shayari,
-            categories: await Category.find({ isActive: true }).sort({ sortOrder: 1, name: 1 }).lean()
-        });
+        /*
+        |--------------------------------------------------------------------------
+        | Increase Views
+        |--------------------------------------------------------------------------
+        */
+
+        await Shayari.updateOne(
+            {
+                _id: shayari._id
+            },
+            {
+                $inc: {
+                    views: 1
+                }
+            }
+        );
+
+        shayari.views =
+            (shayari.views || 0) + 1;
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Related Shayari
+        |--------------------------------------------------------------------------
+        */
+
+        const related =
+            await Shayari.find({
+                _id: {
+                    $ne: shayari._id
+                },
+                category: shayari.category?._id,
+                published: true
+            })
+            .sort({
+                createdAt: -1
+            })
+            .limit(6)
+            .lean();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Comments
+        |--------------------------------------------------------------------------
+        */
+
+        const comments =
+            await Comment.find({
+                shayari: shayari._id,
+                isApproved: true,
+                isDeleted: false,
+                isSpam: false
+            })
+            .sort({
+                createdAt: -1
+            })
+            .limit(50)
+            .lean();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Categories
+        |--------------------------------------------------------------------------
+        */
+
+        const categories =
+            await Category.find({
+                isActive: true
+            })
+            .sort({
+                sortOrder: 1,
+                name: 1
+            })
+            .lean();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Render Detail Page
+        |--------------------------------------------------------------------------
+        */
+
+        return res.render(
+            "shayari/details",
+            {
+                title:
+                    shayari.seoTitle ||
+                    shayari.title,
+
+                activePage: "home",
+
+                shayari,
+
+                related,
+
+                comments,
+
+                categories,
+
+                /*
+                | Current logged-in user
+                */
+
+                user:
+                    req.user ||
+                    null
+            }
+        );
+
     } catch (error) {
-        next(error);
+
+        console.error(
+            "❌ Shayari Detail Page Error:",
+            error
+        );
+
+        return next(error);
+
     }
+
 };
 
 /**
