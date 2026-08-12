@@ -258,33 +258,9 @@
     </div>
 
 </div>
-
-
 <script>
 
 (function () {
-   
-const csrfToken =
-    form.querySelector(
-        'input[name="_csrf"]'
-    )?.value;
-
-
-const response =
-    await fetch(
-        "/background/upload",
-        {
-            method: "POST",
-
-            headers: {
-                "X-CSRF-Token": csrfToken
-            },
-
-            body: formData,
-
-            credentials: "same-origin"
-        }
-    );
 
     const form =
         document.getElementById(
@@ -339,6 +315,34 @@ const response =
             }
 
 
+            const csrfInput =
+                form.querySelector(
+                    'input[name="_csrf"]'
+                );
+
+
+            const csrfToken =
+                csrfInput
+                    ? csrfInput.value
+                    : "";
+
+
+            if (!csrfToken) {
+
+                message.className =
+                    "alert alert-danger mt-3";
+
+                message.textContent =
+                    "CSRF token missing. Please refresh the page.";
+
+                message.style.display =
+                    "block";
+
+                return;
+
+            }
+
+
             const formData =
                 new FormData(form);
 
@@ -362,9 +366,15 @@ const response =
                         {
                             method: "POST",
 
+                            headers: {
+                                "X-CSRF-Token":
+                                    csrfToken
+                            },
+
                             body: formData,
 
-                            credentials: "same-origin"
+                            credentials:
+                                "same-origin"
                         }
                     );
 
@@ -373,7 +383,8 @@ const response =
                     await response.json();
 
 
-                if (!response.ok ||
+                if (
+                    !response.ok ||
                     !result.success
                 ) {
 
@@ -388,7 +399,7 @@ const response =
                 message.className =
                     "alert alert-success mt-3";
 
-                message.innerHTML =
+                message.textContent =
                     "✅ Background successfully uploaded to GitHub.";
 
 
@@ -402,7 +413,7 @@ const response =
             } catch (error) {
 
                 console.error(
-                    "Background Upload Error:",
+                    "❌ Background Upload Error:",
                     error
                 );
 
@@ -421,7 +432,6 @@ const response =
                 message.style.display =
                     "block";
 
-
             } finally {
 
                 button.disabled =
@@ -438,7 +448,6 @@ const response =
 })();
 
 </script>
-
         <!-- Charts -->
 
         <div class="row mb-4">
