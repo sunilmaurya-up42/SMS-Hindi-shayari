@@ -258,195 +258,127 @@
     </div>
 
 </div>
-<script>
-
+        <script>
 (function () {
 
-    const form =
-        document.getElementById(
-            "backgroundUploadForm"
-        );
-
-    const button =
-        document.getElementById(
-            "backgroundUploadButton"
-        );
-
-    const message =
-        document.getElementById(
-            "backgroundUploadMessage"
-        );
-
+    const form = document.getElementById("backgroundUploadForm");
+    const button = document.getElementById("backgroundUploadButton");
+    const message = document.getElementById("backgroundUploadMessage");
 
     if (!form) {
         return;
     }
 
+    form.addEventListener("submit", async function (event) {
 
-    form.addEventListener(
-        "submit",
-        async function (event) {
+        event.preventDefault();
 
-            event.preventDefault();
+        const fileInput = document.getElementById("backgroundFile");
 
+        if (!fileInput || !fileInput.files.length) {
 
-            const fileInput =
-                document.getElementById(
-                    "backgroundFile"
+            message.className = "alert alert-danger mt-3";
+            message.textContent = "Please select a background image.";
+            message.style.display = "block";
+
+            return;
+        }
+
+        const csrfInput = form.querySelector(
+            'input[name="_csrf"]'
+        );
+
+        const csrfToken = csrfInput
+            ? csrfInput.value
+            : "";
+
+        if (!csrfToken) {
+
+            message.className = "alert alert-danger mt-3";
+            message.textContent =
+                "CSRF token missing. Please refresh the page.";
+            message.style.display = "block";
+
+            return;
+        }
+
+        const formData = new FormData(form);
+
+        button.disabled = true;
+
+        button.innerHTML =
+            '<span class="spinner-border spinner-border-sm me-1"></span> Uploading...';
+
+        message.style.display = "none";
+
+        try {
+
+            const response = await fetch(
+                "/background/upload",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "X-CSRF-Token": csrfToken
+                    },
+
+                    body: formData,
+
+                    credentials: "same-origin"
+                }
+            );
+
+            const result = await response.json();
+
+            if (!response.ok || !result.success) {
+
+                throw new Error(
+                    result.message ||
+                    "Background upload failed."
                 );
-
-
-            if (
-                !fileInput.files ||
-                !fileInput.files.length
-            ) {
-
-                message.className =
-                    "alert alert-danger mt-3";
-
-                message.textContent =
-                    "Please select a background image.";
-
-                message.style.display =
-                    "block";
-
-                return;
-
             }
 
+            message.className =
+                "alert alert-success mt-3";
 
-            const csrfInput =
-                form.querySelector(
-                    'input[name="_csrf"]'
+            message.textContent =
+                "✅ Background successfully uploaded to GitHub.";
+
+            message.style.display = "block";
+
+            form.reset();
+
+        } catch (error) {
+
+            console.error(
+                "Background Upload Error:",
+                error
+            );
+
+            message.className =
+                "alert alert-danger mt-3";
+
+            message.textContent =
+                "❌ " +
+                (
+                    error.message ||
+                    "Background upload failed."
                 );
 
+            message.style.display = "block";
 
-            const csrfToken =
-                csrfInput
-                    ? csrfInput.value
-                    : "";
+        } finally {
 
-
-            if (!csrfToken) {
-
-                message.className =
-                    "alert alert-danger mt-3";
-
-                message.textContent =
-                    "CSRF token missing. Please refresh the page.";
-
-                message.style.display =
-                    "block";
-
-                return;
-
-            }
-
-
-            const formData =
-                new FormData(form);
-
-
-            button.disabled =
-                true;
+            button.disabled = false;
 
             button.innerHTML =
-                '<span class="spinner-border spinner-border-sm me-1"></span> Uploading...';
-
-
-            message.style.display =
-                "none";
-
-
-            try {
-
-                const response =
-                    await fetch(
-                        "/background/upload",
-                        {
-                            method: "POST",
-
-                            headers: {
-                                "X-CSRF-Token":
-                                    csrfToken
-                            },
-
-                            body: formData,
-
-                            credentials:
-                                "same-origin"
-                        }
-                    );
-
-
-                const result =
-                    await response.json();
-
-
-                if (
-                    !response.ok ||
-                    !result.success
-                ) {
-
-                    throw new Error(
-                        result.message ||
-                        "Background upload failed."
-                    );
-
-                }
-
-
-                message.className =
-                    "alert alert-success mt-3";
-
-                message.textContent =
-                    "✅ Background successfully uploaded to GitHub.";
-
-
-                message.style.display =
-                    "block";
-
-
-                form.reset();
-
-
-            } catch (error) {
-
-                console.error(
-                    "❌ Background Upload Error:",
-                    error
-                );
-
-
-                message.className =
-                    "alert alert-danger mt-3";
-
-                message.textContent =
-                    "❌ " +
-                    (
-                        error.message ||
-                        "Background upload failed."
-                    );
-
-
-                message.style.display =
-                    "block";
-
-            } finally {
-
-                button.disabled =
-                    false;
-
-                button.innerHTML =
-                    '<i class="fa-solid fa-cloud-arrow-up me-1"></i> Upload Background';
-
-            }
+                '<i class="fa-solid fa-cloud-arrow-up me-1"></i> Upload Background';
 
         }
-    );
+
+    });
 
 })();
-
 </script>
         <!-- Charts -->
 
