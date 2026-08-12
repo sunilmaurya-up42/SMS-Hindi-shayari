@@ -1160,4 +1160,122 @@ async ({
 
 
     /*
-    |---------------------------------------------------------
+    |--------------------------------------------------------------------------
+    | Draw Shayari
+    |--------------------------------------------------------------------------
+    */
+
+    for (
+        const line
+        of lines
+    ) {
+
+        ctx.fillText(
+            line,
+            width / 2,
+            textY
+        );
+
+
+        textY +=
+            lineHeight;
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Reset Shadow
+    |--------------------------------------------------------------------------
+    */
+
+    ctx.shadowColor =
+        "transparent";
+
+
+    ctx.shadowBlur =
+        0;
+
+
+    ctx.shadowOffsetX =
+        0;
+
+
+    ctx.shadowOffsetY =
+        0;
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Website Watermark
+    |--------------------------------------------------------------------------
+    */
+
+    ctx.textAlign =
+        "right";
+
+
+    ctx.textBaseline =
+        "bottom";
+
+
+    const watermarkFontSize =
+        Math.max(
+            18,
+            Math.floor(
+                width * 0.025
+            )
+        );
+
+
+    ctx.font =
+        `bold ${watermarkFontSize}px Arial, sans-serif`;
+
+
+    ctx.fillStyle =
+        "rgba(255,255,255,0.90)";
+
+
+    ctx.shadowColor =
+        "rgba(0,0,0,0.70)";
+
+
+    ctx.shadowBlur =
+        3;
+
+
+    ctx.shadowOffsetX =
+        1;
+
+
+    ctx.shadowOffsetY =
+        1;
+
+
+    ctx.fillText(
+        watermark,
+        width - 30,
+        height - 25
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Final PNG
+    |--------------------------------------------------------------------------
+    */
+
+    const output =
+        canvas.toBuffer(
+            "image/png"
+        );
+
+
+    console.log(
+        "✅ Shayari image generated successfully."
+    );
+
+
+    return output;
+
+};
