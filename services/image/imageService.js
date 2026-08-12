@@ -2,9 +2,243 @@ const sharp = require("sharp");
 const fs = require("fs");
 const path = require("path");
 
-/**
- * Resize Image
- */
+const {
+    createCanvas,
+    loadImage,
+    registerFont
+} = require("canvas");
+
+
+/*
+|--------------------------------------------------------------------------
+| Devanagari Font Configuration
+|--------------------------------------------------------------------------
+*/
+
+const FONT_DIR = path.join(
+    __dirname,
+    "../../public/fonts"
+);
+
+const REGULAR_FONT = path.join(
+    FONT_DIR,
+    "NotoSansDevanagari-Regular.ttf"
+);
+
+const BOLD_FONT = path.join(
+    FONT_DIR,
+    "NotoSansDevanagari-Bold.ttf"
+);
+
+
+/*
+|--------------------------------------------------------------------------
+| Official Noto Sans Devanagari Fonts
+|--------------------------------------------------------------------------
+*/
+
+const REGULAR_FONT_URL =
+    "https://github.com/notofonts/noto-fonts/raw/main/hinted/ttf/NotoSansDevanagari/NotoSansDevanagari-Regular.ttf";
+
+const BOLD_FONT_URL =
+    "https://github.com/notofonts/noto-fonts/raw/main/hinted/ttf/NotoSansDevanagari/NotoSansDevanagari-Bold.ttf";
+
+
+let fontsRegistered = false;
+let fontsLoading = null;
+
+
+/*
+|--------------------------------------------------------------------------
+| Download Font
+|--------------------------------------------------------------------------
+*/
+
+async function downloadFont(
+    url,
+    destination
+) {
+
+    try {
+
+        if (
+            fs.existsSync(destination) &&
+            fs.statSync(destination).size > 10000
+        ) {
+
+            return destination;
+
+        }
+
+
+        fs.mkdirSync(
+            path.dirname(destination),
+            {
+                recursive: true
+            }
+        );
+
+
+        console.log(
+            `📥 Downloading font: ${path.basename(destination)}`
+        );
+
+
+        const response =
+            await fetch(url);
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                `Font download failed: ${response.status}`
+            );
+
+        }
+
+
+        const buffer =
+            Buffer.from(
+                await response.arrayBuffer()
+            );
+
+
+        fs.writeFileSync(
+            destination,
+            buffer
+        );
+
+
+        console.log(
+            `✅ Font saved: ${destination}`
+        );
+
+
+        return destination;
+
+    } catch (error) {
+
+        console.error(
+            `❌ Font download error (${path.basename(destination)}):`,
+            error.message
+        );
+
+        return null;
+
+    }
+
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Register Devanagari Fonts
+|--------------------------------------------------------------------------
+*/
+
+async function ensureDevanagariFonts() {
+
+    if (fontsRegistered) {
+
+        return true;
+
+    }
+
+
+    if (fontsLoading) {
+
+        return fontsLoading;
+
+    }
+
+
+    fontsLoading =
+        (async () => {
+
+            try {
+
+                const regular =
+                    await downloadFont(
+                        REGULAR_FONT_URL,
+                        REGULAR_FONT
+                    );
+
+
+                const bold =
+                    await downloadFont(
+                        BOLD_FONT_URL,
+                        BOLD_FONT
+                    );
+
+
+                if (regular) {
+
+                    registerFont(
+                        regular,
+                        {
+                            family: "SMSNotoDevanagari",
+                            weight: "normal"
+                        }
+                    );
+
+                    console.log(
+                        "✅ Regular Devanagari font registered."
+                    );
+
+                }
+
+
+                if (bold) {
+
+                    registerFont(
+                        bold,
+                        {
+                            family: "SMSNotoDevanagari",
+                            weight: "bold"
+                        }
+                    );
+
+                    console.log(
+                        "✅ Bold Devanagari font registered."
+                    );
+
+                }
+
+
+                fontsRegistered =
+                    Boolean(
+                        regular ||
+                        bold
+                    );
+
+
+                return fontsRegistered;
+
+            } catch (error) {
+
+                console.error(
+                    "❌ Devanagari font registration error:",
+                    error
+                );
+
+                return false;
+
+            }
+
+        })();
+
+
+    return fontsLoading;
+
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Resize Image
+|--------------------------------------------------------------------------
+*/
+
 exports.resize = async (
     input,
     output,
@@ -13,16 +247,23 @@ exports.resize = async (
 ) => {
 
     await sharp(input)
-        .resize(width, height)
+        .resize(
+            width,
+            height
+        )
         .toFile(output);
 
     return output;
 
 };
 
-/**
- * Compress Image
- */
+
+/*
+|--------------------------------------------------------------------------
+| Compress Image
+|--------------------------------------------------------------------------
+*/
+
 exports.compress = async (
     input,
     output,
@@ -30,16 +271,22 @@ exports.compress = async (
 ) => {
 
     await sharp(input)
-        .jpeg({ quality })
+        .jpeg({
+            quality
+        })
         .toFile(output);
 
     return output;
 
 };
 
-/**
- * Convert To WebP
- */
+
+/*
+|--------------------------------------------------------------------------
+| Convert To WebP
+|--------------------------------------------------------------------------
+*/
+
 exports.toWebP = async (
     input,
     output,
@@ -47,16 +294,22 @@ exports.toWebP = async (
 ) => {
 
     await sharp(input)
-        .webp({ quality })
+        .webp({
+            quality
+        })
         .toFile(output);
 
     return output;
 
 };
 
-/**
- * Crop Image
- */
+
+/*
+|--------------------------------------------------------------------------
+| Crop Image
+|--------------------------------------------------------------------------
+*/
+
 exports.crop = async (
     input,
     output,
@@ -79,16 +332,23 @@ exports.crop = async (
 
 };
 
-/**
- * Generate Thumbnail
- */
+
+/*
+|--------------------------------------------------------------------------
+| Generate Thumbnail
+|--------------------------------------------------------------------------
+*/
+
 exports.thumbnail = async (
     input,
     output
 ) => {
 
     await sharp(input)
-        .resize(300, 300)
+        .resize(
+            300,
+            300
+        )
         .webp({
             quality: 85
         })
@@ -98,9 +358,13 @@ exports.thumbnail = async (
 
 };
 
-/**
- * Blur Image
- */
+
+/*
+|--------------------------------------------------------------------------
+| Blur Image
+|--------------------------------------------------------------------------
+*/
+
 exports.blur = async (
     input,
     output
@@ -114,9 +378,13 @@ exports.blur = async (
 
 };
 
-/**
- * Rotate Image
- */
+
+/*
+|--------------------------------------------------------------------------
+| Rotate Image
+|--------------------------------------------------------------------------
+*/
+
 exports.rotate = async (
     input,
     output,
@@ -131,9 +399,13 @@ exports.rotate = async (
 
 };
 
-/**
- * Flip Image
- */
+
+/*
+|--------------------------------------------------------------------------
+| Flip Image
+|--------------------------------------------------------------------------
+*/
+
 exports.flip = async (
     input,
     output
@@ -147,43 +419,71 @@ exports.flip = async (
 
 };
 
-/**
- * Get Metadata
- */
-exports.metadata = async (input) => {
 
-    return await sharp(input).metadata();
+/*
+|--------------------------------------------------------------------------
+| Get Metadata
+|--------------------------------------------------------------------------
+*/
+
+exports.metadata = async (
+    input
+) => {
+
+    return await sharp(
+        input
+    ).metadata();
 
 };
 
-/**
- * Delete Image
- */
-exports.delete = (file) => {
+
+/*
+|--------------------------------------------------------------------------
+| Delete Image
+|--------------------------------------------------------------------------
+*/
+
+exports.delete = (
+    file
+) => {
 
     if (
         file &&
         fs.existsSync(file)
     ) {
 
-        fs.unlinkSync(file);
+        fs.unlinkSync(
+            file
+        );
 
     }
 
 };
 
-/**
- * File Exists
- */
-exports.exists = (file) => {
 
-    return fs.existsSync(file);
+/*
+|--------------------------------------------------------------------------
+| File Exists
+|--------------------------------------------------------------------------
+*/
+
+exports.exists = (
+    file
+) => {
+
+    return fs.existsSync(
+        file
+    );
 
 };
 
-/**
- * Copy Image
- */
+
+/*
+|--------------------------------------------------------------------------
+| Copy Image
+|--------------------------------------------------------------------------
+*/
+
 exports.copy = (
     source,
     destination
@@ -198,9 +498,13 @@ exports.copy = (
 
 };
 
-/**
- * Move Image
- */
+
+/*
+|--------------------------------------------------------------------------
+| Move Image
+|--------------------------------------------------------------------------
+*/
+
 exports.move = (
     source,
     destination
@@ -215,40 +519,65 @@ exports.move = (
 
 };
 
-/**
- * Image Information
- */
-exports.info = async (file) => {
+
+/*
+|--------------------------------------------------------------------------
+| Image Information
+|--------------------------------------------------------------------------
+*/
+
+exports.info = async (
+    file
+) => {
 
     const meta =
-        await sharp(file).metadata();
+        await sharp(
+            file
+        ).metadata();
+
 
     const stat =
-        fs.statSync(file);
+        fs.statSync(
+            file
+        );
+
 
     return {
 
-        name: path.basename(file),
+        name:
+            path.basename(
+                file
+            ),
 
-        size: stat.size,
+        size:
+            stat.size,
 
-        width: meta.width,
+        width:
+            meta.width,
 
-        height: meta.height,
+        height:
+            meta.height,
 
-        format: meta.format,
+        format:
+            meta.format,
 
-        created: stat.birthtime,
+        created:
+            stat.birthtime,
 
-        modified: stat.mtime
+        modified:
+            stat.mtime
 
     };
 
 };
 
-/**
- * Optimize Image
- */
+
+/*
+|--------------------------------------------------------------------------
+| Optimize Image
+|--------------------------------------------------------------------------
+*/
+
 exports.optimize = async (
     input,
     output
@@ -263,19 +592,188 @@ exports.optimize = async (
     return output;
 
 };
+
+
+/*
+|--------------------------------------------------------------------------
+| Text Wrapping
+|--------------------------------------------------------------------------
+*/
+
+function wrapText(
+    ctx,
+    text,
+    maxWidth
+) {
+
+    const lines = [];
+
+    const paragraphs =
+        String(
+            text || ""
+        ).split(
+            /\r?\n/
+        );
+
+
+    for (
+        const paragraph
+        of paragraphs
+    ) {
+
+        const cleanParagraph =
+            paragraph.trim();
+
+
+        if (!cleanParagraph) {
+
+            lines.push("");
+
+            continue;
+
+        }
+
+
+        const words =
+            cleanParagraph.split(
+                /\s+/
+            );
+
+
+        let line = "";
+
+
+        for (
+            const word
+            of words
+        ) {
+
+            const testLine =
+                line
+                    ? `${line} ${word}`
+                    : word;
+
+
+            const testWidth =
+                ctx.measureText(
+                    testLine
+                ).width;
+
+
+            if (
+                testWidth >
+                maxWidth
+            ) {
+
+                if (line) {
+
+                    lines.push(
+                        line
+                    );
+
+                }
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Very Long Hindi Word
+                |--------------------------------------------------------------------------
+                */
+
+                if (
+                    ctx.measureText(
+                        word
+                    ).width >
+                    maxWidth
+                ) {
+
+                    let part = "";
+
+
+                    for (
+                        const character
+                        of Array.from(word)
+                    ) {
+
+                        const testPart =
+                            part +
+                            character;
+
+
+                        if (
+                            ctx.measureText(
+                                testPart
+                            ).width >
+                            maxWidth &&
+                            part
+                        ) {
+
+                            lines.push(
+                                part
+                            );
+
+                            part =
+                                character;
+
+                        } else {
+
+                            part =
+                                testPart;
+
+                        }
+
+                    }
+
+
+                    line =
+                        part;
+
+                } else {
+
+                    line =
+                        word;
+
+                }
+
+            } else {
+
+                line =
+                    testLine;
+
+            }
+
+        }
+
+
+        if (line) {
+
+            lines.push(
+                line
+            );
+
+        }
+
+    }
+
+
+    return lines;
+
+}
+
+
 /*
 |--------------------------------------------------------------------------
 | Generate Shayari Image
 |--------------------------------------------------------------------------
-| GitHub Background + Shayari + Watermark
+| GitHub Background
+| +
+| Shayari Title
+| +
+| Shayari Content
+| +
+| Website Watermark
 |--------------------------------------------------------------------------
 */
-
-const {
-    createCanvas,
-    loadImage
-} = require("canvas");
-
 
 exports.generateShayariImage =
 async ({
@@ -287,9 +785,39 @@ async ({
 
     /*
     |--------------------------------------------------------------------------
+    | Make Sure Hindi Font Is Ready
+    |--------------------------------------------------------------------------
+    */
+
+    await ensureDevanagariFonts();
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Validate Background URL
+    |--------------------------------------------------------------------------
+    */
+
+    if (!backgroundUrl) {
+
+        throw new Error(
+            "Background image URL is required."
+        );
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
     | Download GitHub Background
     |--------------------------------------------------------------------------
     */
+
+    console.log(
+        "🖼️ Downloading background:",
+        backgroundUrl
+    );
+
 
     const response =
         await fetch(
@@ -310,15 +838,21 @@ async ({
         await response.arrayBuffer();
 
 
+    const backgroundBuffer =
+        Buffer.from(
+            arrayBuffer
+        );
+
+
     const backgroundImage =
         await loadImage(
-            Buffer.from(arrayBuffer)
+            backgroundBuffer
         );
 
 
     /*
     |--------------------------------------------------------------------------
-    | Canvas
+    | Canvas Size
     |--------------------------------------------------------------------------
     */
 
@@ -337,7 +871,9 @@ async ({
 
 
     const ctx =
-        canvas.getContext("2d");
+        canvas.getContext(
+            "2d"
+        );
 
 
     /*
@@ -357,7 +893,7 @@ async ({
 
     /*
     |--------------------------------------------------------------------------
-    | Dark Transparent Overlay
+    | Dark Overlay
     |--------------------------------------------------------------------------
     */
 
@@ -388,18 +924,45 @@ async ({
 
 
     const boxY =
-        height * 0.20;
+        height * 0.18;
 
 
     const boxHeight =
-        height * 0.55;
+        height * 0.60;
 
 
     ctx.fillStyle =
-        "rgba(0,0,0,0.48)";
+        "rgba(0,0,0,0.50)";
 
 
     ctx.fillRect(
+        boxX,
+        boxY,
+        boxWidth,
+        boxHeight
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Box Border
+    |--------------------------------------------------------------------------
+    */
+
+    ctx.strokeStyle =
+        "rgba(255,255,255,0.30)";
+
+
+    ctx.lineWidth =
+        Math.max(
+            2,
+            Math.floor(
+                width * 0.002
+            )
+        );
+
+
+    ctx.strokeRect(
         boxX,
         boxY,
         boxWidth,
@@ -416,6 +979,7 @@ async ({
     ctx.textAlign =
         "center";
 
+
     ctx.textBaseline =
         "top";
 
@@ -424,18 +988,77 @@ async ({
         "#ffffff";
 
 
-    ctx.font =
-        `bold ${Math.max(
+    const titleFontSize =
+        Math.max(
             34,
-            Math.floor(width * 0.055)
-        )}px sans-serif`;
+            Math.floor(
+                width * 0.055
+            )
+        );
 
 
-    ctx.fillText(
-        title,
-        width / 2,
-        boxY + 35
-    );
+    ctx.font =
+        `bold ${titleFontSize}px "SMSNotoDevanagari", "Noto Sans Devanagari", sans-serif`;
+
+
+    ctx.shadowColor =
+        "rgba(0,0,0,0.85)";
+
+
+    ctx.shadowBlur =
+        5;
+
+
+    ctx.shadowOffsetX =
+        2;
+
+
+    ctx.shadowOffsetY =
+        2;
+
+
+    const safeTitle =
+        String(
+            title || ""
+        ).trim();
+
+
+    const titleMaxWidth =
+        boxWidth - 60;
+
+
+    const titleLines =
+        wrapText(
+            ctx,
+            safeTitle,
+            titleMaxWidth
+        );
+
+
+    let titleY =
+        boxY + 35;
+
+
+    const titleLineHeight =
+        titleFontSize * 1.35;
+
+
+    for (
+        const line
+        of titleLines
+    ) {
+
+        ctx.fillText(
+            line,
+            width / 2,
+            titleY
+        );
+
+
+        titleY +=
+            titleLineHeight;
+
+    }
 
 
     /*
@@ -447,12 +1070,14 @@ async ({
     const fontSize =
         Math.max(
             25,
-            Math.floor(width * 0.038)
+            Math.floor(
+                width * 0.038
+            )
         );
 
 
     ctx.font =
-        `${fontSize}px sans-serif`;
+        `${fontSize}px "SMSNotoDevanagari", "Noto Sans Devanagari", sans-serif`;
 
 
     ctx.fillStyle =
@@ -468,179 +1093,71 @@ async ({
 
 
     const lines =
-        [];
+        wrapText(
+            ctx,
+            content,
+            maxTextWidth
+        );
 
 
-    const paragraphs =
-        String(content || "")
-            .split(/\r?\n/);
+    /*
+    |--------------------------------------------------------------------------
+    | Calculate Text Position
+    |--------------------------------------------------------------------------
+    */
+
+    const titleSpace =
+        titleLines.length *
+        titleLineHeight;
 
 
-    for (
-        const paragraph
-        of paragraphs
-    ) {
-
-        const words =
-            paragraph
-                .trim()
-                .split(/\s+/);
+    const contentAreaTop =
+        boxY +
+        35 +
+        titleSpace +
+        30;
 
 
-        let line = "";
+    const contentAreaBottom =
+        boxY +
+        boxHeight -
+        35;
 
 
-        for (
-            const word
-            of words
-        ) {
-
-            const test =
-                line
-                    ? `${line} ${word}`
-                    : word;
+    const contentAreaHeight =
+        contentAreaBottom -
+        contentAreaTop;
 
 
-            if (
-                ctx.measureText(test).width
-                >
-                maxTextWidth
-            ) {
-
-                if (line) {
-
-                    lines.push(line);
-
-                }
-
-                line =
-                    word;
-
-            } else {
-
-                line =
-                    test;
-
-            }
-
-        }
-
-
-        if (line) {
-
-            lines.push(line);
-
-        }
-
-    }
-
-
-    const totalHeight =
+    const totalTextHeight =
         lines.length *
         lineHeight;
 
 
     let textY =
-        boxY +
+        contentAreaTop +
         (
-            boxHeight -
-            totalHeight
+            contentAreaHeight -
+            totalTextHeight
         ) / 2;
 
 
-    for (
-        const line
-        of lines
+    /*
+    |--------------------------------------------------------------------------
+    | Prevent Text From Going Outside Box
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+        textY <
+        contentAreaTop
     ) {
 
-        /*
-        | Text shadow
-        */
-
-        ctx.shadowColor =
-            "rgba(0,0,0,0.8)";
-
-        ctx.shadowBlur =
-            4;
-
-        ctx.shadowOffsetX =
-            2;
-
-        ctx.shadowOffsetY =
-            2;
-
-
-        ctx.fillText(
-            line,
-            width / 2,
-            textY
-        );
-
-
-        textY +=
-            lineHeight;
+        textY =
+            contentAreaTop;
 
     }
 
 
     /*
-    |--------------------------------------------------------------------------
-    | Reset Shadow
-    |--------------------------------------------------------------------------
-    */
-
-    ctx.shadowColor =
-        "transparent";
-
-    ctx.shadowBlur =
-        0;
-
-    ctx.shadowOffsetX =
-        0;
-
-    ctx.shadowOffsetY =
-        0;
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Website Watermark
-    |--------------------------------------------------------------------------
-    */
-
-    ctx.textAlign =
-        "right";
-
-    ctx.textBaseline =
-        "bottom";
-
-
-    ctx.font =
-        `bold ${Math.max(
-            18,
-            Math.floor(width * 0.025)
-        )}px sans-serif`;
-
-
-    ctx.fillStyle =
-        "rgba(255,255,255,0.85)";
-
-
-    ctx.fillText(
-        watermark,
-        width - 30,
-        height - 25
-    );
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Return PNG
-    |--------------------------------------------------------------------------
-    */
-
-    return canvas.toBuffer(
-        "image/png"
-    );
-
-};
+    |---------------------------------------------------------
