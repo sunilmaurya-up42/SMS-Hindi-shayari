@@ -6,13 +6,31 @@ const octokit = new Octokit({
     auth: process.env.GITHUB_TOKEN
 });
 
+const GITHUB_REPOSITORY =
+    (
+        process.env.GITHUB_REPO ||
+        process.env.GITHUB_REPOSITORY ||
+        ""
+    ).trim()
+        .replace(/^https?:\/\/github\.com\//i, "")
+        .replace(/\/+$/, "");
+
+
 const OWNER =
-    process.env.GITHUB_OWNER ||
-    process.env.GITHUB_USERNAME;
+    (
+        process.env.GITHUB_OWNER ||
+        process.env.GITHUB_USERNAME ||
+        GITHUB_REPOSITORY.split("/")[0] ||
+        ""
+    ).trim();
+
 
 const REPO =
-    process.env.GITHUB_REPO ||
-    process.env.GITHUB_REPOSITORY;
+    (
+        GITHUB_REPOSITORY.includes("/")
+            ? GITHUB_REPOSITORY.split("/")[1]
+            : GITHUB_REPOSITORY
+    ).trim();
 
 const BRANCH =
     process.env.GITHUB_BRANCH || "main";
