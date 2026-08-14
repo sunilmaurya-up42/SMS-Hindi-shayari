@@ -1257,6 +1257,219 @@ const createShayariImage =
 
 
 /* =========================================================
+   UPLOAD BACKGROUND TO GITHUB
+========================================================= */
+
+async function uploadBackground(file) {
+
+    if (!file) {
+        throw new Error(
+            "Background file is required."
+        );
+    }
+
+    const {
+        Octokit
+    } = require("@octokit/rest");
+
+    const token =
+        process.env.GITHUB_TOKEN;
+
+    const owner =
+        process.env.GITHUB_OWNER ||
+        process.env.GITHUB_USERNAME;
+
+    const repo =
+        process.env.GITHUB_REPO ||
+        process.env.GITHUB_REPOSITORY;
+
+    const branch =
+        process.env.GITHUB_BRANCH ||
+        "main";
+
+    const folder =
+        process.env.GITHUB_BACKGROUND_FOLDER ||
+        "backgrounds";
+
+    if (!token) {
+        throw new Error(
+            "GITHUB_TOKEN is missing."
+        );
+    }
+
+    if (!owner) {
+        throw new Error(
+            "GITHUB_USERNAME/GITHUB_OWNER is missing."
+        );
+    }
+
+    if (!repo) {
+        throw new Error(
+            "GITHUB_REPOSITORY/GITHUB_REPO is missing."
+        );
+    }
+
+    /*
+     * Get file buffer
+     */
+
+    let buffer;
+
+    if (file.buffer) {
+
+        buffer =
+            Buffer.from(file.buffer);
+
+    } else if (file.path) {
+
+        if (!fs.existsSync(file.path)) {
+            throw new Error(
+                "Uploaded background file not found."
+            );
+        }
+
+        buffer =
+            fs.readFileSync(file.path);
+
+    } else {
+
+        throw new Error(
+            "Uploaded background has no buffer or path."
+        );
+
+    }
+
+    if (!buffer.length) {
+        throw new Error(
+            "Background file is empty."
+        );
+    }
+
+    /*
+     * Safe filename
+     */
+
+    const originalName =
+        file.originalname ||
+        `background-${Date.now()}.jpg`;
+
+    const extension =
+        path.extname(originalName)
+            .toLowerCase();
+
+    const baseName =
+        path.basename(
+            originalName,
+            extension
+        )
+        .replace(
+            /[^a-zA-Z0-9_-]/g,
+            "-"
+        )
+        .replace(
+            /-+/g,
+            "-"
+        )
+        .replace(
+            /^-|-$/g,
+            ""
+        ) ||
+        `background-${Date.now()}`;
+
+    const finalExtension =
+        extension ||
+        ".jpg";
+
+    const fileName =
+        `${baseName}-${Date.now()}${finalExtension}`;
+
+    const githubPath =
+        path.posix.join(
+            folder,
+            fileName
+        );
+
+    /*
+     * GitHub API
+     */
+
+    const octokit =
+        new Octokit({
+            auth: token
+        });
+
+    /*
+     * Upload
+     */
+
+    const response =
+        await octokit.repos.createOrUpdateFileContents({
+
+            owner,
+
+            repo,
+
+            path: githubPath,
+
+            message:
+                `Upload background: ${fileName}`,
+
+            content:
+                buffer.toString("base64"),
+
+            branch
+
+        });
+
+    const data =
+        response.data;
+
+    const githubUrl =
+        `https://github.com/${owner}/${repo}/blob/${branch}/${githubPath}`;
+
+    const githubDownloadUrl =
+        `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${githubPath}`;
+
+    console.log(
+        "✅ Background uploaded to GitHub:",
+        githubPath
+    );
+
+    return {
+
+        success: true,
+
+        fileName,
+
+        githubFileName:
+            fileName,
+
+        path:
+            githubPath,
+
+        githubPath:
+            githubPath,
+
+        sha:
+            data.content &&
+            data.content.sha
+                ? data.content.sha
+                : "",
+
+        url:
+            githubUrl,
+
+        githubUrl,
+
+        downloadUrl:
+            githubDownloadUrl,
+
+        githubDownloadUrl
+
+    };
+
+}
+/* =========================================================
    EXPORTS
 ========================================================= */
 
@@ -1272,6 +1485,8 @@ module.exports = {
 
     findHindiFont,
 
-    resolveBackground
+    resolveBackground,
+
+    uploadBackground
 
 };
