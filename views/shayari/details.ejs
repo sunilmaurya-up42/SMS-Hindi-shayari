@@ -194,28 +194,49 @@
                         <% if(user){ %>
 
                             <form
-                                action="/comments"
-                                method="POST">
+    action="/comments"
+    method="POST">
 
-                                <input
-                                    type="hidden"
-                                    name="shayariId"
-                                    value="<%= shayari._id %>">
+    <!-- CSRF TOKEN -->
+    <input
+        type="hidden"
+        name="_csrf"
+        value="<%= csrfToken %>">
 
-                                <textarea
-                                    class="form-control mb-3"
-                                    name="comment"
-                                    rows="4"
-                                    placeholder="Write your comment..."
-                                    required></textarea>
+    <!-- SHAYARI ID -->
+    <input
+        type="hidden"
+        name="shayari"
+        value="<%= shayari._id %>">
 
-                                <button class="btn btn-primary">
+    <!-- USER NAME -->
+    <input
+        type="hidden"
+        name="name"
+        value="<%= user.name || "" %>">
 
-                                    Post Comment
+    <!-- USER EMAIL -->
+    <input
+        type="hidden"
+        name="email"
+        value="<%= user.email || "" %>">
 
-                                </button>
+    <textarea
+        class="form-control mb-3"
+        name="comment"
+        rows="4"
+        placeholder="Write your comment..."
+        required></textarea>
 
-                            </form>
+    <button
+        type="submit"
+        class="btn btn-primary">
+
+        Post Comment
+
+    </button>
+
+</form>
 
                         <% } else { %>
 
