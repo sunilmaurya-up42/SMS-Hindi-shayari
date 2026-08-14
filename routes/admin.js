@@ -20,19 +20,14 @@ const Category = require("../models/Category");
 | ADMIN ROOT
 |--------------------------------------------------------------------------
 */
-
-router.get(
-    "/",
-    (req, res) => {
-
-        if (!req.user) {
-            return res.redirect("/auth/admin-login");
-        }
-
-        return res.redirect("/admin/dashboard");
-
-    }
-);
+router.get("/admin-login", (req, res) => {
+    res.render("auth/admin-login", {
+        title: "Admin Login",
+        error: null,
+        success: null,
+        csrfToken: req.csrfToken()
+    });
+});
 
 
 /*
