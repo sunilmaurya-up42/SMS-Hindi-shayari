@@ -1,3 +1,5 @@
+"use strict";
+
 const sharp = require("sharp");
 const fs = require("fs");
 const path = require("path");
@@ -11,231 +13,458 @@ const {
 
 /*
 |--------------------------------------------------------------------------
-| Devanagari Font Configuration
+| PATHS
 |--------------------------------------------------------------------------
 */
+
+const ROOT_DIR = path.resolve(
+    __dirname,
+    "../.."
+);
+
+const PUBLIC_DIR = path.join(
+    ROOT_DIR,
+    "public"
+);
 
 const FONT_DIR = path.join(
-    __dirname,
-    "../../public/fonts"
+    PUBLIC_DIR,
+    "fonts"
 );
 
-const REGULAR_FONT = path.join(
-    FONT_DIR,
-    "NotoSansDevanagari-Regular.ttf"
+const IMAGE_DIR = path.join(
+    PUBLIC_DIR,
+    "images"
 );
 
-const BOLD_FONT = path.join(
-    FONT_DIR,
-    "NotoSansDevanagari-Bold.ttf"
+const GENERATED_DIR = path.join(
+    PUBLIC_DIR,
+    "uploads",
+    "generated"
 );
 
 
 /*
 |--------------------------------------------------------------------------
-| Official Noto Sans Devanagari Fonts
+| Create generated directory
 |--------------------------------------------------------------------------
 */
 
-const REGULAR_FONT_URL =
-    "https://github.com/notofonts/noto-fonts/raw/main/hinted/ttf/NotoSansDevanagari/NotoSansDevanagari-Regular.ttf";
-
-const BOLD_FONT_URL =
-    "https://github.com/notofonts/noto-fonts/raw/main/hinted/ttf/NotoSansDevanagari/NotoSansDevanagari-Bold.ttf";
-
-
-let fontsRegistered = false;
-let fontsLoading = null;
-
-
-/*
-|--------------------------------------------------------------------------
-| Download Font
-|--------------------------------------------------------------------------
-*/
-
-async function downloadFont(
-    url,
-    destination
-) {
-
-    try {
-
-        if (
-            fs.existsSync(destination) &&
-            fs.statSync(destination).size > 10000
-        ) {
-
-            return destination;
-
+if (!fs.existsSync(GENERATED_DIR)) {
+    fs.mkdirSync(
+        GENERATED_DIR,
+        {
+            recursive: true
         }
-
-
-        fs.mkdirSync(
-            path.dirname(destination),
-            {
-                recursive: true
-            }
-        );
-
-
-        console.log(
-            `📥 Downloading font: ${path.basename(destination)}`
-        );
-
-
-        const response =
-            await fetch(url);
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                `Font download failed: ${response.status}`
-            );
-
-        }
-
-
-        const buffer =
-            Buffer.from(
-                await response.arrayBuffer()
-            );
-
-
-        fs.writeFileSync(
-            destination,
-            buffer
-        );
-
-
-        console.log(
-            `✅ Font saved: ${destination}`
-        );
-
-
-        return destination;
-
-    } catch (error) {
-
-        console.error(
-            `❌ Font download error (${path.basename(destination)}):`,
-            error.message
-        );
-
-        return null;
-
-    }
-
+    );
 }
 
 
 /*
 |--------------------------------------------------------------------------
-| Register Devanagari Fonts
+| FONT FILES
+|--------------------------------------------------------------------------
+*/
+
+const LOCAL_REGULAR_FONT =
+    path.join(
+        FONT_DIR,
+        "NotoSansDevanagari-Regular.ttf"
+    );
+
+const LOCAL_BOLD_FONT =
+    path.join(
+        FONT_DIR,
+        "NotoSansDevanagari-Bold.ttf"
+    );
+
+
+/*
+|--------------------------------------------------------------------------
+| Render/system font locations
+|--------------------------------------------------------------------------
+*/
+
+const SYSTEM_FONT_PATHS = [
+
+    "/usr/share/fonts/truetype/noto/NotoSansDevanagari-Regular.ttf",
+
+    "/usr/share/fonts/truetype/noto/NotoSansDevanagari-SemiCondensed.ttf",
+
+    "/usr/share/fonts/truetype/noto/NotoSansDevanagari-ExtraCondensed.ttf",
+
+    "/usr/share/fonts/truetype/noto/NotoSansDevanagariUI-Regular.ttf",
+
+    "/usr/share/fonts/opentype/noto/NotoSansDevanagari-Regular.ttf",
+
+    "/usr/share/fonts/truetype/lohit-devanagari/Lohit-Devanagari.ttf"
+
+];
+
+
+/*
+|--------------------------------------------------------------------------
+| Online font sources
+|--------------------------------------------------------------------------
+|
+| First source may redirect.
+| Second source is direct raw GitHub.
+|--------------------------------------------------------------------------
+*/
+
+const FONT_URLS = [
+
+    "https://raw.githubusercontent.com/notofonts/noto-fonts/main/hinted/ttf/NotoSansDevanagari/NotoSansDevanagari-Regular.ttf",
+
+    "https://github.com/notofonts/noto-fonts/raw/main/hinted/ttf/NotoSansDevanagari/NotoSansDevanagari-Regular.ttf"
+
+];
+
+
+let devanagariReady = false;
+let devanagariLoading = null;
+
+let DEVANAGARI_FONT_FILE = null;
+
+
+/*
+|--------------------------------------------------------------------------
+| Validate TTF
+|--------------------------------------------------------------------------
+*/
+
+function isValidFontBuffer(buffer) {
+
+    if (!Buffer.isBuffer(buffer)) {
+        return false;
+    }
+
+    if (buffer.length < 1000) {
+        return false;
+    }
+
+    const signature =
+        buffer
+            .subarray(0, 4)
+            .toString("ascii");
+
+    /*
+     * TTF
+     */
+    if (
+        signature === "\u0000\u0001\u0000\u0000"
+    ) {
+        return true;
+    }
+
+    /*
+     * OpenType
+     */
+    if (
+        signature === "OTTO"
+    ) {
+        return true;
+    }
+
+    /*
+     * TrueType collection
+     */
+    if (
+        signature === "ttcf"
+    ) {
+        return true;
+    }
+
+    return false;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Find local/system Hindi font
+|--------------------------------------------------------------------------
+*/
+
+function findExistingHindiFont() {
+
+    const candidates = [
+
+        LOCAL_REGULAR_FONT,
+
+        LOCAL_BOLD_FONT,
+
+        ...SYSTEM_FONT_PATHS
+
+    ];
+
+    for (
+        const file
+        of candidates
+    ) {
+
+        try {
+
+            if (
+                fs.existsSync(file) &&
+                fs.statSync(file).size > 10000
+            ) {
+
+                console.log(
+                    "✅ Devanagari font found:",
+                    file
+                );
+
+                return file;
+            }
+
+        } catch (error) {
+
+            // Continue searching.
+
+        }
+    }
+
+    return null;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Download Hindi font
+|--------------------------------------------------------------------------
+*/
+
+async function downloadHindiFont() {
+
+    for (
+        const url
+        of FONT_URLS
+    ) {
+
+        try {
+
+            console.log(
+                "📥 Downloading Hindi font:",
+                url
+            );
+
+            const response =
+                await fetch(url);
+
+            if (!response.ok) {
+
+                console.warn(
+                    "⚠️ Font HTTP status:",
+                    response.status
+                );
+
+                continue;
+            }
+
+            const buffer =
+                Buffer.from(
+                    await response.arrayBuffer()
+                );
+
+
+            if (
+                !isValidFontBuffer(
+                    buffer
+                )
+            ) {
+
+                console.warn(
+                    "⚠️ Downloaded file is not a valid TTF/OTF."
+                );
+
+                continue;
+            }
+
+
+            fs.mkdirSync(
+                FONT_DIR,
+                {
+                    recursive: true
+                }
+            );
+
+
+            fs.writeFileSync(
+                LOCAL_REGULAR_FONT,
+                buffer
+            );
+
+
+            console.log(
+                "✅ Hindi font saved:",
+                LOCAL_REGULAR_FONT
+            );
+
+
+            return LOCAL_REGULAR_FONT;
+
+        } catch (error) {
+
+            console.warn(
+                "⚠️ Hindi font download failed:",
+                error.message
+            );
+
+        }
+    }
+
+    return null;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Register Hindi font
 |--------------------------------------------------------------------------
 */
 
 async function ensureDevanagariFonts() {
 
-    if (fontsRegistered) {
+    if (
+        devanagariReady &&
+        DEVANAGARI_FONT_FILE
+    ) {
 
-        return true;
-
+        return DEVANAGARI_FONT_FILE;
     }
 
 
-    if (fontsLoading) {
-
-        return fontsLoading;
-
+    if (devanagariLoading) {
+        return devanagariLoading;
     }
 
 
-    fontsLoading =
+    devanagariLoading =
         (async () => {
 
             try {
 
-                const regular =
-                    await downloadFont(
-                        REGULAR_FONT_URL,
-                        REGULAR_FONT
-                    );
+                /*
+                 * 1. Local/system font
+                 */
+
+                let font =
+                    findExistingHindiFont();
 
 
-                const bold =
-                    await downloadFont(
-                        BOLD_FONT_URL,
-                        BOLD_FONT
-                    );
+                /*
+                 * 2. Download if unavailable
+                 */
+
+                if (!font) {
+
+                    font =
+                        await downloadHindiFont();
+
+                }
 
 
-                if (regular) {
+                /*
+                 * IMPORTANT:
+                 *
+                 * Do NOT generate image with
+                 * an unregistered Hindi font.
+                 *
+                 * Otherwise boxes like 01F / 496
+                 * appear.
+                 */
 
-                    registerFont(
-                        regular,
-                        {
-                            family: "SMSNotoDevanagari",
-                            weight: "normal"
-                        }
-                    );
+                if (!font) {
 
-                    console.log(
-                        "✅ Regular Devanagari font registered."
+                    throw new Error(
+                        "Devanagari font is unavailable. Hindi image generation stopped to prevent broken Unicode boxes."
                     );
 
                 }
 
 
-                if (bold) {
+                /*
+                 * Register font
+                 */
+
+                registerFont(
+                    font,
+                    {
+                        family:
+                            "SMSNotoDevanagari",
+                        weight:
+                            "normal"
+                    }
+                );
+
+
+                /*
+                 * If bold font exists,
+                 * register it too.
+                 */
+
+                if (
+                    fs.existsSync(
+                        LOCAL_BOLD_FONT
+                    ) &&
+                    fs.statSync(
+                        LOCAL_BOLD_FONT
+                    ).size > 10000
+                ) {
 
                     registerFont(
-                        bold,
+                        LOCAL_BOLD_FONT,
                         {
-                            family: "SMSNotoDevanagari",
-                            weight: "bold"
+                            family:
+                                "SMSNotoDevanagari",
+                            weight:
+                                "bold"
                         }
-                    );
-
-                    console.log(
-                        "✅ Bold Devanagari font registered."
                     );
 
                 }
 
 
-                fontsRegistered =
-                    Boolean(
-                        regular ||
-                        bold
-                    );
+                DEVANAGARI_FONT_FILE =
+                    font;
+
+                devanagariReady =
+                    true;
 
 
-                return fontsRegistered;
+                console.log(
+                    "✅ Devanagari font registered successfully."
+                );
+
+
+                return font;
 
             } catch (error) {
 
                 console.error(
-                    "❌ Devanagari font registration error:",
-                    error
+                    "❌ Devanagari font setup failed:",
+                    error.message
                 );
 
-                return false;
+                devanagariReady =
+                    false;
 
+                DEVANAGARI_FONT_FILE =
+                    null;
+
+                throw error;
             }
 
         })();
 
 
-    return fontsLoading;
-
+    return devanagariLoading;
 }
 
 
 /*
 |--------------------------------------------------------------------------
-| Resize Image
+| BASIC IMAGE FUNCTIONS
 |--------------------------------------------------------------------------
 */
 
@@ -254,15 +483,8 @@ exports.resize = async (
         .toFile(output);
 
     return output;
-
 };
 
-
-/*
-|--------------------------------------------------------------------------
-| Compress Image
-|--------------------------------------------------------------------------
-*/
 
 exports.compress = async (
     input,
@@ -277,15 +499,8 @@ exports.compress = async (
         .toFile(output);
 
     return output;
-
 };
 
-
-/*
-|--------------------------------------------------------------------------
-| Convert To WebP
-|--------------------------------------------------------------------------
-*/
 
 exports.toWebP = async (
     input,
@@ -300,15 +515,18 @@ exports.toWebP = async (
         .toFile(output);
 
     return output;
-
 };
 
 
 /*
 |--------------------------------------------------------------------------
-| Crop Image
+| Keep old alias
 |--------------------------------------------------------------------------
 */
+
+exports.toWebp =
+    exports.toWebP;
+
 
 exports.crop = async (
     input,
@@ -329,15 +547,8 @@ exports.crop = async (
         .toFile(output);
 
     return output;
-
 };
 
-
-/*
-|--------------------------------------------------------------------------
-| Generate Thumbnail
-|--------------------------------------------------------------------------
-*/
 
 exports.thumbnail = async (
     input,
@@ -355,15 +566,8 @@ exports.thumbnail = async (
         .toFile(output);
 
     return output;
-
 };
 
-
-/*
-|--------------------------------------------------------------------------
-| Blur Image
-|--------------------------------------------------------------------------
-*/
 
 exports.blur = async (
     input,
@@ -375,15 +579,8 @@ exports.blur = async (
         .toFile(output);
 
     return output;
-
 };
 
-
-/*
-|--------------------------------------------------------------------------
-| Rotate Image
-|--------------------------------------------------------------------------
-*/
 
 exports.rotate = async (
     input,
@@ -396,15 +593,8 @@ exports.rotate = async (
         .toFile(output);
 
     return output;
-
 };
 
-
-/*
-|--------------------------------------------------------------------------
-| Flip Image
-|--------------------------------------------------------------------------
-*/
 
 exports.flip = async (
     input,
@@ -416,32 +606,17 @@ exports.flip = async (
         .toFile(output);
 
     return output;
-
 };
 
-
-/*
-|--------------------------------------------------------------------------
-| Get Metadata
-|--------------------------------------------------------------------------
-*/
 
 exports.metadata = async (
     input
 ) => {
 
-    return await sharp(
-        input
-    ).metadata();
-
+    return sharp(input)
+        .metadata();
 };
 
-
-/*
-|--------------------------------------------------------------------------
-| Delete Image
-|--------------------------------------------------------------------------
-*/
 
 exports.delete = (
     file
@@ -452,37 +627,18 @@ exports.delete = (
         fs.existsSync(file)
     ) {
 
-        fs.unlinkSync(
-            file
-        );
-
+        fs.unlinkSync(file);
     }
-
 };
 
-
-/*
-|--------------------------------------------------------------------------
-| File Exists
-|--------------------------------------------------------------------------
-*/
 
 exports.exists = (
     file
 ) => {
 
-    return fs.existsSync(
-        file
-    );
-
+    return fs.existsSync(file);
 };
 
-
-/*
-|--------------------------------------------------------------------------
-| Copy Image
-|--------------------------------------------------------------------------
-*/
 
 exports.copy = (
     source,
@@ -495,15 +651,8 @@ exports.copy = (
     );
 
     return destination;
-
 };
 
-
-/*
-|--------------------------------------------------------------------------
-| Move Image
-|--------------------------------------------------------------------------
-*/
 
 exports.move = (
     source,
@@ -516,38 +665,24 @@ exports.move = (
     );
 
     return destination;
-
 };
 
-
-/*
-|--------------------------------------------------------------------------
-| Image Information
-|--------------------------------------------------------------------------
-*/
 
 exports.info = async (
     file
 ) => {
 
     const meta =
-        await sharp(
-            file
-        ).metadata();
-
+        await sharp(file)
+            .metadata();
 
     const stat =
-        fs.statSync(
-            file
-        );
-
+        fs.statSync(file);
 
     return {
 
         name:
-            path.basename(
-                file
-            ),
+            path.basename(file),
 
         size:
             stat.size,
@@ -568,15 +703,8 @@ exports.info = async (
             stat.mtime
 
     };
-
 };
 
-
-/*
-|--------------------------------------------------------------------------
-| Optimize Image
-|--------------------------------------------------------------------------
-*/
 
 exports.optimize = async (
     input,
@@ -590,13 +718,155 @@ exports.optimize = async (
         .toFile(output);
 
     return output;
-
 };
 
 
 /*
 |--------------------------------------------------------------------------
-| Text Wrapping
+| TEXT HELPERS
+|--------------------------------------------------------------------------
+*/
+
+
+function normalizeText(text) {
+
+    return String(
+        text || ""
+    )
+        .replace(
+            /\r\n/g,
+            "\n"
+        )
+        .replace(
+            /\r/g,
+            "\n"
+        )
+        .replace(
+            /\u0000/g,
+            ""
+        )
+        .trim();
+}
+
+
+function removeHtml(text) {
+
+    return String(
+        text || ""
+    )
+        .replace(
+            /<br\s*\/?>/gi,
+            "\n"
+        )
+        .replace(
+            /<\/p>/gi,
+            "\n"
+        )
+        .replace(
+            /<[^>]*>/g,
+            ""
+        )
+        .replace(
+            /&nbsp;/gi,
+            " "
+        )
+        .replace(
+            /&amp;/gi,
+            "&"
+        )
+        .replace(
+            /&lt;/gi,
+            "<"
+        )
+        .replace(
+            /&gt;/gi,
+            ">"
+        );
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Clean Shayari
+|--------------------------------------------------------------------------
+|
+| IMPORTANT:
+| title is intentionally NOT rendered.
+|
+|--------------------------------------------------------------------------
+*/
+
+function cleanShayari(
+    content
+) {
+
+    let text =
+        removeHtml(
+            content
+        );
+
+    text =
+        normalizeText(
+            text
+        );
+
+    /*
+     * Keep line breaks.
+     */
+
+    text =
+        text
+            .replace(
+                /[ \t]+/g,
+                " "
+            )
+            .replace(
+                /\n{3,}/g,
+                "\n\n"
+            )
+            .trim();
+
+    return text;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Escape HTML/XML
+|--------------------------------------------------------------------------
+*/
+
+function escapeXml(text) {
+
+    return String(
+        text || ""
+    )
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&apos;"
+        );
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Canvas Text Wrap
 |--------------------------------------------------------------------------
 */
 
@@ -611,9 +881,8 @@ function wrapText(
     const paragraphs =
         String(
             text || ""
-        ).split(
-            /\r?\n/
-        );
+        )
+        .split(/\r?\n/);
 
 
     for (
@@ -630,14 +899,12 @@ function wrapText(
             lines.push("");
 
             continue;
-
         }
 
 
         const words =
-            cleanParagraph.split(
-                /\s+/
-            );
+            cleanParagraph
+                .split(/\s+/);
 
 
         let line = "";
@@ -654,94 +921,84 @@ function wrapText(
                     : word;
 
 
-            const testWidth =
+            if (
                 ctx.measureText(
                     testLine
-                ).width;
-
-
-            if (
-                testWidth >
-                maxWidth
+                ).width <= maxWidth
             ) {
-
-                if (line) {
-
-                    lines.push(
-                        line
-                    );
-
-                }
-
-
-                /*
-                |--------------------------------------------------------------------------
-                | Very Long Hindi Word
-                |--------------------------------------------------------------------------
-                */
-
-                if (
-                    ctx.measureText(
-                        word
-                    ).width >
-                    maxWidth
-                ) {
-
-                    let part = "";
-
-
-                    for (
-                        const character
-                        of Array.from(word)
-                    ) {
-
-                        const testPart =
-                            part +
-                            character;
-
-
-                        if (
-                            ctx.measureText(
-                                testPart
-                            ).width >
-                            maxWidth &&
-                            part
-                        ) {
-
-                            lines.push(
-                                part
-                            );
-
-                            part =
-                                character;
-
-                        } else {
-
-                            part =
-                                testPart;
-
-                        }
-
-                    }
-
-
-                    line =
-                        part;
-
-                } else {
-
-                    line =
-                        word;
-
-                }
-
-            } else {
 
                 line =
                     testLine;
 
+                continue;
             }
 
+
+            /*
+             * Current line is full.
+             */
+
+            if (line) {
+
+                lines.push(
+                    line
+                );
+            }
+
+
+            /*
+             * Handle long word.
+             */
+
+            if (
+                ctx.measureText(
+                    word
+                ).width > maxWidth
+            ) {
+
+                let part = "";
+
+
+                for (
+                    const character
+                    of Array.from(word)
+                ) {
+
+                    const testPart =
+                        part +
+                        character;
+
+
+                    if (
+                        ctx.measureText(
+                            testPart
+                        ).width > maxWidth &&
+                        part
+                    ) {
+
+                        lines.push(
+                            part
+                        );
+
+                        part =
+                            character;
+
+                    } else {
+
+                        part =
+                            testPart;
+                    }
+                }
+
+
+                line =
+                    part;
+
+            } else {
+
+                line =
+                    word;
+            }
         }
 
 
@@ -750,71 +1007,169 @@ function wrapText(
             lines.push(
                 line
             );
-
         }
-
     }
 
 
     return lines;
-
 }
 
 
 /*
 |--------------------------------------------------------------------------
-| Generate Shayari Image
-|--------------------------------------------------------------------------
-| GitHub Background
-| +
-| Shayari Title
-| +
-| Shayari Content
-| +
-| Website Watermark
+| Find Website Logo
 |--------------------------------------------------------------------------
 */
 
-exports.generateShayariImage =
-async ({
-    backgroundUrl,
-    title,
-    content,
-    watermark = "SMS Hindi Shayari"
-}) => {
+function findLogo() {
 
-    /*
-    |--------------------------------------------------------------------------
-    | Make Sure Hindi Font Is Ready
-    |--------------------------------------------------------------------------
-    */
+    const logoCandidates = [
 
-    await ensureDevanagariFonts();
+        path.join(
+            IMAGE_DIR,
+            "logo.png"
+        ),
+
+        path.join(
+            IMAGE_DIR,
+            "logo.webp"
+        ),
+
+        path.join(
+            IMAGE_DIR,
+            "logo.jpg"
+        )
+
+    ];
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | Validate Background URL
-    |--------------------------------------------------------------------------
-    */
+    for (
+        const file
+        of logoCandidates
+    ) {
+
+        try {
+
+            if (
+                fs.existsSync(file)
+            ) {
+
+                return file;
+            }
+
+        } catch (_) {}
+
+    }
+
+
+    return null;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Draw Logo
+|--------------------------------------------------------------------------
+*/
+
+async function drawLogo(
+    ctx,
+    width,
+    height
+) {
+
+    const logoPath =
+        findLogo();
+
+
+    if (!logoPath) {
+
+        console.warn(
+            "⚠️ public/images/logo.png not found."
+        );
+
+        return;
+    }
+
+
+    try {
+
+        const logo =
+            await loadImage(
+                logoPath
+            );
+
+
+        /*
+         * Top-left logo.
+         */
+
+        const maxWidth =
+            Math.min(
+                width * 0.16,
+                180
+            );
+
+        const maxHeight =
+            Math.min(
+                height * 0.12,
+                120
+            );
+
+
+        const ratio =
+            Math.min(
+                maxWidth / logo.width,
+                maxHeight / logo.height
+            );
+
+
+        const logoWidth =
+            logo.width * ratio;
+
+        const logoHeight =
+            logo.height * ratio;
+
+
+        ctx.drawImage(
+            logo,
+            35,
+            35,
+            logoWidth,
+            logoHeight
+        );
+
+
+    } catch (error) {
+
+        console.warn(
+            "⚠️ Logo could not be loaded:",
+            error.message
+        );
+    }
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Download Background
+|--------------------------------------------------------------------------
+*/
+
+async function loadBackground(
+    backgroundUrl
+) {
 
     if (!backgroundUrl) {
 
         throw new Error(
             "Background image URL is required."
         );
-
     }
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | Download GitHub Background
-    |--------------------------------------------------------------------------
-    */
-
     console.log(
-        "🖼️ Downloading background:",
+        "🖼️ Background:",
         backgroundUrl
     );
 
@@ -828,40 +1183,143 @@ async ({
     if (!response.ok) {
 
         throw new Error(
-            `Background download failed: ${response.status}`
+            `Background download failed: HTTP ${response.status}`
         );
-
     }
 
 
-    const arrayBuffer =
-        await response.arrayBuffer();
-
-
-    const backgroundBuffer =
+    const buffer =
         Buffer.from(
-            arrayBuffer
+            await response.arrayBuffer()
         );
 
 
-    const backgroundImage =
+    if (!buffer.length) {
+
+        throw new Error(
+            "Downloaded background is empty."
+        );
+    }
+
+
+    return buffer;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Generate Image Buffer
+|--------------------------------------------------------------------------
+|
+| FINAL DESIGN:
+|
+| Background
+|     ↓
+| Dark transparent overlay
+|     ↓
+| Shayari box
+|     ↓
+| ONLY SHAYARI
+|     ↓
+| Logo top-left
+|     ↓
+| SMS Hindi Shayari watermark
+|
+| TITLE IS NEVER DRAWN.
+|
+|--------------------------------------------------------------------------
+*/
+
+exports.generateShayariImage =
+async ({
+    backgroundUrl,
+    title,
+    content,
+    watermark = "SMS Hindi Shayari"
+}) => {
+
+    /*
+     * title is intentionally ignored.
+     *
+     * It is kept in the function signature because
+     * the existing controller sends it.
+     */
+
+    void title;
+
+
+    /*
+     * Font must be ready BEFORE canvas creation.
+     */
+
+    await ensureDevanagariFonts();
+
+
+    if (
+        !DEVANAGARI_FONT_FILE
+    ) {
+
+        throw new Error(
+            "Hindi font unavailable."
+        );
+    }
+
+
+    /*
+     * Shayari content only.
+     */
+
+    const shayari =
+        cleanShayari(
+            content
+        );
+
+
+    if (!shayari) {
+
+        throw new Error(
+            "Shayari content is empty."
+        );
+    }
+
+
+    /*
+     * Background.
+     */
+
+    const backgroundBuffer =
+        await loadBackground(
+            backgroundUrl
+        );
+
+
+    const background =
         await loadImage(
             backgroundBuffer
         );
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | Canvas Size
-    |--------------------------------------------------------------------------
-    */
-
     const width =
-        backgroundImage.width;
+        background.width;
 
     const height =
-        backgroundImage.height;
+        background.height;
 
+
+    if (
+        !width ||
+        !height
+    ) {
+
+        throw new Error(
+            "Invalid background dimensions."
+        );
+    }
+
+
+    /*
+     * Canvas.
+     */
 
     const canvas =
         createCanvas(
@@ -877,13 +1335,11 @@ async ({
 
 
     /*
-    |--------------------------------------------------------------------------
-    | Draw Background
-    |--------------------------------------------------------------------------
-    */
+     * Background.
+     */
 
     ctx.drawImage(
-        backgroundImage,
+        background,
         0,
         0,
         width,
@@ -892,14 +1348,11 @@ async ({
 
 
     /*
-    |--------------------------------------------------------------------------
-    | Dark Overlay
-    |--------------------------------------------------------------------------
-    */
+     * Slight dark overlay.
+     */
 
     ctx.fillStyle =
-        "rgba(0,0,0,0.28)";
-
+        "rgba(0,0,0,0.20)";
 
     ctx.fillRect(
         0,
@@ -910,29 +1363,39 @@ async ({
 
 
     /*
-    |--------------------------------------------------------------------------
-    | Shayari Box
-    |--------------------------------------------------------------------------
-    */
+     * Logo.
+     */
+
+    await drawLogo(
+        ctx,
+        width,
+        height
+    );
+
+
+    /*
+     * Shayari box.
+     */
 
     const boxWidth =
         width * 0.86;
 
-
     const boxX =
         (width - boxWidth) / 2;
 
-
     const boxY =
         height * 0.18;
-
 
     const boxHeight =
         height * 0.60;
 
 
+    /*
+     * Box background.
+     */
+
     ctx.fillStyle =
-        "rgba(0,0,0,0.50)";
+        "rgba(0,0,0,0.42)";
 
 
     ctx.fillRect(
@@ -944,19 +1407,16 @@ async ({
 
 
     /*
-    |--------------------------------------------------------------------------
-    | Box Border
-    |--------------------------------------------------------------------------
-    */
+     * Box border.
+     */
 
     ctx.strokeStyle =
-        "rgba(255,255,255,0.30)";
-
+        "rgba(255,255,255,0.48)";
 
     ctx.lineWidth =
         Math.max(
             2,
-            Math.floor(
+            Math.round(
                 width * 0.002
             )
         );
@@ -971,162 +1431,70 @@ async ({
 
 
     /*
-    |--------------------------------------------------------------------------
-    | Title
-    |--------------------------------------------------------------------------
-    */
+     * Shayari font.
+     */
 
-    ctx.textAlign =
-        "center";
-
-
-    ctx.textBaseline =
-        "top";
-
-
-    ctx.fillStyle =
-        "#ffffff";
-
-
-    const titleFontSize =
+    let fontSize =
         Math.max(
-            34,
+            30,
             Math.floor(
-                width * 0.055
+                width * 0.040
             )
         );
-
-
-    ctx.font =
-        `bold ${titleFontSize}px "SMSNotoDevanagari", "Noto Sans Devanagari", sans-serif`;
-
-
-    ctx.shadowColor =
-        "rgba(0,0,0,0.85)";
-
-
-    ctx.shadowBlur =
-        5;
-
-
-    ctx.shadowOffsetX =
-        2;
-
-
-    ctx.shadowOffsetY =
-        2;
-
-
-    const safeTitle =
-        String(
-            title || ""
-        ).trim();
-
-
-    const titleMaxWidth =
-        boxWidth - 60;
-
-
-    const titleLines =
-        wrapText(
-            ctx,
-            safeTitle,
-            titleMaxWidth
-        );
-
-
-    let titleY =
-        boxY + 35;
-
-
-    const titleLineHeight =
-        titleFontSize * 1.35;
-
-
-    for (
-        const line
-        of titleLines
-    ) {
-
-        ctx.fillText(
-            line,
-            width / 2,
-            titleY
-        );
-
-
-        titleY +=
-            titleLineHeight;
-
-    }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Shayari Content
-    |--------------------------------------------------------------------------
-    */
-
-    const fontSize =
-        Math.max(
-            25,
-            Math.floor(
-                width * 0.038
-            )
-        );
-
-
-    ctx.font =
-        `${fontSize}px "SMSNotoDevanagari", "Noto Sans Devanagari", sans-serif`;
-
-
-    ctx.fillStyle =
-        "#ffffff";
 
 
     const maxTextWidth =
-        boxWidth - 70;
+        boxWidth - 90;
 
 
-    const lineHeight =
-        fontSize * 1.55;
+    /*
+     * Text wrapping.
+     */
+
+    ctx.font =
+        `${fontSize}px "SMSNotoDevanagari"`;
 
 
-    const lines =
+    let lines =
         wrapText(
             ctx,
-            content,
+            shayari,
             maxTextWidth
         );
 
 
     /*
-    |--------------------------------------------------------------------------
-    | Calculate Text Position
-    |--------------------------------------------------------------------------
-    */
+     * If too many lines,
+     * reduce font size.
+     */
 
-    const titleSpace =
-        titleLines.length *
-        titleLineHeight;
+    while (
+        lines.length > 10 &&
+        fontSize > 28
+    ) {
+
+        fontSize -= 2;
+
+        ctx.font =
+            `${fontSize}px "SMSNotoDevanagari"`;
+
+        lines =
+            wrapText(
+                ctx,
+                shayari,
+                maxTextWidth
+            );
+    }
 
 
-    const contentAreaTop =
-        boxY +
-        35 +
-        titleSpace +
-        30;
+    /*
+     * Text line height.
+     */
 
-
-    const contentAreaBottom =
-        boxY +
-        boxHeight -
-        35;
-
-
-    const contentAreaHeight =
-        contentAreaBottom -
-        contentAreaTop;
+    const lineHeight =
+        Math.round(
+            fontSize * 1.55
+        );
 
 
     const totalTextHeight =
@@ -1134,41 +1502,80 @@ async ({
         lineHeight;
 
 
+    /*
+     * Center Shayari inside box.
+     */
+
+    const contentCenterY =
+        boxY +
+        boxHeight / 2;
+
+
     let textY =
-        contentAreaTop +
-        (
-            contentAreaHeight -
-            totalTextHeight
-        ) / 2;
+        contentCenterY -
+        totalTextHeight / 2 +
+        lineHeight / 2;
 
 
     /*
-    |--------------------------------------------------------------------------
-    | Prevent Text From Going Outside Box
-    |--------------------------------------------------------------------------
-    */
+     * Text style.
+     */
 
-    if (
-        textY <
-        contentAreaTop
-    ) {
+    ctx.textAlign =
+        "center";
 
-        textY =
-            contentAreaTop;
+    ctx.textBaseline =
+        "middle";
 
-    }
+    ctx.font =
+        `${fontSize}px "SMSNotoDevanagari"`;
+
+
+    ctx.fillStyle =
+        "#ffffff";
+
+
+    ctx.strokeStyle =
+        "rgba(0,0,0,0.72)";
+
+
+    ctx.lineWidth =
+        Math.max(
+            1.5,
+            fontSize * 0.035
+        );
+
+
+    ctx.shadowColor =
+        "rgba(0,0,0,0.55)";
+
+    ctx.shadowBlur =
+        3;
+
+    ctx.shadowOffsetX =
+        1;
+
+    ctx.shadowOffsetY =
+        1;
 
 
     /*
-    |--------------------------------------------------------------------------
-    | Draw Shayari
-    |--------------------------------------------------------------------------
-    */
+     * ONLY SHAYARI.
+     *
+     * No title.
+     */
 
     for (
         const line
         of lines
     ) {
+
+        ctx.strokeText(
+            line,
+            width / 2,
+            textY
+        );
+
 
         ctx.fillText(
             line,
@@ -1179,91 +1586,86 @@ async ({
 
         textY +=
             lineHeight;
-
     }
 
 
     /*
-    |--------------------------------------------------------------------------
-    | Reset Shadow
-    |--------------------------------------------------------------------------
-    */
+     * Reset shadow.
+     */
 
     ctx.shadowColor =
         "transparent";
 
-
     ctx.shadowBlur =
         0;
 
-
     ctx.shadowOffsetX =
         0;
-
 
     ctx.shadowOffsetY =
         0;
 
 
     /*
-    |--------------------------------------------------------------------------
-    | Website Watermark
-    |--------------------------------------------------------------------------
-    */
+     * Watermark.
+     */
+
+    const watermarkText =
+        String(
+            watermark ||
+            "SMS Hindi Shayari"
+        );
+
+
+    const watermarkSize =
+        Math.max(
+            18,
+            Math.floor(
+                width * 0.023
+            )
+        );
+
 
     ctx.textAlign =
-        "right";
-
+        "center";
 
     ctx.textBaseline =
         "bottom";
 
 
-    const watermarkFontSize =
-        Math.max(
-            18,
-            Math.floor(
-                width * 0.025
-            )
-        );
-
-
     ctx.font =
-        `bold ${watermarkFontSize}px Arial, sans-serif`;
+        `bold ${watermarkSize}px Arial, sans-serif`;
 
 
     ctx.fillStyle =
         "rgba(255,255,255,0.90)";
 
 
-    ctx.shadowColor =
-        "rgba(0,0,0,0.70)";
+    ctx.strokeStyle =
+        "rgba(0,0,0,0.55)";
 
 
-    ctx.shadowBlur =
-        3;
-
-
-    ctx.shadowOffsetX =
+    ctx.lineWidth =
         1;
 
 
-    ctx.shadowOffsetY =
-        1;
+    ctx.strokeText(
+        watermarkText,
+        width / 2,
+        height - 25
+    );
 
 
     ctx.fillText(
-        watermark,
-        width - 30,
+        watermarkText,
+        width / 2,
         height - 25
     );
 
 
     /*
-    |--------------------------------------------------------------------------
-    | Final PNG
-    |--------------------------------------------------------------------------
-    */
+     * PNG.
+     */
 
     const output =
         canvas.toBuffer(
@@ -1271,11 +1673,120 @@ async ({
         );
 
 
+    if (
+        !output ||
+        output.length < 100
+    ) {
+
+        throw new Error(
+            "Generated PNG is empty."
+        );
+    }
+
+
     console.log(
-        "✅ Shayari image generated successfully."
+        "✅ Shayari PNG generated successfully."
     );
 
 
     return output;
-
 };
+
+
+/*
+|--------------------------------------------------------------------------
+| ADMIN GENERATE FUNCTION
+|--------------------------------------------------------------------------
+|
+| Existing shayariController.js calls:
+|
+| imageService.generate({
+|     title,
+|     text,
+|     background
+| })
+|
+| Keep this API working.
+|--------------------------------------------------------------------------
+*/
+
+exports.generate =
+async ({
+    title,
+    text,
+    background
+}) => {
+
+    const output =
+        await exports.generateShayariImage({
+
+            backgroundUrl:
+                background,
+
+            title,
+
+            content:
+                text,
+
+            watermark:
+                "SMS Hindi Shayari"
+
+        });
+
+
+    const filename =
+        `shayari-${Date.now()}-${Math.random()
+            .toString(36)
+            .slice(2, 8)}.png`;
+
+
+    const outputPath =
+        path.join(
+            GENERATED_DIR,
+            filename
+        );
+
+
+    fs.writeFileSync(
+        outputPath,
+        output
+    );
+
+
+    return {
+
+        success:
+            true,
+
+        path:
+            outputPath,
+
+        filePath:
+            outputPath,
+
+        filename,
+
+        url:
+            `/uploads/generated/${filename}`
+
+    };
+};
+
+
+/*
+|--------------------------------------------------------------------------
+| Export helper functions
+|--------------------------------------------------------------------------
+*/
+
+exports.cleanShayari =
+    cleanShayari;
+
+exports.wrapText =
+    wrapText;
+
+exports.ensureDevanagariFonts =
+    ensureDevanagariFonts;
+
+exports.findExistingHindiFont =
+    findExistingHindiFont;
