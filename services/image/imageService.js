@@ -1230,339 +1230,11 @@ async function loadBackground(
 |--------------------------------------------------------------------------
 */
 
-exports.generateShayariImage =
-async ({
-    backgroundUrl,
-    title,
-    content,
-    watermark = "SMS Hindi Shayari"
-}) => {
 
-    /*
-     * title is intentionally ignored.
-     *
-     * It is kept in the function signature because
-     * the existing controller sends it.
-     */
-
-    void title;
-
-
-    /*
-     * Font must be ready BEFORE canvas creation.
-     */
-
-    await ensureDevanagariFonts();
-
-
-    if (
-        !DEVANAGARI_FONT_FILE
-    ) {
-
-        throw new Error(
-            "Hindi font unavailable."
-        );
-    }
-
-
-    /*
-     * Shayari content only.
-     */
-
-    const shayari =
-        cleanShayari(
-            content
-        );
-
-
-    if (!shayari) {
-
-        throw new Error(
-            "Shayari content is empty."
-        );
-    }
-
-
-    /*
-     * Background.
-     */
-
-    const backgroundBuffer =
-        await loadBackground(
-            backgroundUrl
-        );
-
-
-    const background =
-        await loadImage(
-            backgroundBuffer
-        );
-
-
-    const width =
-        background.width;
-
-    const height =
-        background.height;
-
-
-    if (
-        !width ||
-        !height
-    ) {
-
-        throw new Error(
-            "Invalid background dimensions."
-        );
-    }
-
-
-    /*
-     * Canvas.
-     */
-
-    const canvas =
-        createCanvas(
-            width,
-            height
-        );
-
-
-    const ctx =
-        canvas.getContext(
-            "2d"
-        );
-
-
-    /*
-     * Background.
-     */
-
-    ctx.drawImage(
-        background,
-        0,
-        0,
-        width,
-        height
-    );
-
-
-    /*
-     * Slight dark overlay.
-     */
-
-    ctx.fillStyle =
-        "rgba(0,0,0,0.20)";
-
-    ctx.fillRect(
-        0,
-        0,
-        width,
-        height
-    );
-
-
-    /*
-     * Logo.
-     */
-
-    await drawLogo(
-        ctx,
-        width,
-        height
-    );
-
-
-    /*
-     * Shayari box.
-     */
-
-    const boxWidth =
-        width * 0.86;
-
-    const boxX =
-        (width - boxWidth) / 2;
-
-    const boxY =
-        height * 0.18;
-
-    const boxHeight =
-        height * 0.60;
-
-
-    /*
-     * Box background.
-     */
-
-    ctx.fillStyle =
-        "rgba(0,0,0,0.42)";
-
-
-    ctx.fillRect(
-        boxX,
-        boxY,
-        boxWidth,
-        boxHeight
-    );
-
-
-    /*
-     * Box border.
-     */
-
-    ctx.strokeStyle =
-        "rgba(255,255,255,0.48)";
-
-    ctx.lineWidth =
-        Math.max(
-            2,
-            Math.round(
-                width * 0.002
-            )
-        );
-
-
-    ctx.strokeRect(
-        boxX,
-        boxY,
-        boxWidth,
-        boxHeight
-    );
-
-
-    /*
-     * Shayari font.
-     */
-
-    let fontSize =
-        Math.max(
-            30,
-            Math.floor(
-                width * 0.040
-            )
-        );
-
-
-    const maxTextWidth =
-        boxWidth - 90;
-
-
-    /*
-     * Text wrapping.
-     */
-
-    ctx.font =
-        `${fontSize}px "SMSNotoDevanagari"`;
-
-
-    let lines =
-        wrapText(
-            ctx,
-            shayari,
-            maxTextWidth
-        );
-
-
-    /*
-     * If too many lines,
-     * reduce font size.
-     */
-
-    while (
-        lines.length > 10 &&
-        fontSize > 28
-    ) {
-
-        fontSize -= 2;
-
-        ctx.font =
-            `${fontSize}px "SMSNotoDevanagari"`;
-
-        lines =
-            wrapText(
-                ctx,
-                shayari,
-                maxTextWidth
-            );
-    }
-
-
-    /*
-     * Text line height.
-     */
-
-    const lineHeight =
-        Math.round(
-            fontSize * 1.55
-        );
-
-
-    const totalTextHeight =
-        lines.length *
-        lineHeight;
-
-
-    /*
-     * Center Shayari inside box.
-     */
-
-    const contentCenterY =
-        boxY +
-        boxHeight / 2;
-
-
-    let textY =
-        contentCenterY -
-        totalTextHeight / 2 +
-        lineHeight / 2;
-
-
-    /*
-     * Text style.
-     */
-
-    ctx.textAlign =
-        "center";
-
-    ctx.textBaseline =
-        "middle";
-
-    ctx.font =
-        `${fontSize}px "SMSNotoDevanagari"`;
-
-
-    ctx.fillStyle =
-        "#ffffff";
-
-
-    ctx.strokeStyle =
-        "rgba(0,0,0,0.72)";
-
-
-    ctx.lineWidth =
-        Math.max(
-            1.5,
-            fontSize * 0.035
-        );
-
-
-    ctx.shadowColor =
-        "rgba(0,0,0,0.55)";
-
-    ctx.shadowBlur =
-        3;
-
-    ctx.shadowOffsetX =
-        1;
-
-    ctx.shadowOffsetY =
-        1;
-
-
-    /*
-     * ONLY SHAYARI.
-     *
-     * No title.
+        
+    
+        
+    
      */
 
     for (
@@ -1635,63 +1307,339 @@ async ({
 
     ctx.font =
         `bold ${watermarkSize}px Arial, sans-serif`;
+exports.generateShayariImage = async ({
+    backgroundUrl,
+    title,
+    content,
+    watermark = "SMS Hindi Shayari"
+}) => {
 
+    // Title intentionally ignored.
+    void title;
+    void watermark;
+
+    await ensureDevanagariFonts();
+
+    if (!DEVANAGARI_FONT_FILE) {
+        throw new Error("Hindi font unavailable.");
+    }
+
+    const shayari = cleanShayari(content);
+
+    if (!shayari) {
+        throw new Error("Shayari content is empty.");
+    }
+
+    // ------------------------------------------------------
+    // LOAD BACKGROUND
+    // ------------------------------------------------------
+
+    const backgroundBuffer =
+        await loadBackground(backgroundUrl);
+
+    const background =
+        await loadImage(backgroundBuffer);
+
+    const width = background.width;
+    const height = background.height;
+
+    if (!width || !height) {
+        throw new Error("Invalid background dimensions.");
+    }
+
+    // ------------------------------------------------------
+    // CANVAS
+    // ------------------------------------------------------
+
+    const canvas =
+        createCanvas(width, height);
+
+    const ctx =
+        canvas.getContext("2d");
+
+    ctx.drawImage(
+        background,
+        0,
+        0,
+        width,
+        height
+    );
+
+    // ------------------------------------------------------
+    // DARK OVERLAY
+    // ------------------------------------------------------
 
     ctx.fillStyle =
-        "rgba(255,255,255,0.90)";
+        "rgba(0,0,0,0.18)";
 
+    ctx.fillRect(
+        0,
+        0,
+        width,
+        height
+    );
 
+    // ------------------------------------------------------
+    // LOGO = ONLY WATERMARK
+    // LEFT TOP
+    // ------------------------------------------------------
+
+    await drawLogo(
+        ctx,
+        width,
+        height
+    );
+
+    // ------------------------------------------------------
+    // SHAYARI BOX
+    // ------------------------------------------------------
+
+    const boxWidth =
+        width * 0.86;
+
+    const boxHeight =
+        height * 0.62;
+
+    const boxX =
+        (width - boxWidth) / 2;
+
+    const boxY =
+        (height - boxHeight) / 2;
+
+    // Box background
+    ctx.fillStyle =
+        "rgba(0,0,0,0.38)";
+
+    ctx.fillRect(
+        boxX,
+        boxY,
+        boxWidth,
+        boxHeight
+    );
+
+    // Box border
     ctx.strokeStyle =
-        "rgba(0,0,0,0.55)";
-
+        "rgba(255,255,255,0.45)";
 
     ctx.lineWidth =
-        1;
-
-
-    ctx.strokeText(
-        watermarkText,
-        width / 2,
-        height - 25
-    );
-
-
-    ctx.fillText(
-        watermarkText,
-        width / 2,
-        height - 25
-    );
-
-
-    /*
-     * PNG.
-     */
-
-    const output =
-        canvas.toBuffer(
-            "image/png"
+        Math.max(
+            2,
+            Math.round(width * 0.002)
         );
 
+    ctx.strokeRect(
+        boxX,
+        boxY,
+        boxWidth,
+        boxHeight
+    );
+
+    // ------------------------------------------------------
+    // TEXT AREA
+    // ------------------------------------------------------
+
+    const paddingX =
+        Math.max(
+            50,
+            width * 0.055
+        );
+
+    const paddingY =
+        Math.max(
+            45,
+            height * 0.045
+        );
+
+    const maxTextWidth =
+        boxWidth -
+        paddingX * 2;
+
+    const maxTextHeight =
+        boxHeight -
+        paddingY * 2;
+
+    // ------------------------------------------------------
+    // START FONT SIZE
+    // ------------------------------------------------------
+
+    let fontSize =
+        Math.floor(
+            Math.min(
+                width * 0.047,
+                height * 0.075
+            )
+        );
+
+    fontSize =
+        Math.max(
+            fontSize,
+            28
+        );
+
+    let lines = [];
+
+    let lineHeight = 0;
+
+    // ------------------------------------------------------
+    // AUTO FIT TEXT
+    // ------------------------------------------------------
+
+    while (fontSize >= 24) {
+
+        ctx.font =
+            `${fontSize}px "SMSNotoDevanagari"`;
+
+        lines =
+            wrapText(
+                ctx,
+                shayari,
+                maxTextWidth
+            );
+
+        lineHeight =
+            Math.round(
+                fontSize * 1.45
+            );
+
+        const totalHeight =
+            lines.length *
+            lineHeight;
+
+        if (
+            totalHeight <=
+            maxTextHeight
+        ) {
+            break;
+        }
+
+        fontSize -= 2;
+    }
+
+    // ------------------------------------------------------
+    // FINAL SAFETY
+    // ------------------------------------------------------
+
+    ctx.font =
+        `${fontSize}px "SMSNotoDevanagari"`;
+
+    lines =
+        wrapText(
+            ctx,
+            shayari,
+            maxTextWidth
+        );
+
+    lineHeight =
+        Math.round(
+            fontSize * 1.45
+        );
+
+    // ------------------------------------------------------
+    // VERTICAL CENTER
+    // ------------------------------------------------------
+
+    const totalTextHeight =
+        lines.length *
+        lineHeight;
+
+    let textY =
+        boxY +
+        (
+            boxHeight -
+            totalTextHeight
+        ) / 2 +
+        lineHeight / 2;
+
+    // ------------------------------------------------------
+    // TEXT STYLE
+    // ------------------------------------------------------
+
+    ctx.textAlign =
+        "center";
+
+    ctx.textBaseline =
+        "middle";
+
+    ctx.font =
+        `${fontSize}px "SMSNotoDevanagari"`;
+
+    ctx.fillStyle =
+        "#ffffff";
+
+    ctx.strokeStyle =
+        "rgba(0,0,0,0.70)";
+
+    ctx.lineWidth =
+        Math.max(
+            1.5,
+            fontSize * 0.025
+        );
+
+    ctx.shadowColor =
+        "rgba(0,0,0,0.45)";
+
+    ctx.shadowBlur =
+        2;
+
+    ctx.shadowOffsetX =
+        1;
+
+    ctx.shadowOffsetY =
+        1;
+
+    // ------------------------------------------------------
+    // ONLY SHAYARI
+    // NO TITLE
+    // NO WATERMARK TEXT
+    // ------------------------------------------------------
+
+    for (const line of lines) {
+
+        ctx.strokeText(
+            line,
+            width / 2,
+            textY
+        );
+
+        ctx.fillText(
+            line,
+            width / 2,
+            textY
+        );
+
+        textY +=
+            lineHeight;
+    }
+
+    // ------------------------------------------------------
+    // RESET
+    // ------------------------------------------------------
+
+    ctx.shadowColor =
+        "transparent";
+
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+
+    // ------------------------------------------------------
+    // PNG OUTPUT
+    // ------------------------------------------------------
+
+    const output =
+        canvas.toBuffer("image/png");
 
     if (
         !output ||
         output.length < 100
     ) {
-
         throw new Error(
-            "Generated PNG is empty."
+            "Generated image is empty."
         );
     }
 
-
-    console.log(
-        "✅ Shayari PNG generated successfully."
-    );
-
-
     return output;
 };
-
 
 /*
 |--------------------------------------------------------------------------
