@@ -11,13 +11,10 @@ const admin = require("../middleware/admin");
 | Public Routes
 |--------------------------------------------------------------------------
 */
-
-// Add Comment
 router.post(
     "/",
     commentController.create
 );
-
 // Get Comments By Shayari
 router.get(
     "/shayari/:id",
