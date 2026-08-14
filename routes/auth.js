@@ -1,199 +1,205 @@
 const express = require("express");
 const router = express.Router();
 
-const auth = require("../middleware/auth");
-const admin = require("../middleware/admin");
-
-const dashboardController =
-    require("../controllers/admin/dashboardController");
-
-const analyticsController =
-    require("../controllers/analytics/analyticsController");
-
-const settingsController =
-    require("../controllers/settings/settingsController");
+const authController =
+    require("../controllers/auth/authController");
 
 
 // ==========================================================
-// ADMIN ROOT
-// GET /admin
+// ADMIN LOGIN PAGE
+// GET /auth/admin-login
 // ==========================================================
-router.get("/admin-login", (req, res) => {
-    res.render("auth/admin-login", {
-        title: "Admin Login",
-        error: null,
-        success: null,
-        csrfToken: req.csrfToken()
-    });
-});
+
 router.get(
-    "/",
-    auth,
-    admin(),
+    "/admin-login",
     (req, res) => {
-        return res.redirect("/admin/dashboard");
+
+        return res.render(
+            "auth/admin-login",
+            {
+                title: "Admin Login - SMS Hindi Shayari",
+                error_msg: null,
+                success_msg: null,
+                csrfToken: req.csrfToken()
+            }
+        );
+
     }
 );
 
 
 // ==========================================================
-// ADMIN DASHBOARD
-// GET /admin/dashboard
+// ADMIN LOGIN
+// POST /auth/admin-login
 // ==========================================================
-
-router.get(
-    "/dashboard",
-    auth,
-    admin(),
-    dashboardController.dashboard
-);
-
-
-// ==========================================================
-// ANALYTICS
-// ==========================================================
-
-router.get(
-    "/analytics",
-    auth,
-    admin(),
-    analyticsController.dashboard
-);
-
-router.get(
-    "/analytics/daily",
-    auth,
-    admin(),
-    analyticsController.dailyVisitors
-);
-
-router.get(
-    "/analytics/monthly",
-    auth,
-    admin(),
-    analyticsController.monthlyVisitors
-);
-
-router.get(
-    "/analytics/top-shayari",
-    auth,
-    admin(),
-    analyticsController.topShayari
-);
-
-router.get(
-    "/analytics/top-category",
-    auth,
-    admin(),
-    analyticsController.topCategories
-);
-
-router.get(
-    "/analytics/downloads",
-    auth,
-    admin(),
-    analyticsController.downloadReport
-);
-
-router.get(
-    "/analytics/devices",
-    auth,
-    admin(),
-    analyticsController.deviceStatistics
-);
-
-router.get(
-    "/analytics/browser",
-    auth,
-    admin(),
-    analyticsController.browserStatistics
-);
-
-router.get(
-    "/analytics/country",
-    auth,
-    admin(),
-    analyticsController.countryStatistics
-);
-
-router.get(
-    "/analytics/graph",
-    auth,
-    admin(),
-    analyticsController.graph
-);
-
-
-// ==========================================================
-// WEBSITE SETTINGS
-// ==========================================================
-
-router.get(
-    "/settings",
-    auth,
-    admin(),
-    settingsController.index
-);
 
 router.post(
-    "/settings/general",
-    auth,
-    admin(),
-    settingsController.updateGeneral
-);
-
-router.put(
-    "/settings/seo",
-    auth,
-    admin(),
-    settingsController.updateSeo
-);
-
-router.put(
-    "/settings/adsense",
-    auth,
-    admin(),
-    settingsController.updateAdsense
-);
-
-router.put(
-    "/settings/github",
-    auth,
-    admin(),
-    settingsController.updateGithub
-);
-
-router.put(
-    "/settings/ai",
-    auth,
-    admin(),
-    settingsController.updateAI
-);
-
-router.put(
-    "/settings/maintenance",
-    auth,
-    admin(),
-    settingsController.toggleMaintenance
+    "/admin-login",
+    authController.login
 );
 
 
 // ==========================================================
-// BACKUP / RESTORE
+// USER LOGIN PAGE
+// GET /auth/login
 // ==========================================================
 
 router.get(
-    "/backup",
-    auth,
-    admin(),
-    settingsController.backup
+    "/login",
+    (req, res) => {
+
+        if (req.user) {
+            return res.redirect("/");
+        }
+
+        return res.render(
+            "auth/login",
+            {
+                title: "Login",
+                activePage: "login",
+                redirect:
+                    req.query.redirect || ""
+            }
+        );
+
+    }
 );
 
+
+// ==========================================================
+// USER REGISTER PAGE
+// GET /auth/register
+// ==========================================================
+
+router.get(
+    "/register",
+    (req, res) => {
+
+        if (req.user) {
+            return res.redirect("/");
+        }
+
+        return res.render(
+            "auth/register",
+            {
+                title: "Register",
+                activePage: "register"
+            }
+        );
+
+    }
+);
+
+
+// ==========================================================
+// ADMIN PROFILE
+// GET /auth/profile
+// ==========================================================
+
+router.get(
+    "/profile",
+    async (req, res, next) => {
+
+        try {
+
+            if (!req.user) {
+                return res.redirect(
+                    "/auth/admin-login"
+                );
+            }
+
+            return authController.profile(
+                req,
+                res,
+                next
+            );
+
+        } catch (error) {
+
+            return next(error);
+
+        }
+
+    }
+);
+
+
+// ==========================================================
+// LOGOUT
+// GET /auth/logout
+// ==========================================================
+
+router.get(
+    "/logout",
+    (req, res, next) => {
+
+        if (!req.logout) {
+            return res.redirect("/");
+        }
+
+        req.logout((error) => {
+
+            if (error) {
+                return next(error);
+            }
+
+            if (req.session) {
+
+                req.session.destroy(
+                    () => {
+                        return res.redirect("/");
+                    }
+                );
+
+            } else {
+
+                return res.redirect("/");
+
+            }
+
+        });
+
+    }
+);
+
+
+// ==========================================================
+// FORGOT PASSWORD
+// ==========================================================
+
 router.post(
-    "/restore",
-    auth,
-    admin(),
-    settingsController.restore
+    "/forgot-password",
+    authController.forgotPassword
+);
+
+
+// ==========================================================
+// RESET PASSWORD
+// ==========================================================
+
+router.post(
+    "/reset-password",
+    authController.resetPassword
+);
+
+
+// ==========================================================
+// REFRESH TOKEN
+// ==========================================================
+
+router.post(
+    "/refresh-token",
+    authController.refreshToken
+);
+
+
+// ==========================================================
+// CHANGE PASSWORD
+// ==========================================================
+
+router.post(
+    "/change-password",
+    authController.changePassword
 );
 
 
