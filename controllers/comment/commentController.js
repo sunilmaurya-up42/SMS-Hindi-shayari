@@ -1,6 +1,5 @@
 const Comment = require("../../models/Comment");
 const Shayari = require("../../models/Shayari");
-
 /**
  * Add Comment
  */
@@ -8,41 +7,140 @@ exports.create = async (req, res) => {
 
     try {
 
-        const shayari = await Shayari.findById(req.body.shayari);
+        const shayariId =
+            (req.body.shayari || "").trim();
+
+        const name =
+            (req.body.name || "").trim();
+
+        const email =
+            (req.body.email || "").trim();
+
+        const message =
+            (req.body.comment || req.body.message || "").trim();
+
+
+        // --------------------------------------------------
+        // VALIDATION
+        // --------------------------------------------------
+
+        if (!shayariId) {
+
+            return res.status(400).json({
+                success: false,
+                message: "Shayari ID is required."
+            });
+
+        }
+
+        if (!name) {
+
+            return res.status(400).json({
+                success: false,
+                message: "Name is required."
+            });
+
+        }
+
+        if (!message) {
+
+            return res.status(400).json({
+                success: false,
+                message: "Comment is required."
+            });
+
+        }
+
+
+        // --------------------------------------------------
+        // CHECK SHAYARI
+        // --------------------------------------------------
+
+        const shayari =
+            await Shayari.findById(shayariId);
 
         if (!shayari) {
+
             return res.status(404).json({
                 success: false,
                 message: "Shayari not found."
             });
+
         }
 
-        const comment = await Comment.create({
-            shayari: req.body.shayari,
-            name: req.body.name,
-            email: req.body.email,
-            comment: req.body.comment
-        });
+
+        // --------------------------------------------------
+        // CREATE COMMENT
+        // --------------------------------------------------
+
+        const comment =
+            await Comment.create({
+
+                shayari:
+                    shayari._id,
+
+                name:
+                    name,
+
+                email:
+                    email,
+
+                message:
+                    message,
+
+                ipAddress:
+                    req.ip || "",
+
+                userAgent:
+                    req.get("user-agent") || "",
+
+                isApproved:
+                    false,
+
+                isSpam:
+                    false,
+
+                isDeleted:
+                    false
+
+            });
+
+
+        // --------------------------------------------------
+        // SUCCESS
+        // --------------------------------------------------
 
         return res.status(201).json({
+
             success: true,
-            message: "Comment submitted successfully.",
-            data: comment
+
+            message:
+                "Comment submitted successfully.",
+
+            data:
+                comment
+
         });
 
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            "❌ Create Comment Error:",
+            error
+        );
 
         return res.status(500).json({
+
             success: false,
-            message: "Internal Server Error"
+
+            message:
+                "Internal Server Error"
+
         });
 
     }
 
 };
-
 /**
  * Get Comments By Shayari
  */
