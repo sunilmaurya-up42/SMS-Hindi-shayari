@@ -1071,7 +1071,6 @@ function findLogo() {
 | Draw Logo
 |--------------------------------------------------------------------------
 */
-
 async function drawLogo(
     ctx,
     width,
@@ -1080,7 +1079,6 @@ async function drawLogo(
 
     const logoPath =
         findLogo();
-
 
     if (!logoPath) {
 
@@ -1091,7 +1089,6 @@ async function drawLogo(
         return;
     }
 
-
     try {
 
         const logo =
@@ -1099,23 +1096,17 @@ async function drawLogo(
                 logoPath
             );
 
-
-        /*
-         * Top-left logo.
-         */
-
         const maxWidth =
             Math.min(
-                width * 0.16,
-                180
+                width * 0.14,
+                150
             );
 
         const maxHeight =
             Math.min(
-                height * 0.12,
-                120
+                height * 0.09,
+                90
             );
-
 
         const ratio =
             Math.min(
@@ -1123,22 +1114,20 @@ async function drawLogo(
                 maxHeight / logo.height
             );
 
-
         const logoWidth =
             logo.width * ratio;
 
         const logoHeight =
             logo.height * ratio;
 
-
+        // LEFT-TOP WATERMARK
         ctx.drawImage(
             logo,
-            35,
-            35,
+            30,
+            30,
             logoWidth,
             logoHeight
         );
-
 
     } catch (error) {
 
@@ -1148,8 +1137,6 @@ async function drawLogo(
         );
     }
 }
-
-
 /*
 |--------------------------------------------------------------------------
 | Download Background
