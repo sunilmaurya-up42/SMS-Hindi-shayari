@@ -18,7 +18,14 @@ const settingsController =
 // ADMIN ROOT
 // GET /admin
 // ==========================================================
-
+router.get("/admin-login", (req, res) => {
+    res.render("auth/admin-login", {
+        title: "Admin Login",
+        error: null,
+        success: null,
+        csrfToken: req.csrfToken()
+    });
+});
 router.get(
     "/",
     auth,
