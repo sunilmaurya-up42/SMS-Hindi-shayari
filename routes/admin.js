@@ -128,29 +128,47 @@ router.get(
 */
 
 router.get(
-    "/settings",
+    ["/shayari", "/shayari/new"],
     auth,
     admin(),
-    (req, res, next) => {
+    async (req, res, next) => {
 
         try {
 
-            return res.render("admin/settings", {
-                title: "Settings - Admin",
-                activePage: "settings",
-                user: req.user
-            });
+            const Category =
+                require("../models/Category");
+
+            const categories =
+                await Category.find({
+                    isActive: true
+                })
+                .sort({
+                    sortOrder: 1,
+                    name: 1
+                })
+                .lean();
+
+            return res.render(
+                "admin/shayari-new",
+                {
+                    title: "Add Shayari - Admin",
+                    activePage: "shayari",
+                    activeMenu: "shayari",
+                    user: req.user,
+                    categories,
+                    layout: "layouts/admin"
+                }
+            );
 
         } catch (error) {
 
             console.error(
-                "❌ Admin Settings Page Error:",
+                "❌ Add Shayari Page Error:",
                 error
             );
 
             return next(error);
         }
-
     }
 );
 
