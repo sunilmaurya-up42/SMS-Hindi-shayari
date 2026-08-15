@@ -174,126 +174,132 @@
                     </div>
 
                 </div>
+<!-- ==========================================================
+     COMMENTS
+========================================================== -->
 
-                <!-- Comments -->
+<section class="comments-section" id="comments">
 
-                <div class="card shadow-sm mt-4">
+    <div class="comments-header">
+        <h3>Comments</h3>
+    </div>
 
-                    <div class="card-header">
+    <!-- Comment Form -->
+    <div class="comment-form">
 
-                        <h4 class="mb-0">
+        <form
+            action="/comments"
+            method="POST">
 
-                            Comments
+            <!-- CSRF -->
+            <input
+                type="hidden"
+                name="_csrf"
+                value="<%= csrfToken %>">
 
-                        </h4>
+            <!-- Shayari ID -->
+            <input
+                type="hidden"
+                name="shayari"
+                value="<%= shayari._id %>">
 
+            <!-- Name -->
+            <div class="mb-3">
+                <label for="commentName">
+                    Name
+                </label>
+
+                <input
+                    type="text"
+                    id="commentName"
+                    name="name"
+                    class="form-control"
+                    placeholder="Enter your name"
+                    value=""
+                    required>
+            </div>
+
+            <!-- Email -->
+            <div class="mb-3">
+                <label for="commentEmail">
+                    Email
+                </label>
+
+                <input
+                    type="email"
+                    id="commentEmail"
+                    name="email"
+                    class="form-control"
+                    placeholder="Enter your email"
+                    value="">
+            </div>
+
+            <!-- Comment -->
+            <div class="mb-3">
+                <label for="commentMessage">
+                    Comment
+                </label>
+
+                <textarea
+                    id="commentMessage"
+                    name="comment"
+                    class="form-control"
+                    rows="4"
+                    placeholder="Write your comment..."
+                    required></textarea>
+            </div>
+
+            <button
+                type="submit"
+                class="btn btn-primary">
+                Post Comment
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <!-- Existing Comments -->
+    <div class="comments-list">
+
+        <% if (comments && comments.length > 0) { %>
+
+            <% comments.forEach(function(comment) { %>
+
+                <div class="comment-item">
+
+                    <div class="comment-author">
+                        <strong>
+                            <%= comment.name %>
+                        </strong>
                     </div>
 
-                    <div class="card-body">
-
-                        <% if(user){ %>
-
-                            <form
-    action="/comments"
-    method="POST">
-
-    <!-- CSRF TOKEN -->
-    <input
-        type="hidden"
-        name="_csrf"
-        value="<%= csrfToken %>">
-
-    <!-- SHAYARI ID -->
-    <input
-        type="hidden"
-        name="shayari"
-        value="<%= shayari._id %>">
-
-    <!-- USER NAME -->
-    <input
-        type="hidden"
-        name="name"
-        value="<%= user.name || "" %>">
-
-    <!-- USER EMAIL -->
-    <input
-        type="hidden"
-        name="email"
-        value="<%= user.email || "" %>">
-
-    <textarea
-        class="form-control mb-3"
-        name="comment"
-        rows="4"
-        placeholder="Write your comment..."
-        required></textarea>
-
-    <button
-        type="submit"
-        class="btn btn-primary">
-
-        Post Comment
-
-    </button>
-
-</form>
-
-                        <% } else { %>
-
-                            <div class="alert alert-info">
-
-                                Please login to comment.
-
-                            </div>
-
-                        <% } %>
-
-                        <hr>
-
-                        <% if(comments && comments.length){ %>
-
-                            <% comments.forEach(comment=>{ %>
-
-                                <div class="border rounded p-3 mb-3">
-
-                                    <strong>
-
-                                        <%= comment.user.name %>
-
-                                    </strong>
-
-                                    <small class="text-muted ms-2">
-
-                                        <%= new Date(comment.createdAt).toLocaleString() %>
-
-                                    </small>
-
-                                    <p class="mt-2 mb-0">
-
-                                        <%= comment.message %>
-
-                                    </p>
-
-                                </div>
-
-                            <% }) %>
-
-                        <% } else { %>
-
-                            <p class="text-muted">
-
-                                No comments yet.
-
-                            </p>
-
-                        <% } %>
-
+                    <div class="comment-message">
+                        <%= comment.message %>
                     </div>
+
+                    <% if (comment.createdAt) { %>
+                        <div class="comment-date">
+                            <%= new Date(comment.createdAt).toLocaleDateString("en-IN") %>
+                        </div>
+                    <% } %>
 
                 </div>
 
-            </div>
+            <% }); %>
 
+        <% } else { %>
+
+            <p class="no-comments">
+                No comments yet. Be the first to comment.
+            </p>
+
+        <% } %>
+
+    </div>
+
+</section>
             <!-- Sidebar -->
 
             <div class="col-lg-4">
