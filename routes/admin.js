@@ -1874,4 +1874,128 @@ router.post(
 
     }
 );
+/*
+|--------------------------------------------------------------------------
+| COMMENTS MANAGEMENT
+|--------------------------------------------------------------------------
+| GET /admin/comments
+|--------------------------------------------------------------------------
+*/
+
+router.get(
+    "/comments",
+    auth,
+    admin(),
+    async (req, res, next) => {
+
+        try {
+
+            const Comment =
+                require("../models/Comment");
+
+            const page =
+                Math.max(
+                    parseInt(req.query.page) || 1,
+                    1
+                );
+
+            const limit = 20;
+
+            const skip =
+                (page - 1) * limit;
+
+            const query =
+                (req.query.q || "").trim();
+
+            const status =
+                (req.query.status || "").trim();
+
+            const filter = {
+                isDeleted: false
+            };
+
+            if (status === "approved") {
+                filter.isApproved = true;
+            }
+
+            if (status === "pending") {
+                filter.isApproved = false;
+            }
+
+            if (query) {
+
+                filter.$or = [
+                    {
+                        name: {
+                            $regex: query,
+                            $options: "i"
+                        }
+                    },
+                    {
+                        email: {
+                            $regex: query,
+                            $options: "i"
+                        }
+                    },
+                    {
+                        message: {
+                            $regex: query,
+                            $options: "i"
+                        }
+                    }
+                ];
+
+            }
+
+            const total =
+                await Comment.countDocuments(filter);
+
+            const comments =
+                await Comment.find(filter)
+                    .populate(
+                        "shayari",
+                        "title slug"
+                    )
+                    .sort({
+                        createdAt: -1
+                    })
+                    .skip(skip)
+                    .limit(limit)
+                    .lean();
+
+            const totalPages =
+                Math.ceil(total / limit);
+
+            return res.render(
+                "admin/comments",
+                {
+                    title: "Comments - Admin",
+                    activePage: "comments",
+                    activeMenu: "comments",
+                    user: req.user,
+                    comments,
+                    query,
+                    status,
+                    pagination: {
+                        page,
+                        limit,
+                        total,
+                        totalPages
+                    },
+                    csrfToken: req.csrfToken(),
+                    layout: "layouts/admin"
+                }
+            );
+
+        } catch (error) {
+
+            console.error(
+                "❌ Admin Comments Error:",
+                error
+            );
+
+            return next(error);
+        }
+    }
+);
 module.exports = router;
