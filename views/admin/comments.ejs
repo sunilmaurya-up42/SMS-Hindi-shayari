@@ -332,16 +332,15 @@
 
                                                     <li>
 
-                                                        <form
-                                                            action="/admin/comments/<%= comment._id %>/approve"
-                                                            method="POST">
-
+                                                        <form 
+                                                            method="POST"
+                                                            action="/admin/comments/<%= comment._id %>/approve">
                                                             <input
                                                                 type="hidden"
                                                                 name="_csrf"
                                                                 value="<%= csrfToken %>">
 
-                                                            <button class="dropdown-item">
+                                                            <button type="submit" class="dropdown-item">
 
                                                                 Approve
 
@@ -362,7 +361,7 @@
                                                                 name="_csrf"
                                                                 value="<%= csrfToken %>">
 
-                                                            <button class="dropdown-item">
+                                                            <button type="submit" class="dropdown-item">
 
                                                                 Reject
 
