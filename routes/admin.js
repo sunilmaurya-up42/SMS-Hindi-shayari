@@ -2001,12 +2001,12 @@ router.get(
 /*
 |--------------------------------------------------------------------------
 | COMMENT MANAGEMENT
-|--------------------------------------------------------------------------
+|------------------------------------------------------------------------
 */
-
 /*
 |--------------------------------------------------------------------------
 | APPROVE COMMENT
+|--------------------------------------------------------------------------
 | POST /admin/comments/:id/approve
 |--------------------------------------------------------------------------
 */
@@ -2023,15 +2023,8 @@ router.post(
                 require("../models/Comment");
 
             const comment =
-                await Comment.findByIdAndUpdate(
-                    req.params.id,
-                    {
-                        isApproved: true,
-                        isSpam: false
-                    },
-                    {
-                        new: true
-                    }
+                await Comment.findById(
+                    req.params.id
                 );
 
             if (!comment) {
@@ -2045,6 +2038,11 @@ router.post(
                     "/admin/comments"
                 );
             }
+
+            comment.isApproved = true;
+            comment.isSpam = false;
+
+            await comment.save();
 
             req.flash(
                 "success_msg",
@@ -2071,6 +2069,7 @@ router.post(
 /*
 |--------------------------------------------------------------------------
 | REJECT COMMENT
+|--------------------------------------------------------------------------
 | POST /admin/comments/:id/reject
 |--------------------------------------------------------------------------
 */
@@ -2087,15 +2086,8 @@ router.post(
                 require("../models/Comment");
 
             const comment =
-                await Comment.findByIdAndUpdate(
-                    req.params.id,
-                    {
-                        isApproved: false,
-                        isSpam: false
-                    },
-                    {
-                        new: true
-                    }
+                await Comment.findById(
+                    req.params.id
                 );
 
             if (!comment) {
@@ -2109,6 +2101,11 @@ router.post(
                     "/admin/comments"
                 );
             }
+
+            comment.isApproved = false;
+            comment.isSpam = false;
+
+            await comment.save();
 
             req.flash(
                 "success_msg",
@@ -2130,8 +2127,6 @@ router.post(
         }
     }
 );
-
-
 /*
 |--------------------------------------------------------------------------
 | DELETE COMMENT
