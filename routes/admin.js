@@ -1998,4 +1998,193 @@ router.get(
         }
     }
 );
+/*
+|--------------------------------------------------------------------------
+| COMMENT MANAGEMENT
+|--------------------------------------------------------------------------
+*/
+
+/*
+|--------------------------------------------------------------------------
+| APPROVE COMMENT
+| POST /admin/comments/:id/approve
+|--------------------------------------------------------------------------
+*/
+
+router.post(
+    "/comments/:id/approve",
+    auth,
+    admin(),
+    async (req, res, next) => {
+
+        try {
+
+            const Comment =
+                require("../models/Comment");
+
+            const comment =
+                await Comment.findByIdAndUpdate(
+                    req.params.id,
+                    {
+                        isApproved: true,
+                        isSpam: false
+                    },
+                    {
+                        new: true
+                    }
+                );
+
+            if (!comment) {
+
+                req.flash(
+                    "error_msg",
+                    "Comment not found."
+                );
+
+                return res.redirect(
+                    "/admin/comments"
+                );
+            }
+
+            req.flash(
+                "success_msg",
+                "Comment approved successfully."
+            );
+
+            return res.redirect(
+                "/admin/comments"
+            );
+
+        } catch (error) {
+
+            console.error(
+                "❌ Approve Comment Error:",
+                error
+            );
+
+            return next(error);
+        }
+    }
+);
+
+
+/*
+|--------------------------------------------------------------------------
+| REJECT COMMENT
+| POST /admin/comments/:id/reject
+|--------------------------------------------------------------------------
+*/
+
+router.post(
+    "/comments/:id/reject",
+    auth,
+    admin(),
+    async (req, res, next) => {
+
+        try {
+
+            const Comment =
+                require("../models/Comment");
+
+            const comment =
+                await Comment.findByIdAndUpdate(
+                    req.params.id,
+                    {
+                        isApproved: false,
+                        isSpam: false
+                    },
+                    {
+                        new: true
+                    }
+                );
+
+            if (!comment) {
+
+                req.flash(
+                    "error_msg",
+                    "Comment not found."
+                );
+
+                return res.redirect(
+                    "/admin/comments"
+                );
+            }
+
+            req.flash(
+                "success_msg",
+                "Comment rejected successfully."
+            );
+
+            return res.redirect(
+                "/admin/comments"
+            );
+
+        } catch (error) {
+
+            console.error(
+                "❌ Reject Comment Error:",
+                error
+            );
+
+            return next(error);
+        }
+    }
+);
+
+
+/*
+|--------------------------------------------------------------------------
+| DELETE COMMENT
+| POST /admin/comments/:id/delete
+|--------------------------------------------------------------------------
+*/
+
+router.post(
+    "/comments/:id/delete",
+    auth,
+    admin(),
+    async (req, res, next) => {
+
+        try {
+
+            const Comment =
+                require("../models/Comment");
+
+            const deleted =
+                await Comment.findByIdAndDelete(
+                    req.params.id
+                );
+
+            if (!deleted) {
+
+                req.flash(
+                    "error_msg",
+                    "Comment not found."
+                );
+
+                return res.redirect(
+                    "/admin/comments"
+                );
+            }
+
+            req.flash(
+                "success_msg",
+                "Comment deleted successfully."
+            );
+
+            return res.redirect(
+                "/admin/comments"
+            );
+
+        } catch (error) {
+
+            console.error(
+                "❌ Delete Comment Error:",
+                error
+            );
+
+            return next(error);
+        }
+    }
+);
 module.exports = router;
