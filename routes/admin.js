@@ -2005,7 +2005,7 @@ router.get(
 */
 /*
 |--------------------------------------------------------------------------
-| APPROVE COMMENT
+| ADMIN COMMENT - APPROVE
 |--------------------------------------------------------------------------
 | POST /admin/comments/:id/approve
 |--------------------------------------------------------------------------
@@ -2041,6 +2041,7 @@ router.post(
 
             comment.isApproved = true;
             comment.isSpam = false;
+            comment.isDeleted = false;
 
             await comment.save();
 
@@ -2056,7 +2057,7 @@ router.post(
         } catch (error) {
 
             console.error(
-                "❌ Approve Comment Error:",
+                "❌ Admin Approve Comment Error:",
                 error
             );
 
@@ -2068,7 +2069,7 @@ router.post(
 
 /*
 |--------------------------------------------------------------------------
-| REJECT COMMENT
+| ADMIN COMMENT - REJECT
 |--------------------------------------------------------------------------
 | POST /admin/comments/:id/reject
 |--------------------------------------------------------------------------
@@ -2104,6 +2105,7 @@ router.post(
 
             comment.isApproved = false;
             comment.isSpam = false;
+            comment.isDeleted = false;
 
             await comment.save();
 
@@ -2119,7 +2121,7 @@ router.post(
         } catch (error) {
 
             console.error(
-                "❌ Reject Comment Error:",
+                "❌ Admin Reject Comment Error:",
                 error
             );
 
