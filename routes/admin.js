@@ -2247,14 +2247,6 @@ router.get(
         }
     }
 );
-/*
-|--------------------------------------------------------------------------
-| ADMIN COMMENT REPLY
-|--------------------------------------------------------------------------
-| POST /admin/comments/:id/reply
-|--------------------------------------------------------------------------
-*/
-
 router.post(
     "/comments/:id/reply",
     auth,
@@ -2300,12 +2292,23 @@ router.post(
 
             /*
             |--------------------------------------------------------------------------
-            | Save Admin Reply
+            | ADMIN REPLY
+            |--------------------------------------------------------------------------
+            | adminReply is an embedded object
             |--------------------------------------------------------------------------
             */
 
-            comment.adminReply = reply;
-            comment.replyAt = new Date();
+            comment.adminReply = {
+                message: reply,
+                repliedBy: req.user
+                    ? (
+                        req.user.name ||
+                        req.user.email ||
+                        "Admin"
+                    )
+                    : "Admin",
+                repliedAt: new Date()
+            };
 
             await comment.save();
 
