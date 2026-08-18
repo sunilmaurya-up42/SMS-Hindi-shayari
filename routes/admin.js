@@ -2247,4 +2247,86 @@ router.get(
         }
     }
 );
+/*
+|--------------------------------------------------------------------------
+| ADMIN COMMENT REPLY
+|--------------------------------------------------------------------------
+| POST /admin/comments/:id/reply
+|--------------------------------------------------------------------------
+*/
+
+router.post(
+    "/comments/:id/reply",
+    auth,
+    admin(),
+    async (req, res, next) => {
+
+        try {
+
+            const Comment =
+                require("../models/Comment");
+
+            const comment =
+                await Comment.findById(
+                    req.params.id
+                );
+
+            if (!comment) {
+
+                req.flash(
+                    "error_msg",
+                    "Comment not found."
+                );
+
+                return res.redirect(
+                    "/admin/comments"
+                );
+            }
+
+            const reply =
+                (req.body.reply || "").trim();
+
+            if (!reply) {
+
+                req.flash(
+                    "error_msg",
+                    "Reply cannot be empty."
+                );
+
+                return res.redirect(
+                    `/admin/comments/${req.params.id}/reply`
+                );
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Save Admin Reply
+            |--------------------------------------------------------------------------
+            */
+
+            comment.adminReply = reply;
+            comment.replyAt = new Date();
+
+            await comment.save();
+
+            req.flash(
+                "success_msg",
+                "Reply submitted successfully."
+            );
+
+            return res.redirect(
+                "/admin/comments"
+            );
+
+        } catch (error) {
+
+            console.error(
+                "❌ Admin Comment Reply Error:",
+                error
+            );
+
+            return next(error);
+        }
+    }
+);
 module.exports = router;
