@@ -2184,4 +2184,67 @@ router.post(
         }
     }
 );
+/*
+|--------------------------------------------------------------------------
+| ADMIN COMMENT REPLY PAGE
+|--------------------------------------------------------------------------
+| GET /admin/comments/:id/reply
+|--------------------------------------------------------------------------
+*/
+
+router.get(
+    "/comments/:id/reply",
+    auth,
+    admin(),
+    async (req, res, next) => {
+
+        try {
+
+            const Comment =
+                require("../models/Comment");
+
+            const comment =
+                await Comment.findById(
+                    req.params.id
+                )
+                .populate(
+                    "shayari",
+                    "title slug"
+                )
+                .lean();
+
+            if (!comment) {
+
+                req.flash(
+                    "error_msg",
+                    "Comment not found."
+                );
+
+                return res.redirect(
+                    "/admin/comments"
+                );
+            }
+
+            return res.render(
+                "admin/comment-reply",
+                {
+                    title: "Reply to Comment",
+                    activePage: "comments",
+                    user: req.user,
+                    comment,
+                    csrfToken: req.csrfToken()
+                }
+            );
+
+        } catch (error) {
+
+            console.error(
+                "❌ Admin Comment Reply Page Error:",
+                error
+            );
+
+            return next(error);
+        }
+    }
+);
 module.exports = router;
