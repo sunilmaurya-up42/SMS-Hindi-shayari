@@ -103,9 +103,9 @@
         <!-- Bulk Actions -->
 
         <form
-            action="/admin/comments/bulk"
-            method="POST">
-
+    id="bulkCommentsForm"
+    action="/admin/comments/bulk"
+    method="POST">
             <input
                 type="hidden"
                 name="_csrf"
@@ -182,7 +182,7 @@
                     </div>
 
                 </div>
-
+</form>
                 <div class="table-responsive">
 
                     <table class="table table-hover align-middle mb-0">
@@ -226,10 +226,10 @@
                                         <td>
 
                                             <input
-                                                type="checkbox"
-                                                name="ids"
-                                                value="<%= comment._id %>">
-
+    type="checkbox"
+    name="ids"
+    value="<%= comment._id %>"
+    form="bulkCommentsForm">
                                         </td>
 
                                         <td>
@@ -427,8 +427,6 @@
                 </div>
 
             </div>
-
-        </form>
 
         <!-- Pagination -->
 
