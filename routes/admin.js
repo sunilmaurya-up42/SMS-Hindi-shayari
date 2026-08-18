@@ -2247,6 +2247,7 @@ router.get(
         }
     }
 );
+/* Reply Admin */
 router.post(
     "/comments/:id/reply",
     auth,
@@ -2294,19 +2295,15 @@ router.post(
             |--------------------------------------------------------------------------
             | ADMIN REPLY
             |--------------------------------------------------------------------------
-            | adminReply is an embedded object
-            |--------------------------------------------------------------------------
             */
 
             comment.adminReply = {
                 message: reply,
-                repliedBy: req.user
-                    ? (
-                        req.user.name ||
-                        req.user.email ||
-                        "Admin"
-                    )
-                    : "Admin",
+
+                admin: req.user
+                    ? req.user._id
+                    : null,
+
                 repliedAt: new Date()
             };
 
