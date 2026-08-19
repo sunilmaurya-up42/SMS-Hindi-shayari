@@ -2259,6 +2259,9 @@ router.post(
             const Comment =
                 require("../models/Comment");
 
+            const User =
+                require("../models/User");
+
             const comment =
                 await Comment.findById(
                     req.params.id
@@ -2293,17 +2296,67 @@ router.post(
 
             /*
             |--------------------------------------------------------------------------
-            | ADMIN REPLY
+            | GET ADMIN USER ID
+            |--------------------------------------------------------------------------
+            */
+
+            let adminId = null;
+
+            if (req.user && req.user._id) {
+                adminId = req.user._id;
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | FALLBACK: FIND SUPER ADMIN
+            |--------------------------------------------------------------------------
+            */
+
+            if (!adminId) {
+
+                const adminUser =
+                    await User.findOne({
+                        role: {
+                            $in: [
+                                "super_admin",
+                                "admin"
+                            ]
+                        },
+                        isActive: true
+                    }).select("_id");
+
+                if (adminUser) {
+                    adminId = adminUser._id;
+                }
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | ADMIN ID REQUIRED
+            |--------------------------------------------------------------------------
+            */
+
+            if (!adminId) {
+
+                req.flash(
+                    "error_msg",
+                    "Admin account not found."
+                );
+
+                return res.redirect(
+                    "/admin/comments"
+                );
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | SAVE REPLY
             |--------------------------------------------------------------------------
             */
 
             comment.adminReply = {
                 message: reply,
-
-                admin: req.user
-                    ? req.user._id
-                    : null,
-
+                admin: adminId,
                 repliedAt: new Date()
             };
 
