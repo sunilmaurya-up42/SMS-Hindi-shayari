@@ -1,27 +1,19 @@
-
 <section class="py-5">
 
     <div class="container">
 
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb" class="mb-4">
-
             <ol class="breadcrumb">
 
                 <li class="breadcrumb-item">
-
                     <a href="/">Home</a>
-
                 </li>
 
                 <li class="breadcrumb-item">
-
                     <a href="/category/<%= shayari.category?.slug %>">
-
                         <%= shayari.category?.name %>
-
                     </a>
-
                 </li>
 
                 <li
@@ -33,12 +25,15 @@
                 </li>
 
             </ol>
-
         </nav>
+
 
         <div class="row">
 
-            <!-- Main Content -->
+            <!-- ==================================================
+                 MAIN CONTENT
+            =================================================== -->
+
             <div class="col-lg-8">
 
                 <div class="card shadow-sm">
@@ -52,24 +47,26 @@
 
                     <% } %>
 
+
                     <div class="card-body">
 
                         <span class="badge bg-primary mb-3">
-
                             <%= shayari.category?.name || "General" %>
-
                         </span>
 
+
                         <h1 class="mb-3">
-
                             <%= shayari.title %>
-
                         </h1>
+
 
                         <pre
                             id="shayariText"
                             class="fs-5 border rounded p-3 bg-light"
-                            style="white-space: pre-wrap;font-family:inherit;"><%= shayari.content %></pre>
+                            style="white-space:pre-wrap;font-family:inherit;"><%= shayari.content %></pre>
+
+
+                        <!-- Statistics -->
 
                         <div class="row text-center my-4">
 
@@ -80,12 +77,11 @@
                                 <br>
 
                                 <strong>
-
                                     <%= shayari.views || 0 %>
-
                                 </strong>
 
                             </div>
+
 
                             <div class="col">
 
@@ -94,12 +90,11 @@
                                 <br>
 
                                 <strong id="likeCount">
-
                                     <%= shayari.likes || 0 %>
-
                                 </strong>
 
                             </div>
+
 
                             <div class="col">
 
@@ -108,14 +103,15 @@
                                 <br>
 
                                 <strong>
-
                                     <%= shayari.shares || 0 %>
-
                                 </strong>
 
                             </div>
 
                         </div>
+
+
+                        <!-- Buttons -->
 
                         <div class="d-grid gap-2 d-md-flex">
 
@@ -124,10 +120,10 @@
                                 class="btn btn-outline-primary">
 
                                 <i class="fa-solid fa-copy"></i>
-
                                 Copy
 
                             </button>
+
 
                             <button
                                 class="btn btn-outline-danger"
@@ -135,36 +131,36 @@
                                 data-id="<%= shayari._id %>">
 
                                 <i class="fa-solid fa-heart"></i>
-
                                 Like
 
                             </button>
+
 
                             <button
                                 id="shareBtn"
                                 class="btn btn-outline-success">
 
                                 <i class="fa-solid fa-share-nodes"></i>
-
                                 Share
 
                             </button>
 
+
                             <a
-    href="/shayari/download-image/<%= shayari._id %>"
-    class="btn btn-success">
+                                href="/shayari/download-image/<%= shayari._id %>"
+                                class="btn btn-success">
 
-    <i class="fa-solid fa-download"></i>
+                                <i class="fa-solid fa-download"></i>
+                                Download
 
-    Download
+                            </a>
 
-</a>
+
                             <button
                                 class="btn btn-warning"
                                 id="bookmarkBtn">
 
                                 <i class="fa-solid fa-bookmark"></i>
-
                                 Bookmark
 
                             </button>
@@ -174,201 +170,281 @@
                     </div>
 
                 </div>
-<!-- ==========================================================
-     COMMENTS
-========================================================== -->
 
-<section class="comments-section" id="comments">
 
-    <div class="comments-header">
-        <h3>Comments</h3>
-    </div>
+                <!-- ==================================================
+                     COMMENTS
+                =================================================== -->
 
-    <!-- Comment Form -->
-    <div class="comment-form">
+                <section
+                    class="comments-section mt-4"
+                    id="comments">
 
-        <form
-            action="/comments"
-            method="POST">
+                    <div class="comments-header mb-3">
 
-            <!-- CSRF -->
-            <input
-                type="hidden"
-                name="_csrf"
-                value="<%= csrfToken %>">
+                        <h3>
+                            Comments
+                        </h3>
 
-            <!-- Shayari ID -->
-            <input
-                type="hidden"
-                name="shayari"
-                value="<%= shayari._id %>">
-
-            <!-- Name -->
-            <div class="mb-3">
-                <label for="commentName">
-                    Name
-                </label>
-
-                <input
-                    type="text"
-                    id="commentName"
-                    name="name"
-                    class="form-control"
-                    placeholder="Enter your name"
-                    value=""
-                    required>
-            </div>
-
-            <!-- Email -->
-            <div class="mb-3">
-                <label for="commentEmail">
-                    Email
-                </label>
-
-                <input
-                    type="email"
-                    id="commentEmail"
-                    name="email"
-                    class="form-control"
-                    placeholder="Enter your email"
-                    value="">
-            </div>
-
-            <!-- Comment -->
-            <div class="mb-3">
-                <label for="commentMessage">
-                    Comment
-                </label>
-
-                <textarea
-                    id="commentMessage"
-                    name="comment"
-                    class="form-control"
-                    rows="4"
-                    placeholder="Write your comment..."
-                    required></textarea>
-            </div>
-
-            <button
-                type="submit"
-                class="btn btn-primary">
-                Post Comment
-            </button>
-
-        </form>
-
-    </div>
-
-    <!-- Existing Comments -->
-
-<div class="comments-list">
-
-    <% if (comments && comments.length > 0) { %>
-
-        <% comments.forEach(function(comment) { %>
-
-            <div class="comment-item">
-
-                <div class="comment-author">
-                    <strong>
-                        <%= comment.name %>
-                    </strong>
-                </div>
-
-                <div class="comment-message">
-                    <%= comment.message %>
-                </div>
-
-                <% if (comment.createdAt) { %>
-
-                    <div class="comment-date">
-                        <%= new Date(
-                            comment.createdAt
-                        ).toLocaleDateString("en-IN") %>
                     </div>
 
-                <% } %>
+
+                    <!-- ==================================================
+                         COMMENT FORM
+                    =================================================== -->
+
+                    <div class="comment-form mb-4">
+
+                        <form
+                            action="/comments"
+                            method="POST">
+
+                            <% if (typeof csrfToken !== "undefined" && csrfToken) { %>
+
+                                <input
+                                    type="hidden"
+                                    name="_csrf"
+                                    value="<%= csrfToken %>">
+
+                            <% } %>
 
 
-                <!-- ==========================================
-                     ADMIN REPLY
-                =========================================== -->
+                            <input
+                                type="hidden"
+                                name="shayari"
+                                value="<%= shayari._id %>">
 
-                <% if (
-                    comment.adminReply &&
-                    comment.adminReply.message
-                ) { %>
 
-                    <div
-                        class="admin-reply"
-                        style="
-                            margin-top:12px;
-                            margin-left:20px;
-                            padding:12px 15px;
-                            border-left:4px solid #0d6efd;
-                            background:#f4f7ff;
-                            border-radius:6px;
-                        "
-                    >
+                            <!-- Name -->
 
-                        <div
-                            style="
-                                font-weight:700;
-                                color:#0d6efd;
-                                margin-bottom:6px;
-                            "
-                        >
-                            <i class="fa-solid fa-reply"></i>
-                            Admin Reply
-                        </div>
+                            <div class="mb-3">
 
-                        <div
-                            style="
-                                white-space:pre-wrap;
-                                line-height:1.6;
-                            "
-                        >
-                            <%= comment.adminReply.message %>
-                        </div>
+                                <label
+                                    for="commentName"
+                                    class="form-label">
 
-                        <% if (
-                            comment.adminReply.repliedAt
-                        ) { %>
+                                    Name
 
-                            <div
-                                style="
-                                    margin-top:6px;
-                                    font-size:12px;
-                                    color:#777;
-                                "
-                            >
-                                <%= new Date(
-                                    comment.adminReply.repliedAt
-                                ).toLocaleDateString("en-IN") %>
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="commentName"
+                                    name="name"
+                                    class="form-control"
+                                    placeholder="Enter your name"
+                                    required>
+
                             </div>
+
+
+                            <!-- Email -->
+
+                            <div class="mb-3">
+
+                                <label
+                                    for="commentEmail"
+                                    class="form-label">
+
+                                    Email
+
+                                </label>
+
+                                <input
+                                    type="email"
+                                    id="commentEmail"
+                                    name="email"
+                                    class="form-control"
+                                    placeholder="Enter your email">
+
+                            </div>
+
+
+                            <!-- Comment -->
+
+                            <div class="mb-3">
+
+                                <label
+                                    for="commentMessage"
+                                    class="form-label">
+
+                                    Comment
+
+                                </label>
+
+                                <textarea
+                                    id="commentMessage"
+                                    name="comment"
+                                    class="form-control"
+                                    rows="4"
+                                    placeholder="Write your comment..."
+                                    required></textarea>
+
+                            </div>
+
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary">
+
+                                Post Comment
+
+                            </button>
+
+                        </form>
+
+                    </div>
+
+
+                    <!-- ==================================================
+                         EXISTING COMMENTS
+                    =================================================== -->
+
+                    <div class="comments-list">
+
+                        <% if (comments && comments.length > 0) { %>
+
+                            <% comments.forEach(function(comment) { %>
+
+                                <div
+                                    class="comment-item border rounded p-3 mb-3">
+
+
+                                    <!-- Comment Author -->
+
+                                    <div class="comment-author">
+
+                                        <strong>
+                                            <%= comment.name %>
+                                        </strong>
+
+                                    </div>
+
+
+                                    <!-- Comment Message -->
+
+                                    <div class="comment-message mt-2">
+
+                                        <%= comment.message %>
+
+                                    </div>
+
+
+                                    <!-- Comment Date -->
+
+                                    <% if (comment.createdAt) { %>
+
+                                        <div
+                                            class="comment-date mt-2 text-muted small">
+
+                                            <%= new Date(
+                                                comment.createdAt
+                                            ).toLocaleDateString("en-IN") %>
+
+                                        </div>
+
+                                    <% } %>
+
+
+                                    <!-- ==================================================
+                                         ADMIN REPLY
+                                    =================================================== -->
+
+                                    <% if (
+                                        comment.adminReply &&
+                                        comment.adminReply.message
+                                    ) { %>
+
+                                        <div
+                                            class="admin-reply"
+                                            style="
+                                                margin-top:15px;
+                                                margin-left:20px;
+                                                padding:12px 15px;
+                                                border-left:4px solid #0d6efd;
+                                                background:#f4f7ff;
+                                                border-radius:6px;
+                                            ">
+
+
+                                            <div
+                                                style="
+                                                    font-weight:700;
+                                                    color:#0d6efd;
+                                                    margin-bottom:6px;
+                                                ">
+
+                                                <i class="fa-solid fa-reply"></i>
+
+                                                Admin Reply
+
+                                            </div>
+
+
+                                            <div
+                                                style="
+                                                    white-space:pre-wrap;
+                                                    line-height:1.6;
+                                                ">
+
+                                                <%= comment.adminReply.message %>
+
+                                            </div>
+
+
+                                            <% if (
+                                                comment.adminReply.repliedAt ||
+                                                comment.adminReply.createdAt
+                                            ) { %>
+
+                                                <div
+                                                    style="
+                                                        margin-top:7px;
+                                                        font-size:12px;
+                                                        color:#777;
+                                                    ">
+
+                                                    <%= new Date(
+                                                        comment.adminReply.repliedAt ||
+                                                        comment.adminReply.createdAt
+                                                    ).toLocaleDateString("en-IN") %>
+
+                                                </div>
+
+                                            <% } %>
+
+                                        </div>
+
+                                    <% } %>
+
+
+                                </div>
+
+                            <% }); %>
+
+
+                        <% } else { %>
+
+
+                            <p class="no-comments text-muted">
+
+                                No comments yet. Be the first to comment.
+
+                            </p>
+
 
                         <% } %>
 
                     </div>
 
-                <% } %>
+                </section>
 
             </div>
 
-        <% }); %>
 
-    <% } else { %>
-
-        <p class="no-comments">
-            No comments yet. Be the first to comment.
-        </p>
-
-    <% } %>
-
-</div>
-
-</section>
-            <!-- Sidebar -->
+            <!-- ==================================================
+                 SIDEBAR
+            =================================================== -->
 
             <div class="col-lg-4">
 
@@ -380,11 +456,12 @@
 
                     </div>
 
+
                     <div class="list-group list-group-flush">
 
-                        <% if(related && related.length){ %>
+                        <% if (related && related.length) { %>
 
-                            <% related.forEach(item=>{ %>
+                            <% related.forEach(item => { %>
 
                                 <a
                                     href="/shayari/<%= item.slug %>"
@@ -395,6 +472,7 @@
                                 </a>
 
                             <% }) %>
+
 
                         <% } else { %>
 
@@ -418,44 +496,63 @@
 
 </section>
 
+
+<!-- ==========================================================
+     PAGE JAVASCRIPT
+========================================================== -->
+
 <script>
 
-document.getElementById("copyBtn")
-?.addEventListener("click", async () => {
+document
+    .getElementById("copyBtn")
+    ?.addEventListener("click", async () => {
 
-    await navigator.clipboard.writeText(
+        try {
 
-        document.getElementById("shayariText").innerText
+            await navigator.clipboard.writeText(
+                document.getElementById("shayariText").innerText
+            );
 
-    );
+            alert("Shayari copied.");
 
-    alert("Shayari copied.");
+        } catch (error) {
 
-});
+            console.error("Copy Error:", error);
 
-document.getElementById("shareBtn")
-?.addEventListener("click", async () => {
+        }
 
-    const url = window.location.href;
+    });
 
-    if (navigator.share) {
 
-        await navigator.share({
+document
+    .getElementById("shareBtn")
+    ?.addEventListener("click", async () => {
 
-            title: document.title,
+        try {
 
-            url
+            const url = window.location.href;
 
-        });
+            if (navigator.share) {
 
-    } else {
+                await navigator.share({
+                    title: document.title,
+                    url: url
+                });
 
-        await navigator.clipboard.writeText(url);
+            } else {
 
-        alert("Link copied.");
+                await navigator.clipboard.writeText(url);
 
-    }
+                alert("Link copied.");
 
-});
+            }
+
+        } catch (error) {
+
+            console.error("Share Error:", error);
+
+        }
+
+    });
 
 </script>
